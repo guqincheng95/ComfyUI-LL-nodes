@@ -1,0 +1,13 @@
+test_all_135_builtin_combinations (test_resolution.ResolutionTests.test_all_135_builtin_combinations) ... ok
+test_custom_unchanged (test_resolution.ResolutionTests.test_custom_unchanged) ... ok
+test_family_tables_independent (test_resolution.ResolutionTests.test_family_tables_independent) ... ok
+test_invalid_inputs (test_resolution.ResolutionTests.test_invalid_inputs) ... ok
+test_preset_validation (test_resolution.ResolutionTests.test_preset_validation) ... ok
+test_registration_and_defaults (test_resolution.ResolutionTests.test_registration_and_defaults) ... ok
+test_required_five_cases (test_resolution.ResolutionTests.test_required_five_cases) ... ok
+test_workflow_links (test_resolution.ResolutionTests.test_workflow_links) ... ok
+
+----------------------------------------------------------------------
+Ran 8 tests in 0.002s
+
+OK

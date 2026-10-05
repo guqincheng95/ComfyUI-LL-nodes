@@ -1,0 +1,38 @@
+{
+  "1": {
+    "class_type": "ResolutionPreset",
+    "inputs": {
+      "model_family": "Z-Image",
+      "ratio": "9:16",
+      "quality_tier": "Quality",
+      "orientation": "Auto",
+      "custom_width": 1376,
+      "custom_height": 768
+    }
+  },
+  "2": {
+    "class_type": "EmptyImage",
+    "inputs": {
+      "width": [
+        "1",
+        0
+      ],
+      "height": [
+        "1",
+        1
+      ],
+      "batch_size": 1,
+      "color": 0
+    }
+  },
+  "3": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "2",
+        0
+      ],
+      "filename_prefix": "ResolutionPreset_test"
+    }
+  }
+}
