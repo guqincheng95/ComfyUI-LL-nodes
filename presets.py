@@ -1,7 +1,7 @@
 """Production presets; edit this file to tune each model independently."""
 from copy import deepcopy
 
-RATIOS = ("1:1", "3:4", "4:3", "9:16", "16:9")
+RATIOS = ("1:1", "3:4", "4:3", "9:16", "16:9", "2:3")
 QUALITY_TIERS = ("Fast", "Quality", "Max")
 ORIENTATIONS = ("Auto", "Portrait", "Landscape")
 _BASE = {
@@ -9,6 +9,7 @@ _BASE = {
     "3:4": {"Fast": (768, 1024), "Quality": (1152, 1536), "Max": (1536, 2048)},
     "4:3": {"Fast": (1024, 768), "Quality": (1536, 1152), "Max": (2048, 1536)},
     "9:16": {"Fast": (576, 1024), "Quality": (864, 1536), "Max": (1152, 2048)},
+    "2:3": {"Fast": (704, 1056), "Quality": (1024, 1536), "Max": (1344, 2016)},
     "16:9": {"Fast": (1024, 576), "Quality": (1536, 864), "Max": (2048, 1152)},
 }
 PRESETS = {name: deepcopy(_BASE) for name in ("Z-Image", "SCAIL-2 / WAN", "FLUX")}

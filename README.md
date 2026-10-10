@@ -1,6 +1,6 @@
 # ComfyUI-ResolutionPreset
 
-**v0.1.0** · 轻量分辨率预设节点 · Python 标准库 · 无运行时网络请求
+**v0.1.1** · 轻量分辨率预设节点 · Python 标准库 · 无运行时网络请求
 
 选模型 → 选比例 → 选质量 → 输出 `width` / `height` 两个 `INT`，直接连接需要宽高的节点。
 仅提供尺寸，不生成图像、不处理 latent、不缩放、不加载模型。无需 pip 安装依赖，也不会修改 Torch、CUDA、Triton、SageAttention 或 ComfyUI 核心代码。
@@ -27,7 +27,7 @@ ComfyUI/custom_nodes/ComfyUI-ResolutionPreset/__init__.py
 | 输入 | 可选项 / 默认值 | 行为 |
 |---|---|---|
 | model_family | Z-Image（默认）、SCAIL-2 / WAN、FLUX、Custom | 选择独立的模型预设表 |
-| ratio | 1:1、3:4、4:3、9:16（默认）、16:9 | 宽:高 |
+| ratio | 1:1、3:4、4:3、9:16（默认）、16:9、2:3 | 宽:高 |
 | quality_tier | Fast、Quality（默认）、Max | 快速草图 / 正式生产 / 原生高分辨率测试 |
 | orientation | Auto（默认）、Portrait、Landscape | 保持比例方向 / 长边为高 / 长边为宽 |
 | custom_width | 1376 | Custom 宽度，正整数，步长 1 |
@@ -66,6 +66,7 @@ Z-Image、SCAIL-2 / WAN、FLUX 在本版使用相同尺寸规范，但各自的�
 | 4:3 | 1024 × 768 | 1536 × 1152 | 2048 × 1536 |
 | 9:16 | 576 × 1024 | 864 × 1536 | 1152 × 2048 |
 | 16:9 | 1024 × 576 | 1536 × 864 | 2048 × 1152 |
+| 2:3 | 704 × 1056 | 1024 × 1536 | 1344 × 2016 |
 
 ## 修改预设
 
@@ -85,7 +86,7 @@ PRESETS["FLUX"]["16:9"]["Quality"] = (1536, 864)
 
 **Resolution Preset → EmptyImage → SaveImage**
 
-使用内置空图节点承接两个整数，保存纯色测试图以验证实际尺寸；不用模型或 VAE。SaveImage 是执行终点，避免只有 latent 节点但无输出节点导致工作流不执行。切换五种比例并运行即可检查尺寸。
+使用内置空图节点承接两个整数，保存纯色测试图以验证实际尺寸；不用模型或 VAE。SaveImage 是执行终点，避免只有 latent 节点但无输出节点导致工作流不执行。切换六种比例并运行即可检查尺寸。
 `examples/minimal_api.json` 是同一工作流的 API 格式，供验收脚本使用。
 
 纯 Python 测试（无需 ComfyUI）：
@@ -95,7 +96,7 @@ cd ComfyUI/custom_nodes/ComfyUI-ResolutionPreset
 python -m unittest discover -s tests -v
 ```
 
-已覆盖需求五例、全部 135 个内置方向组合、Custom 不对齐值、错误输入、预设校验、注册声明和工作流连线结构。
+已覆盖需求五例、全部 162 个内置方向组合、Custom 不对齐值、错误输入、预设校验、注册声明和工作流连线结构。
 
 **目标环境验收尚待执行**：当前开发容器是 Python 3.12.14，没有指定的 ComfyUI 0.38.0 / Python 3.12.3 / PyTorch 2.9.1+cu130 / RTX 4090 48GB 环境。未将单元测试冒充 ComfyUI 启动或 UI 验收。完整步骤见 [验收说明](docs/ACCEPTANCE.md)，当前证据见 [测试报告](docs/TEST_REPORT.md)。
 
@@ -115,3 +116,17 @@ docs/                         需求、测试、验收、开发与交接记录
 
 验收脚本仅在手动运行时向指定的 ComfyUI 服务发起请求；节点运行本身没有网络请求。
 后续更多比例、JSON 预设导入导出、超分等不属于本次需求规定的版本范围。
+
+## Krea 2 与 2:3（v0.1.1）
+
+Krea 2 官方 README 说明输出宽高不足 16 倍数时向上补齐；当前插件所有预设均为 32 倍数，因此也符合该网格。按用户要求不新增 Krea 2 模型选项，可选择 Z-Image 表输出宽高连接 Krea 2 工作流；这仅复用尺寸，不切换实际模型。
+
+2:3：Fast 704×1056、Quality 1024×1536、Max 1344×2016。保持精确 2:3 和两边都为 32 倍数，长边取最接近原有 1024/1536/2048 档的可用值。Landscape 输出反向 3:2，无需另加比例。
+
+官方区分 Raw（训练到约 1K）和 Turbo（说明可生成 1K～2K）；不要把网格兼容理解为所有档位都是最佳实测参数。Raw 可先试 Fast；Turbo 可试 Quality，再按显存、耗时和效果决定是否使用 Max。本次没有运行 Krea 2 模型进行画质测试。
+
+来源：https://github.com/krea-ai/krea-2 ，README blob `6dc93f45bcb7d7afac00c342bbc8b67417ee03c2`，查询日期 2026-10-10。
+
+### ZIP 更新
+
+v0.1.1 ZIP 只包含尺寸插件，不含独立的 PhotoFinish 插件。若曾修改 presets.py 请先备份；解压覆盖同名文件后重启 ComfyUI，再刷新浏览器。旧的五种比例及预设数值保持不变。

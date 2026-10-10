@@ -29,19 +29,28 @@ class ResolutionTests(unittest.TestCase):
             with self.subTest(family=family, ratio=ratio, tier=tier):
                 self.assertEqual(self.node.resolve(family, ratio, tier, orientation), expected)
 
-    def test_all_135_builtin_combinations(self):
+    def test_all_162_builtin_combinations(self):
         # Independent specification oracle, not a copy of the implementation table.
         for family in ("Z-Image", "SCAIL-2 / WAN", "FLUX"):
-            for ratio in ("1:1", "3:4", "4:3", "9:16", "16:9"):
+            for ratio in ("1:1", "3:4", "4:3", "9:16", "16:9", "2:3"):
                 a, b = map(int, ratio.split(":"))
                 for tier, long_side in (("Fast", 1024), ("Quality", 1536), ("Max", 2048)):
-                    expected = (long_side * a // max(a, b), long_side * b // max(a, b))
+                    unit = round(long_side / (max(a, b) * 32)) * 32
+                    expected = (unit * a, unit * b)
                     for orientation in ("Auto", "Portrait", "Landscape"):
                         pair = expected if orientation == "Auto" else tuple(sorted(expected, reverse=orientation == "Landscape"))
                         with self.subTest(family=family, ratio=ratio, tier=tier, orientation=orientation):
                             actual = self.node.resolve(family, ratio, tier, orientation)
                             self.assertEqual(actual, pair)
                             self.assertTrue(all(type(v) is int and v % 32 == 0 for v in actual))
+
+    def test_two_three_and_krea_alignment(self):
+        for family in ("Z-Image", "SCAIL-2 / WAN", "FLUX"):
+            for tier, expected in (("Fast", (704, 1056)), ("Quality", (1024, 1536)), ("Max", (1344, 2016))):
+                self.assertEqual(self.node.resolve(family, "2:3", tier, "Auto"), expected)
+                self.assertEqual(self.node.resolve(family, "2:3", tier, "Landscape"), expected[::-1])
+                self.assertEqual(expected[0] * 3, expected[1] * 2)
+                self.assertTrue(all(v % 16 == 0 for v in expected))
 
     def test_custom_unchanged(self):
         for orientation in ("Auto", "Portrait", "Landscape"):

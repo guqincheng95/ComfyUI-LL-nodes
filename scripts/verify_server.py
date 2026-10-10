@@ -1,7 +1,7 @@
 """Exercise a running ComfyUI server and record actual output PNG dimensions.
 
 Standard library only. This opt-in development tool is not imported by the node.
-Saves 10 small test images in the server output directory (no model required).
+Saves 11 small test images in the server output directory (no model required).
 """
 import argparse
 import copy
@@ -49,6 +49,7 @@ def run(base, output, timeout):
             ('FLUX', '16:9', 'Fast', 'Auto', (1024, 576)),
             ('Z-Image', '9:16', 'Quality', 'Landscape', (1536, 864)),
             ('Custom', '1:1', 'Fast', 'Landscape', (1377, 769)),
+            ('Z-Image', '2:3', 'Quality', 'Auto', (1024, 1536)),
         ]
         for index, (family, ratio, tier, orientation, expected) in enumerate(cases, 1):
             prompt = copy.deepcopy(template)

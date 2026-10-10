@@ -42,14 +42,14 @@ bash scripts/capture_startup.sh
 python scripts/verify_server.py --url http://127.0.0.1:6006
 ```
 
-脚本查询实际 `/object_info/ResolutionPreset` 注册信息、记录 `/system_stats`，提交十组真实工作流，读取执行历史并验证输出 PNG 的宽高。包含需求五例、第五种比例、另两类模型、强制横向和非 32 对齐 Custom。
+脚本查询实际 `/object_info/ResolutionPreset` 注册信息、记录 `/system_stats`，提交十一组真实工作流，读取执行历史并验证输出 PNG 的宽高。包含需求五例、第五种比例、另两类模型、强制横向和非 32 对齐 Custom。
 失败退出非零，保留失败原因，**没有 mock 服务或跳过即成功的逻辑**。
-会在 ComfyUI output/ResolutionPreset_acceptance 内保存十张纯色测试图；本地 acceptance-output 同时保存报告、图像、注册信息、系统信息和历史。大队列时可增加 `--timeout 600`。
+会在 ComfyUI output/ResolutionPreset_acceptance 内保存十一张纯色测试图；本地 acceptance-output 同时保存报告、图像、注册信息、系统信息和历史。大队列时可增加 `--timeout 600`。
 
 ## 4. UI 验收
 
 浏览器刷新 ComfyUI，搜索 Resolution Preset。截图应显示节点菜单结果和节点本身。
-导入 `examples/minimal_workflow.json`，确认宽、高两根连线，依次切换五种比例并执行。
+导入 `examples/minimal_workflow.json`，确认宽、高两根连线，依次切换六种比例并执行。
 将截图保存为 `acceptance-output/node-menu.png`。API 注册成功只能证明后端注册，不可替代菜单截图。
 
 ## 完成条件
