@@ -1,0 +1,57 @@
+{
+  "torch": "2.14.1+cpu",
+  "device": "cpu",
+  "cpu_threads": 2,
+  "4k_shape": [
+    1,
+    2160,
+    3840,
+    3
+  ],
+  "4k_seconds": 1.713,
+  "finite": true,
+  "tile_max_abs_error": 3.5762786865234375e-07,
+  "photo_source": "https://github.com/scikit-image/scikit-image/blob/v0.24.0/skimage/data/astronaut.png",
+  "cases": [
+    [
+      "Original",
+      {}
+    ],
+    [
+      "Exposure +0.7",
+      {
+        "exposure": 0.7
+      }
+    ],
+    [
+      "Shadows +70 / Highlights -70",
+      {
+        "shadows": 70,
+        "highlights": -70
+      }
+    ],
+    [
+      "Temperature +25 / Tint +8",
+      {
+        "temperature": 25,
+        "tint": 8
+      }
+    ],
+    [
+      "Cool shadows / warm highlights",
+      {
+        "shadow_cyan_red": -18,
+        "shadow_yellow_blue": 20,
+        "highlight_cyan_red": 15,
+        "highlight_yellow_blue": -10
+      }
+    ],
+    [
+      "Contrast +20 / Vibrance +35",
+      {
+        "contrast": 20,
+        "vibrance": 35
+      }
+    ]
+  ]
+}

@@ -1,0 +1,20 @@
+test_all_controls_effect_and_bounds (test_photo.PhotoTests.test_all_controls_effect_and_bounds) ... ok
+test_batch_tile_alpha_nonmutation (test_photo.PhotoTests.test_batch_tile_alpha_nonmutation) ... ok
+test_black_white_endpoints (test_photo.PhotoTests.test_black_white_endpoints) ... ok
+test_combined_extremes_and_half_input (test_photo.PhotoTests.test_combined_extremes_and_half_input) ... ok
+test_exposure_is_linear_ev (test_photo.PhotoTests.test_exposure_is_linear_ev) ... ok
+test_float_precision_no_uint8_quantization (test_photo.PhotoTests.test_float_precision_no_uint8_quantization) ... ok
+test_invalid_inputs (test_photo.PhotoTests.test_invalid_inputs) ... ok
+test_preserve_luminance_after_gamut_mapping (test_photo.PhotoTests.test_preserve_luminance_after_gamut_mapping) ... ok
+test_region_weights_and_isolation (test_photo.PhotoTests.test_region_weights_and_isolation) ... ok
+test_registration_and_19_defaults (test_photo.PhotoTests.test_registration_and_19_defaults) ... ok
+test_saturation_and_vibrance (test_photo.PhotoTests.test_saturation_and_vibrance) ... ok
+test_tone_monotone_extremes (test_photo.PhotoTests.test_tone_monotone_extremes) ... ok
+test_tone_regions_distinct (test_photo.PhotoTests.test_tone_regions_distinct) ... ok
+test_transfer_roundtrip (test_photo.PhotoTests.test_transfer_roundtrip) ... ok
+test_white_balance_signs (test_photo.PhotoTests.test_white_balance_signs) ... ok
+
+----------------------------------------------------------------------
+Ran 15 tests in 0.048s
+
+OK
