@@ -1,4 +1,4 @@
-# Photo Finish · 基础后期 v0.1.0
+# Photo Finish · 基础后期 v0.1.1
 
 用于 ComfyUI 的独立后期调色节点：19 个数字参数 + 保持明度开关。
 输入 IMAGE，输出 IMAGE；处理 PNG/JPG 加载后的浮点图像。原生控件，无自定义前端、无模型下载。
@@ -15,10 +15,10 @@ ComfyUI/custom_nodes/ComfyUI-PhotoFinish/__init__.py
 
 ```bash
 cd /root/autodl-tmp/AI_Workspace/ComfyUI/custom_nodes
-python -m zipfile -e ComfyUI-PhotoFinish-v0.1.0.zip .
+python -m zipfile -e ComfyUI-PhotoFinish-v0.1.1.zip .
 ```
 
-重启 ComfyUI，刷新浏览器，搜索 **Photo Finish**，分类为 **AI Visual / Photo**。
+重启 ComfyUI，刷新浏览器，搜索 **后期修图**、**曝光**、**白平衡**、**色彩平衡** 或 **Photo Finish**，分类为 **AI 视觉 / 后期修图**。
 不需要 pip install，不更换现有 Torch、CUDA、Triton 或其他环境依赖；仅使用 ComfyUI 已有 PyTorch。
 已有同名目录时先将其备份到 custom_nodes 外，再解压更新，避免重复注册。
 
@@ -89,3 +89,9 @@ python -m unittest discover -s tests -v
 
 导入示例工作流，零参数运行一次，再单独改曝光到 +0.5、色温到 +20、阴影到 +30，确认图像变化且尺寸不变。
 当前没有访问你的服务器；真实服务器导入、界面及 CUDA 验收待执行。
+
+## 中文界面（2026-10-10）
+
+重启 ComfyUI 并按 Ctrl+F5 强制刷新浏览器。在 ComfyUI 设置的语言选项中选择“中文 / Chinese”，节点参数、下拉选项和接口标签会使用中文。原始英文参数键、节点类型、选项值与控件顺序保持不变，已有工作流与 API 调用兼容。节点中英文名称均保留，便于搜索。
+
+采用官方 locales/zh/nodeDefs.json 翻译机制，无额外前端脚本、无需安装依赖。若手动给旧节点改过标题，该标题不会被强制覆盖，可重新命名或新建节点。

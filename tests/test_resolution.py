@@ -86,7 +86,7 @@ class ResolutionTests(unittest.TestCase):
     def test_registration_and_defaults(self):
         self.assertEqual(self.node.RETURN_TYPES, ("INT", "INT"))
         self.assertEqual(self.node.RETURN_NAMES, ("width", "height"))
-        self.assertEqual(package.NODE_DISPLAY_NAME_MAPPINGS["ResolutionPreset"], "Resolution Preset")
+        self.assertEqual(package.NODE_DISPLAY_NAME_MAPPINGS["ResolutionPreset"], '比例预设 · Resolution Preset')
         schema = self.node.INPUT_TYPES()["required"]
         defaults = {name: definition[1]["default"] for name, definition in schema.items()}
         self.assertEqual(getattr(self.node, self.node.FUNCTION)(**defaults), (864, 1536))

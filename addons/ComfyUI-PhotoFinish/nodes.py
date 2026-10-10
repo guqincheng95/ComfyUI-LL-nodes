@@ -27,7 +27,7 @@ class PhotoFinish:
     RETURN_TYPES = ('IMAGE',)
     RETURN_NAMES = ('image',)
     FUNCTION = 'apply'
-    CATEGORY = 'AI Visual / Photo'
+    CATEGORY = 'AI 视觉/后期修图'
     DESCRIPTION = '基础后期：光影六项、白平衡、自然饱和度与饱和度、三明度区域色彩平衡。'
 
     def apply(self, image, preserve_luminosity=True, **values):

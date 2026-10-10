@@ -1,6 +1,6 @@
 # ComfyUI-ResolutionPreset
 
-**v0.1.1** · 轻量分辨率预设节点 · Python 标准库 · 无运行时网络请求
+**v0.1.2** · 轻量分辨率预设节点 · Python 标准库 · 无运行时网络请求
 
 选模型 → 选比例 → 选质量 → 输出 `width` / `height` 两个 `INT`，直接连接需要宽高的节点。
 仅提供尺寸，不生成图像、不处理 latent、不缩放、不加载模型。无需 pip 安装依赖，也不会修改 Torch、CUDA、Triton、SageAttention 或 ComfyUI 核心代码。
@@ -19,7 +19,7 @@ git clone https://github.com/guqincheng95/ComfyUI-ResolutionPreset.git custom_no
 ComfyUI/custom_nodes/ComfyUI-ResolutionPreset/__init__.py
 ```
 
-重启 ComfyUI 后，搜索 **Resolution Preset**，或在 **AI Visual / Utilities** 中添加。
+重启 ComfyUI 后，搜索 **比例预设** 或 **Resolution Preset**，或在 **AI 视觉 / 尺寸工具** 中添加。
 更新：在插件目录执行 `git pull --ff-only`，再重启 ComfyUI。卸载只需移除插件目录后重启。
 
 ## 输入与输出
@@ -130,3 +130,9 @@ Krea 2 官方 README 说明输出宽高不足 16 倍数时向上补齐；当前�
 ### ZIP 更新
 
 v0.1.1 ZIP 只包含尺寸插件，不含独立的 PhotoFinish 插件。若曾修改 presets.py 请先备份；解压覆盖同名文件后重启 ComfyUI，再刷新浏览器。旧的五种比例及预设数值保持不变。
+
+## 中文界面（2026-10-10）
+
+重启 ComfyUI 并按 Ctrl+F5 强制刷新浏览器。在 ComfyUI 设置的语言选项中选择“中文 / Chinese”，节点参数、下拉选项和接口标签会使用中文。原始英文参数键、节点类型、选项值与控件顺序保持不变，已有工作流与 API 调用兼容。节点中英文名称均保留，便于搜索。
+
+采用官方 locales/zh/nodeDefs.json 翻译机制，无额外前端脚本、无需安装依赖。若手动给旧节点改过标题，该标题不会被强制覆盖，可重新命名或新建节点。
