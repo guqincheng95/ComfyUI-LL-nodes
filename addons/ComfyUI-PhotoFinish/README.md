@@ -1,7 +1,7 @@
-# Photo Finish · 基础后期 v0.1.1
+# Photo Finish · 基础后期 v0.2.0
 
 用于 ComfyUI 的独立后期调色节点：19 个数字参数 + 保持明度开关。
-输入 IMAGE，输出 IMAGE；处理 PNG/JPG 加载后的浮点图像。原生控件，无自定义前端、无模型下载。
+输入 IMAGE，输出 IMAGE；处理 PNG/JPG 加载后的浮点图像。19 项滑块与数值/箭头精细控制，无模型下载。
 
 ## 安装（无需服务器连接外网）
 
@@ -15,7 +15,7 @@ ComfyUI/custom_nodes/ComfyUI-PhotoFinish/__init__.py
 
 ```bash
 cd /root/autodl-tmp/AI_Workspace/ComfyUI/custom_nodes
-python -m zipfile -e ComfyUI-PhotoFinish-v0.1.1.zip .
+python -m zipfile -e ComfyUI-PhotoFinish-v0.2.0.zip .
 ```
 
 重启 ComfyUI，刷新浏览器，搜索 **后期修图**、**曝光**、**白平衡**、**色彩平衡** 或 **Photo Finish**，分类为 **AI 视觉 / 后期修图**。
@@ -94,4 +94,18 @@ python -m unittest discover -s tests -v
 
 重启 ComfyUI 并按 Ctrl+F5 强制刷新浏览器。在 ComfyUI 设置的语言选项中选择“中文 / Chinese”，节点参数、下拉选项和接口标签会使用中文。原始英文参数键、节点类型、选项值与控件顺序保持不变，已有工作流与 API 调用兼容。节点中英文名称均保留，便于搜索。
 
-采用官方 locales/zh/nodeDefs.json 翻译机制，无额外前端脚本、无需安装依赖。若手动给旧节点改过标题，该标题不会被强制覆盖，可重新命名或新建节点。
+采用官方 locales/zh/nodeDefs.json 翻译机制，翻译无需额外依赖；v0.2.0 的滑块由随包 web 前端扩展提供。若手动给旧节点改过标题，该标题不会被强制覆盖，可重新命名或新建节点。
+
+## v0.2.0 · 第二版滑块
+
+每项参数包含中文名称、精确数值框、◀ / ▶ 微调按钮及下方滑块。
+
+- 左负右正，中心为 0；负向 10 档、正向 10 档，加零位共 21 个位置（20 段）。
+- 曝光范围 −5～+5 EV，滑块每档 0.5 EV，按钮每次 0.05 EV。
+- 其他 18 项范围 −100～+100，滑块每档 10，按钮每次 1。
+- 数值框支持直接输入；滑块双击归零，也可用键盘左右键逐档移动。
+- 旧工作流的 0.30、−6 等精细值保持不变，仅主动操作滑块时吸附到整档。
+- 原有参数名、数量、顺序和算法不变。端口连接外部数值时禁用对应本地控件。
+- 操作只改变参数，仍需运行工作流查看调色结果，不是实时图像预览。
+
+覆盖解压后必须重启 ComfyUI 并 Ctrl+F5，确认 `web/controls.js`、`web/photo_finish.js` 已一起安装。节点会增高以容纳滑块。前端扩展未加载时仍保留原数值控件，可检查浏览器控制台与 ComfyUI 启动日志。
