@@ -9,7 +9,7 @@ spec = importlib.util.spec_from_file_location('photo_test', ROOT / '__init__.py'
 pkg = importlib.util.module_from_spec(spec)
 sys.modules[spec.name] = pkg
 spec.loader.exec_module(pkg)
-from photo_test.processing import (PARAMETERS, adjust_image, srgb_to_linear,
+from photo_test.modules.photo.processing import (PARAMETERS, adjust_image, srgb_to_linear,
     linear_to_srgb, luminance, tone_curve, validate_parameters, region_weights)
 
 torch.set_num_threads(2)

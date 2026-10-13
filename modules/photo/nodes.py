@@ -1,4 +1,4 @@
-from .processing import PARAMETERS, adjust_image
+from .parameters import PARAMETERS
 
 LABELS = {
     'exposure': '曝光 EV', 'contrast': '对比度', 'highlights': '高光',
@@ -27,8 +27,9 @@ class PhotoFinish:
     RETURN_TYPES = ('IMAGE',)
     RETURN_NAMES = ('image',)
     FUNCTION = 'apply'
-    CATEGORY = 'AI 视觉/后期修图'
+    CATEGORY = 'LL 节点库/图像后期/基础调色'
     DESCRIPTION = '基础后期：光影六项、白平衡、自然饱和度与饱和度、三明度区域色彩平衡。'
 
     def apply(self, image, preserve_luminosity=True, **values):
+        from .processing import adjust_image
         return (adjust_image(image, preserve_luminosity=preserve_luminosity, **values),)

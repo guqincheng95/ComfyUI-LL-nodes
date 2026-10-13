@@ -1,17 +1,28 @@
-name: Python tests
+name: LL node library tests
 on: [push, pull_request, workflow_dispatch]
 permissions:
   contents: read
 jobs:
-  unit-tests:
+  metadata-and-frontend:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        python-version: ['3.12', '3.13']
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
-          python-version: ${{ matrix.python-version }}
-      - run: python -m unittest discover -s tests -v
-      - run: python -m compileall -q __init__.py nodes.py presets.py scripts tests
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: python -m unittest discover -s tests -p test_resolution.py -v
+      - run: python -m unittest discover -s tests -p test_library.py -v
+      - run: node tests/frontend.test.mjs
+      - run: python -m compileall -q __init__.py modules scripts tests
+  photo-algorithms:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: python -m pip install torch --index-url https://download.pytorch.org/whl/cpu
+      - run: python -m unittest discover -s tests -p test_photo.py -v

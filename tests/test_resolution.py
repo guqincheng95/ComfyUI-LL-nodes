@@ -86,15 +86,15 @@ class ResolutionTests(unittest.TestCase):
     def test_registration_and_defaults(self):
         self.assertEqual(self.node.RETURN_TYPES, ("INT", "INT"))
         self.assertEqual(self.node.RETURN_NAMES, ("width", "height"))
-        self.assertEqual(package.NODE_DISPLAY_NAME_MAPPINGS["ResolutionPreset"], '比例预设 · Resolution Preset')
+        self.assertEqual(package.NODE_DISPLAY_NAME_MAPPINGS["ResolutionPreset"], 'LL 比例预设 · Resolution Preset')
         schema = self.node.INPUT_TYPES()["required"]
         defaults = {name: definition[1]["default"] for name, definition in schema.items()}
         self.assertEqual(getattr(self.node, self.node.FUNCTION)(**defaults), (864, 1536))
 
     def test_workflow_links(self):
-        flow = json.loads((ROOT / "examples/minimal_workflow.json").read_text())
+        flow = json.loads((ROOT / "examples/resolution/minimal_workflow.json").read_text())
         self.assertEqual(flow["links"][:2], [[1, 1, 0, 2, 0, "INT"], [2, 1, 1, 2, 1, "INT"]])
-        prompt = json.loads((ROOT / "examples/minimal_api.json").read_text())
+        prompt = json.loads((ROOT / "examples/resolution/minimal_api.json").read_text())
         self.assertEqual(prompt["2"]["inputs"]["width"], ["1", 0])
         self.assertEqual(prompt["2"]["inputs"]["height"], ["1", 1])
         self.assertEqual(prompt["3"]["class_type"], "SaveImage")

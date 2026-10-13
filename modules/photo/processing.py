@@ -2,18 +2,13 @@
 
 Exposure uses the standard linear-light 2**EV relationship (also used by
 GPUImage2). Tone-region and gamut algorithms here are independent implementations.
-See docs/ALGORITHMS.md for source research, assumptions and limitations.
+See docs/history/photo/ALGORITHMS.md for source research, assumptions and limitations.
 """
 import math
 import torch
 
-PARAMETERS = (
-    'exposure', 'contrast', 'highlights', 'shadows', 'whites', 'blacks',
-    'temperature', 'tint', 'vibrance', 'saturation',
-    'shadow_cyan_red', 'shadow_magenta_green', 'shadow_yellow_blue',
-    'midtone_cyan_red', 'midtone_magenta_green', 'midtone_yellow_blue',
-    'highlight_cyan_red', 'highlight_magenta_green', 'highlight_yellow_blue',
-)
+from .parameters import PARAMETERS
+
 WEIGHTS = (0.2126, 0.7152, 0.0722)
 
 

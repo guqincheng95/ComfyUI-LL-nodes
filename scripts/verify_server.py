@@ -37,7 +37,7 @@ def run(base, output, timeout):
         report['registered'] = True
         stats = request(base, '/system_stats')
         (output / 'system_stats.json').write_text(json.dumps(stats, indent=2))
-        template = json.loads((Path(__file__).resolve().parents[1] / 'examples/minimal_api.json').read_text())
+        template = json.loads((Path(__file__).resolve().parents[1] / 'examples/resolution/minimal_api.json').read_text())
         cases = [
             ('Z-Image', '9:16', 'Quality', 'Portrait', (864, 1536)),
             ('Z-Image', '16:9', 'Quality', 'Landscape', (1536, 864)),
