@@ -1,16 +1,17 @@
 # 当前状态 · 交接入口
 
-- 日期：2026-10-24；仓库 guqincheng95/ComfyUI-LL-nodes；整库版本 0.4.0。
-- 新增 LLPersonContourTrim，菜单 LL 节点库/图像工具/人物轮廓，中文搜索“人物轮廓修剪”。
-- 范围：修剪原深度图的外扩裙摆/头饰/宽袖；保留区域使用原深度。不重建、不补全身体。
-- 复用 SDPose/DWPose POSE_KEYPOINT、原图 BEN2 前景 MASK、Pillow 成熟绘图与形态学；可接现有人体分割的 protect/exclude MASK，不下载新模型。
-- 原图可见轮廓通过 foreground_mask 用于局部宽度观测；同裁切的等比例遮罩可自动对齐深度分辨率。
-- 四路输出：修剪深度、保留 MASK、绿保留/红删除预览、处理说明。识别不足安全保留该帧或报错。
-- 连线：深度图 -> 新节点 -> 原混合图像的深度输入；SDPose 原始关键点 -> 新节点；原图 BEN2 mask -> foreground_mask。
-- 验证：PyTorch 2.9.1+cpu，41 项 Python 测试通过（轮廓13、比例9、调色15、整库4）；前端19控件/399位置检查与编译通过。
-- 公开真实人物轮廓样例已目视检查；使用标注骨架与分割，不是模型推理。用户真实 ComfyUI 与完整生图链路仍待验证。
-- CPU 2线程单次22帧752×1392测量2.806秒，仅本开发环境样本。
-- 新节点偏向全身有效骨架；贴身范围内的饰品需 exclude_mask，半身或关键点缺失可能回退保留，不是全自动语义解析。
-- 原比例、调色节点标识/参数不变；更新一次整库 ZIP 或 git pull；不必再次迁移旧目录，除非仍使用拆分插件。
+- 日期：2026-10-23 UTC；仓库 guqincheng95/ComfyUI-LL-nodes；整库版本 0.5.0。
+- 整库三个节点：ResolutionPreset、AIVisualPhotoFinish、LLPersonContourTrim；单目录安装与更新，中文分级分类。
+- 本轮后期优化：可选 reference_image，off／original／reference 三种模式；总强度、明暗匹配、颜色匹配独立设置。匹配先于既有手动调色。
+- 原图对齐面向同构图不同分辨率的颜色漂移；参考仿色匹配不同图片的明暗分位数及三明度区域颜色统计，非语义风格迁移。
+- 曝光、色温、色调三个默认收起的面板；参数在隐藏时生效、保存恢复展开状态及数值。19 个手动滑块增加黑白／互补色色带，保留精确输入与按钮。
+- 旧 19 个 FLOAT 与布尔控件顺序及节点类型不变，新自动参数为 optional 并追加，旧 API 与工作流默认关闭匹配。
+- PyTorch 2.9.1+cpu、Python 3.12：54 项测试通过（新匹配13、轮廓13、后期15、比例9、整库4）；前端19控件／399位置及折叠／色带检查通过。
+- Chromium 134 真实 DOM 适配器检查通过：展开收起、微调、布尔开关、自动选择器、24个控件值及展开状态保存恢复，控制台无错误。适配器不是完整 ComfyUI 前端。
+- 真实照片加已知模拟色偏与2倍放大的检查已完成；恢复目标颜色接近原图。记录见 photo-match-metrics.json，不能据此保证实际重采样的校正百分比。
+- 用户 ComfyUI 服务端、GPU、实际二次采样图片与完整生图链路仍待实测；没有声称已远程部署。
+- 人物轮廓 v0.4.0 功能保留：接原深度、SDPose／DWPose关键点与可选前景／保护／去除 MASK，修剪外扩服饰，不补画身体。见 CONTOUR_TRIM.md。
+- 比例预设：6种比例包含2:3，原对齐尺寸与 Krea2 适配保留。
+- 更新一次整库 ZIP 或 git pull；重启后 Ctrl+F5。已经完成旧目录迁移的安装无需再次迁移。
 
-下次先读本文件和 docs/CONTOUR_TRIM.md，再按需查看模块、CONTOUR_RESEARCH.md 或最新 CHANGELOG。历史记录不必通读。
+后续优先读本文件与 PHOTO_COLOR_MATCH.md，按需查 PHOTO_MATCH_RESEARCH.md、CONTOUR_TRIM.md 和 CHANGELOG.md。历史验证记录在 history/。

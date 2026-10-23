@@ -1,3 +1,16 @@
+test_batch_broadcast_and_per_frame_reference (test_color_match.ColorMatchTests.test_batch_broadcast_and_per_frame_reference) ... ok
+test_invalid_controls_inputs_and_aspect_ratio (test_color_match.ColorMatchTests.test_invalid_controls_inputs_and_aspect_ratio) ... ok
+test_luminance_only_and_color_only_are_separate (test_color_match.ColorMatchTests.test_luminance_only_and_color_only_are_separate) ... ok
+test_manual_adjustments_follow_matching_and_old_call_works (test_color_match.ColorMatchTests.test_manual_adjustments_follow_matching_and_old_call_works) ... ok
+test_modes_zero_identity_and_same_image (test_color_match.ColorMatchTests.test_modes_zero_identity_and_same_image) ... ok
+test_oklab_roundtrip_and_tile_invariance (test_color_match.ColorMatchTests.test_oklab_roundtrip_and_tile_invariance) ... ok
+test_original_corrects_linear_rgb_cast (test_color_match.ColorMatchTests.test_original_corrects_linear_rgb_cast) ... ok
+test_reference_matches_luminance_and_chroma_statistics (test_color_match.ColorMatchTests.test_reference_matches_luminance_and_chroma_statistics) ... ok
+test_strength_and_alpha_nonmutation (test_color_match.ColorMatchTests.test_strength_and_alpha_nonmutation) ... ok
+test_transparent_hidden_rgb_does_not_bleed_into_statistics (test_color_match.ColorMatchTests.test_transparent_hidden_rgb_does_not_bleed_into_statistics) ... ok
+test_transparent_pixels_ignored_and_float_precision (test_color_match.ColorMatchTests.test_transparent_pixels_ignored_and_float_precision) ... ok
+test_uniform_grayscale_and_clipped_images_remain_finite (test_color_match.ColorMatchTests.test_uniform_grayscale_and_clipped_images_remain_finite) ... ok
+test_upscaled_input_retains_shape_and_restores_color (test_color_match.ColorMatchTests.test_upscaled_input_retains_shape_and_restores_color) ... ok
 test_batches_broadcast_validation_and_no_input_mutation (test_contour.ContourTests.test_batches_broadcast_validation_and_no_input_mutation) ... ok
 test_foreground_resolution_alignment_and_crop_mismatch (test_contour.ContourTests.test_foreground_resolution_alignment_and_crop_mismatch) ... ok
 test_invalid_input_contracts (test_contour.ContourTests.test_invalid_input_contracts) ... ok
@@ -41,6 +54,6 @@ test_two_three_and_krea_alignment (test_resolution.ResolutionTests.test_two_thre
 test_workflow_links (test_resolution.ResolutionTests.test_workflow_links) ... ok
 
 ----------------------------------------------------------------------
-Ran 41 tests in 0.502s
+Ran 54 tests in 0.643s
 
 OK

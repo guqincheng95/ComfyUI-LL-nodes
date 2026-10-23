@@ -23,7 +23,7 @@ class PhotoTests(unittest.TestCase):
     def test_registration_and_19_defaults(self):
         cls = pkg.NODE_CLASS_MAPPINGS['AIVisualPhotoFinish']
         schema = cls.INPUT_TYPES()['required']
-        self.assertEqual(len([v for v in schema.values() if v[0] == 'FLOAT']), 19)
+        self.assertEqual(len([schema[k] for k in PARAMETERS if schema[k][0] == 'FLOAT']), 19)
         values = {k: v[1]['default'] for k, v in schema.items() if k != 'image'}
         result = cls().apply(self.random, **values)[0]
         self.assertTrue(torch.equal(result, self.random))

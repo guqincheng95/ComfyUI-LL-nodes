@@ -64,8 +64,8 @@
     }
   },
   "AIVisualPhotoFinish": {
-    "display_name": "LL 后期修图·曝光·白平衡·色彩平衡 · Photo Finish",
-    "description": "基础后期调色：曝光、对比度、高光、阴影、白色、黑色；白平衡、饱和度与三明度区域色彩平衡。",
+    "display_name": "LL 后期修图·自动仿色·曝光·白平衡 · Photo Finish",
+    "description": "原图对齐修正放大或二次采样色差；参考仿色匹配明暗/色彩统计，之后可使用曝光、色温、色调三个折叠区微调。",
     "inputs": {
       "image": {
         "name": "输入图像",
@@ -150,6 +150,31 @@
       "highlight_yellow_blue": {
         "name": "高光·黄 ← → 蓝",
         "tooltip": "负值偏黄、正值偏蓝；仅对相应明度区域按平滑权重调整。"
+      },
+      "reference_image": {
+        "name": "原图／仿色参考图",
+        "tooltip": "原图对齐接同画面原图；参考仿色接想模仿色调的图片。尺寸可不同，不会复制纹理或人物。"
+      },
+      "auto_mode": {
+        "name": "自动对齐模式",
+        "tooltip": "先自动对齐，再进行手动调整。关闭时即使连接参考图也不进行匹配。",
+        "options": {
+          "off": "关闭",
+          "original": "原图对齐（同画面）",
+          "reference": "参考仿色（不同图片）"
+        }
+      },
+      "match_strength": {
+        "name": "自动匹配总强度",
+        "tooltip": "0为不匹配，1为完整匹配；手动参数独立生效。"
+      },
+      "match_luminance": {
+        "name": "明暗／色阶匹配",
+        "tooltip": "控制亮度与色阶分布匹配程度；设0保留原明暗。"
+      },
+      "match_color": {
+        "name": "色彩匹配",
+        "tooltip": "控制颜色匹配程度；参考仿色含暗部、中间调、亮部统计。设0只匹配明暗。"
       }
     },
     "outputs": {

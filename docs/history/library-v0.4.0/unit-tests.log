@@ -1,0 +1,46 @@
+test_batches_broadcast_validation_and_no_input_mutation (test_contour.ContourTests.test_batches_broadcast_validation_and_no_input_mutation) ... ok
+test_foreground_resolution_alignment_and_crop_mismatch (test_contour.ContourTests.test_foreground_resolution_alignment_and_crop_mismatch) ... ok
+test_invalid_input_contracts (test_contour.ContourTests.test_invalid_input_contracts) ... ok
+test_keypoint_canvas_scales_without_changing_layout (test_contour.ContourTests.test_keypoint_canvas_scales_without_changing_layout) ... ok
+test_missing_keypoints_keep_frame_and_error_mode (test_contour.ContourTests.test_missing_keypoints_keep_frame_and_error_mode) ... ok
+test_multiple_people_and_person_index (test_contour.ContourTests.test_multiple_people_and_person_index) ... ok
+test_node_tensor_precision_alpha_and_outputs (test_contour.ContourTests.test_node_tensor_precision_alpha_and_outputs) ... ok
+test_observations_fit_narrow_body_without_accepting_huge_skirt (test_contour.ContourTests.test_observations_fit_narrow_body_without_accepting_huge_skirt) ... ok
+test_protect_exclude_priority_and_foreground_intersection (test_contour.ContourTests.test_protect_exclude_priority_and_foreground_intersection) ... ok
+test_scale_controls_and_feather_preserve_range (test_contour.ContourTests.test_scale_controls_and_feather_preserve_range) ... ok
+test_sdpose_pixel_and_normalized_and_body25 (test_contour.ContourTests.test_sdpose_pixel_and_normalized_and_body25) ... ok
+test_temporal_state_is_local_and_large_jump_resets (test_contour.ContourTests.test_temporal_state_is_local_and_large_jump_resets) ... ok
+test_trims_protrusions_keeps_body_and_canvas (test_contour.ContourTests.test_trims_protrusions_keeps_body_and_canvas) ... ok
+test_existing_api_workflows_resolve (test_library.LibraryTests.test_existing_api_workflows_resolve) ... ok
+test_migration_preview_backup_and_repeat (test_library.LibraryTests.test_migration_preview_backup_and_repeat) ... ok
+test_migration_rejects_unrecognized_directory (test_library.LibraryTests.test_migration_rejects_unrecognized_directory) ... ok
+test_unified_registration_and_assets (test_library.LibraryTests.test_unified_registration_and_assets) ... ok
+test_all_controls_effect_and_bounds (test_photo.PhotoTests.test_all_controls_effect_and_bounds) ... ok
+test_batch_tile_alpha_nonmutation (test_photo.PhotoTests.test_batch_tile_alpha_nonmutation) ... ok
+test_black_white_endpoints (test_photo.PhotoTests.test_black_white_endpoints) ... ok
+test_combined_extremes_and_half_input (test_photo.PhotoTests.test_combined_extremes_and_half_input) ... ok
+test_exposure_is_linear_ev (test_photo.PhotoTests.test_exposure_is_linear_ev) ... ok
+test_float_precision_no_uint8_quantization (test_photo.PhotoTests.test_float_precision_no_uint8_quantization) ... ok
+test_invalid_inputs (test_photo.PhotoTests.test_invalid_inputs) ... ok
+test_preserve_luminance_after_gamut_mapping (test_photo.PhotoTests.test_preserve_luminance_after_gamut_mapping) ... ok
+test_region_weights_and_isolation (test_photo.PhotoTests.test_region_weights_and_isolation) ... ok
+test_registration_and_19_defaults (test_photo.PhotoTests.test_registration_and_19_defaults) ... ok
+test_saturation_and_vibrance (test_photo.PhotoTests.test_saturation_and_vibrance) ... ok
+test_tone_monotone_extremes (test_photo.PhotoTests.test_tone_monotone_extremes) ... ok
+test_tone_regions_distinct (test_photo.PhotoTests.test_tone_regions_distinct) ... ok
+test_transfer_roundtrip (test_photo.PhotoTests.test_transfer_roundtrip) ... ok
+test_white_balance_signs (test_photo.PhotoTests.test_white_balance_signs) ... ok
+test_all_162_builtin_combinations (test_resolution.ResolutionTests.test_all_162_builtin_combinations) ... ok
+test_custom_unchanged (test_resolution.ResolutionTests.test_custom_unchanged) ... ok
+test_family_tables_independent (test_resolution.ResolutionTests.test_family_tables_independent) ... ok
+test_invalid_inputs (test_resolution.ResolutionTests.test_invalid_inputs) ... ok
+test_preset_validation (test_resolution.ResolutionTests.test_preset_validation) ... ok
+test_registration_and_defaults (test_resolution.ResolutionTests.test_registration_and_defaults) ... ok
+test_required_five_cases (test_resolution.ResolutionTests.test_required_five_cases) ... ok
+test_two_three_and_krea_alignment (test_resolution.ResolutionTests.test_two_three_and_krea_alignment) ... ok
+test_workflow_links (test_resolution.ResolutionTests.test_workflow_links) ... ok
+
+----------------------------------------------------------------------
+Ran 41 tests in 0.502s
+
+OK

@@ -9,6 +9,33 @@ for (const [region, label] of [['shadow', '阴影'], ['midtone', '中间调'], [
   LABELS[`${region}_${axis}`] = `${label} · ${colors}`;
  }
 }
+// Color bars are UI direction hints; zero is neutral, with no change to processing.
+export function gradientFor(name) {
+ if(['exposure','contrast','highlights','shadows','whites','blacks'].includes(name))
+  return 'linear-gradient(90deg, #080808 0%, #808080 50%, #ffffff 100%)';
+ let ends;
+ if(name==='temperature') ends=['#245adb','#df7815'];
+ else if(name==='tint') ends=['#07843e','#b01aac'];
+ else if(name.endsWith('cyan_red')) ends=['#0093a2','#c51d2e'];
+ else if(name.endsWith('magenta_green')) ends=['#b01aac','#07843e'];
+ else if(name.endsWith('yellow_blue')) ends=['#c9ab00','#245adb'];
+ if(ends)return `linear-gradient(90deg, ${ends[0]} 0%, #ffffff 50%, ${ends[1]} 100%)`;
+ return 'linear-gradient(90deg, #777777 0%, #ffffff 50%, transparent 100%), linear-gradient(0deg, #e23b5a 0%, #f1c93d 33%, #2cb76c 66%, #3d72df 100%)';
+}
+function ensureSliderStyles(doc) {
+ if(!doc.head || doc.getElementById?.('ll-photo-slider-style'))return;
+ const style=doc.createElement('style');style.id='ll-photo-slider-style';
+ style.textContent=`
+ .ll-photo-slider { appearance:none; -webkit-appearance:none; background:transparent; outline:none; }
+ .ll-photo-slider::-webkit-slider-runnable-track { height:12px; background:transparent; border:0; }
+ .ll-photo-slider::-webkit-slider-thumb { appearance:none; -webkit-appearance:none; width:16px; height:16px; margin-top:-2px; border:2px solid #222; border-radius:50%; background:#f4f4f4; box-shadow:0 0 0 1px #ddd; }
+ .ll-photo-slider::-moz-range-track { height:12px; background:transparent; border:0; }
+ .ll-photo-slider::-moz-range-progress { background:transparent; }
+ .ll-photo-slider::-moz-range-thumb { width:12px; height:12px; border:2px solid #222; border-radius:50%; background:#f4f4f4; }
+ .ll-photo-slider:focus-visible { outline:1px solid #7ec8e7; outline-offset:2px; }
+ `;
+ doc.head.append(style);
+}
 export const limitFor = name => name === 'exposure' ? 5 : 100;
 export const fineStepFor = name => name === 'exposure' ? 0.05 : 1;
 export function clampValue(value, limit) {
@@ -20,6 +47,7 @@ export function snapValue(value, limit) {
  return Math.sign(n) * Math.round(Math.abs(n) / (limit / 10)) * (limit / 10);
 }
 export function makeControl(name, initial, onChange, doc = document) {
+ ensureSliderStyles(doc);
  const limit = limitFor(name), fine = fineStepFor(name);
  let value = clampValue(initial, limit);
  const root = doc.createElement('div');
@@ -43,19 +71,23 @@ export function makeControl(name, initial, onChange, doc = document) {
  row.append(label,minus,number,plus);
  const track = doc.createElement('div');
  track.style.cssText='position:relative;height:27px;display:flex;align-items:center;';
+ const colorBar=doc.createElement('div');
+ colorBar.style.cssText='position:absolute;left:8px;right:8px;top:8px;height:10px;border:1px solid #777;border-radius:5px;box-sizing:border-box;pointer-events:none;';
+ colorBar.style.background=gradientFor(name);
  const ticks = doc.createElement('div');
  ticks.style.cssText='pointer-events:none;position:absolute;left:8px;right:8px;top:5px;height:18px;display:flex;justify-content:space-between;';
  for(let i=0;i<=20;i++) {
   const tick=doc.createElement('i');
-  tick.style.cssText=`display:block;width:${i===10?2:1}px;height:${i===10?18:7}px;background:${i===10?'#ddd':'#777'};`;
+  tick.style.cssText=`display:block;width:${i===10?2:1}px;height:${i===10?18:7}px;background:${i===10?'#111':'#333'};opacity:0.65;`;
   ticks.append(tick);
  }
  const slider=doc.createElement('input'); slider.type='range';
+ slider.setAttribute('class','ll-photo-slider');
  // Fine-grained thumb position preserves old/off-grid values. Only user drags snap.
  slider.min=-limit; slider.max=limit; slider.step='any';
  slider.setAttribute('aria-label',`${LABELS[name]}滑块`);
  slider.title=`左负右正，各10档；每档 ${limit/10}；双击归零`;
- slider.style.cssText='position:relative;z-index:1;width:100%;height:20px;margin:0;accent-color:#65b8dc;cursor:pointer;';
+ slider.style.cssText='position:relative;z-index:1;width:100%;height:20px;margin:0;background:transparent;cursor:pointer;';
  slider.addEventListener('input',()=>commit(snapValue(slider.value,limit)));
  slider.addEventListener('keydown',event=>{
   const delta={ArrowLeft:-1,ArrowDown:-1,ArrowRight:1,ArrowUp:1}[event.key];
@@ -68,7 +100,7 @@ export function makeControl(name, initial, onChange, doc = document) {
   commit(number.valueAsNumber);
  });
  number.addEventListener('keydown',event=>{if(event.key==='Enter'){event.preventDefault();number.blur();}});
- track.append(ticks,slider); root.append(row,track);
+ track.append(colorBar,ticks,slider); root.append(row,track);
  for(const event of ['pointerdown','mousedown','keydown','dblclick']) root.addEventListener(event,e=>e.stopPropagation());
  function render(){
   slider.value=String(value);

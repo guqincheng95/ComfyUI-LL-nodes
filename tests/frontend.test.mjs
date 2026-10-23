@@ -1,7 +1,7 @@
 // Dependency-free DOM/Comfy adapter harness, NOT an actual ComfyUI browser test.
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
-import { LABELS, makeControl, limitFor } from '../web/controls.js';
+import { LABELS, makeControl, limitFor, gradientFor } from '../web/controls.js';
 class Element {
  constructor(){this.style={};this.children=[];this.events={};this.value='';this.disabled=false;}
  append(...children){this.children.push(...children);}
@@ -12,6 +12,10 @@ class Element {
  blur(){document.activeElement=null;this.emit('change');}
 }
 globalThis.document={createElement:()=>new Element(),activeElement:null};
+assert.ok(gradientFor('exposure').includes('#808080 50%'));
+for(const name of Object.keys(LABELS).filter(n=>!['exposure','contrast','highlights','shadows','whites','blacks'].includes(n)))assert.ok(gradientFor(name).includes('#ffffff 50%'));
+assert.ok(gradientFor('temperature').includes('#245adb'));
+assert.ok(gradientFor('shadow_cyan_red').includes('#0093a2'));
 let cases=0;
 for(const name of Object.keys(LABELS)){
  let output;const control=makeControl(name,0,v=>output=v);const limit=limitFor(name);
@@ -55,5 +59,18 @@ const restored=makeNode();enhanceNode(restored);saved.forEach((v,i)=>restored.wi
 assert.deepEqual(restored.widgets.map(w=>w.value),saved);
 restored.widgets[0].value=1.25;assert.equal(node.widgets[0].value,0.3);
 node.inputs=[{widget:{name:'exposure'},link:12}];node.widgets[0].options.onDraw();
-assert.ok(node.widgets[0].element.children[1].children[1].disabled);
-console.log(`PASS: ${names.length} controls / ${cases} signed positions; snapping; fine buttons; numeric input; keyboard; reset; connected disabling; old value/order preservation; save/reload; independent nodes; idempotence.`);
+assert.ok(node.__photoFinishUI.controls.get('exposure').slider.disabled);
+assert.equal(node.__photoFinishUI.groups.size,3);
+assert.equal(node.widgets[1].hidden,true);
+const exposureHeader=node.__photoFinishUI.records.find(r=>r.original.name==='exposure').header;
+exposureHeader.emit('click');assert.equal(node.widgets[1].hidden,false);
+assert.equal(node.properties.llPhotoSections.exposure,true);
+const savedProperties=JSON.parse(JSON.stringify(node.properties));
+const savedValues=node.widgets.map(w=>w.value);
+exposureHeader.emit('click');assert.equal(node.widgets[1].hidden,true);
+assert.deepEqual(node.widgets.map(w=>w.value),savedValues);
+restored.properties=savedProperties;testApp.extension.loadedGraphNode(restored);
+assert.equal(restored.widgets[1].hidden,false);
+assert.equal(restored.widgets.length,20);
+assert.equal(restored.widgets[19].value,true);
+console.log(`PASS: ${names.length} controls / ${cases} signed positions; snapping; fine buttons; numeric input; keyboard; reset; connected disabling; old value/order preservation; save/reload; independent nodes; idempotence; three sections; collapsed values and restored states; boolean; neutral-centered gradient directions.`);

@@ -1,0 +1,13 @@
+{
+  "photo_sources": [
+    "NASA astronaut from scikit-image sample",
+    "COCO 785 from OpenMMLab MMPose sample"
+  ],
+  "scenario": "2x upscaled real photo + known simulated linear RGB color cast; not real second-sampling output",
+  "unclipped_mse_before": 0.0006426675245165825,
+  "unclipped_mse_after": 1.396257630403852e-06,
+  "mse_reduction_percent": 99.78274028527362,
+  "same_scene_1024x1024_seconds_cpu_two_threads": 0.20836634100010087,
+  "reference_512x512_seconds_cpu_two_threads": 0.07711552799992205,
+  "reference_result": "inspected for tonal changes; no semantic/style/skin-tone equivalence guarantee"
+}

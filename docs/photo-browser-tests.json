@@ -1,0 +1,15 @@
+{
+  "environment": "Playwright 1.51.1 / Chromium 134 headless, real DOM with Comfy node adapter",
+  "checks": [
+    "three default-collapsed sections",
+    "section slider counts",
+    "precise buttons",
+    "collapse preserves values",
+    "boolean control",
+    "reference selector",
+    "save/reload preserves 24 values and section states",
+    "Chinese text and gradient bars visually inspected"
+  ],
+  "console_errors": [],
+  "full_comfyui_integration": false
+}
