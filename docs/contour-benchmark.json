@@ -1,0 +1,13 @@
+{
+  "torch": "2.9.1+cpu",
+  "device": "CPU",
+  "threads": 2,
+  "batch": 22,
+  "shape": [
+    1392,
+    752,
+    3
+  ],
+  "seconds_one_sample": 2.806,
+  "report": "22 帧；22 帧完成轮廓修剪；0 帧安全保留。 已使用原图前景轮廓观测部位宽度。"
+}

@@ -1,0 +1,8 @@
+{
+  "source": "OpenMMLab MMPose tests/data/coco/000000000785.jpg; COCO 785 annotation 442619",
+  "pose_source": "ground-truth COCO WholeBody converted to OpenPose, NOT model inference",
+  "purpose": "observed RGB silhouette QA, not depth estimation or generated-image validation",
+  "foreground_pixels": 28308.0,
+  "retained_pixels": 22851.921875,
+  "report": "1 帧；1 帧完成轮廓修剪；0 帧安全保留。 已使用原图前景轮廓观测部位宽度。"
+}

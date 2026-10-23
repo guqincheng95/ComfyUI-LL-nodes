@@ -1,0 +1,23 @@
+test_all_162_builtin_combinations (test_resolution.ResolutionTests.test_all_162_builtin_combinations) ... ok
+test_custom_unchanged (test_resolution.ResolutionTests.test_custom_unchanged) ... ok
+test_family_tables_independent (test_resolution.ResolutionTests.test_family_tables_independent) ... ok
+test_invalid_inputs (test_resolution.ResolutionTests.test_invalid_inputs) ... ok
+test_preset_validation (test_resolution.ResolutionTests.test_preset_validation) ... ok
+test_registration_and_defaults (test_resolution.ResolutionTests.test_registration_and_defaults) ... ok
+test_required_five_cases (test_resolution.ResolutionTests.test_required_five_cases) ... ok
+test_two_three_and_krea_alignment (test_resolution.ResolutionTests.test_two_three_and_krea_alignment) ... ok
+test_workflow_links (test_resolution.ResolutionTests.test_workflow_links) ... ok
+
+----------------------------------------------------------------------
+Ran 9 tests in 0.003s
+
+OK
+test_existing_api_workflows_resolve (test_library.LibraryTests.test_existing_api_workflows_resolve) ... ok
+test_migration_preview_backup_and_repeat (test_library.LibraryTests.test_migration_preview_backup_and_repeat) ... ok
+test_migration_rejects_unrecognized_directory (test_library.LibraryTests.test_migration_rejects_unrecognized_directory) ... ok
+test_unified_registration_and_assets (test_library.LibraryTests.test_unified_registration_and_assets) ... ok
+
+----------------------------------------------------------------------
+Ran 4 tests in 0.004s
+
+OK

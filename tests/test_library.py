@@ -15,11 +15,11 @@ from ll_library_test.scripts.migrate_legacy import migrate
 
 class LibraryTests(unittest.TestCase):
     def test_unified_registration_and_assets(self):
-        self.assertEqual(set(pkg.NODE_CLASS_MAPPINGS), {'ResolutionPreset', 'AIVisualPhotoFinish'})
+        self.assertEqual(set(pkg.NODE_CLASS_MAPPINGS), {'ResolutionPreset', 'AIVisualPhotoFinish', 'LLPersonContourTrim'})
         self.assertTrue((ROOT / pkg.WEB_DIRECTORY / 'photo_finish.js').is_file())
         translations = json.loads((ROOT / 'locales/zh/nodeDefs.json').read_text())
         for key, node in pkg.NODE_CLASS_MAPPINGS.items():
-            self.assertEqual(set(translations[key]['inputs']), set(node.INPUT_TYPES()['required']))
+            self.assertEqual(set(translations[key]['inputs']), set(node.INPUT_TYPES()['required']) | set(node.INPUT_TYPES().get('optional', {})))
             self.assertTrue(node.CATEGORY.startswith('LL 节点库/'))
         self.assertFalse((ROOT / 'addons').exists())
 

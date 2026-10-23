@@ -158,5 +158,102 @@
         "tooltip": "连接预览图像或保存图像节点。"
       }
     }
+  },
+  "LLPersonContourTrim": {
+    "display_name": "LL 人物轮廓修剪 · Person Contour Trim",
+    "description": "结合骨架与原图前景轮廓裁去头饰、裙摆、宽袖等外扩部分；保留区域沿用原深度。",
+    "inputs": {
+      "depth_image": {
+        "name": "原始深度图",
+        "tooltip": "接 Depth Anything V2 输出；在与骨架图片混合前修剪。"
+      },
+      "keypoints": {
+        "name": "人物关键点",
+        "tooltip": "接 SDPose / DWPose 的 POSE_KEYPOINT 输出，不是彩色骨架图。"
+      },
+      "head_scale": {
+        "name": "头部保留宽度",
+        "tooltip": "小于1收紧，大于1放宽；收紧可裁去外扩头饰，也可能切掉蓬松发型。"
+      },
+      "torso_scale": {
+        "name": "躯干保留宽度",
+        "tooltip": "肩腰胯轮廓倍率；观察预览，避免误切身体。"
+      },
+      "arm_scale": {
+        "name": "手臂保留宽度",
+        "tooltip": "调整宽袖外的保留范围；手部优先使用关键点保留。"
+      },
+      "leg_scale": {
+        "name": "腿部保留宽度",
+        "tooltip": "减小可清除腿外的裙摆；不补全腿之间被裙子遮住的深度。"
+      },
+      "padding_px": {
+        "name": "边缘保护像素",
+        "tooltip": "额外保留边缘；过大会保留装饰。"
+      },
+      "feather_px": {
+        "name": "边缘柔化像素",
+        "tooltip": "向内柔化边缘，0为硬裁切。"
+      },
+      "confidence": {
+        "name": "关键点置信度",
+        "tooltip": "默认0.3；主关键点不足时按下方策略处理。"
+      },
+      "temporal_smoothing": {
+        "name": "视频稳定强度",
+        "tooltip": "独立图片为0，连续单人视频可用0.2～0.3；批次之间不保留状态。"
+      },
+      "person_index": {
+        "name": "人物序号",
+        "tooltip": "0为第一人，-1保留全部检测人物。"
+      },
+      "background_value": {
+        "name": "裁剪区域填充值",
+        "tooltip": "通常为0黑色，按后续深度条件约定设置。"
+      },
+      "coordinate_mode": {
+        "name": "骨架坐标格式",
+        "tooltip": "SDPose是像素坐标；自动兼容常见归一化 OpenPose 输出。",
+        "options": {
+          "auto": "自动",
+          "pixels": "像素坐标",
+          "normalized": "归一化坐标"
+        }
+      },
+      "missing_pose": {
+        "name": "识别不足时",
+        "tooltip": "保留原帧并提示，或报错停止。",
+        "options": {
+          "keep": "安全保留原帧",
+          "error": "报错停止"
+        }
+      },
+      "foreground_mask": {
+        "name": "原图人物遮罩（推荐）",
+        "tooltip": "接原图 BEN2 背景移除的 MASK。用于观测宽度与限制轮廓，不把宽裙摆当胯宽；必须同裁切；等比例分辨率会自动对齐。"
+      },
+      "protect_mask": {
+        "name": "额外保留遮罩",
+        "tooltip": "白色强制保留，可接成熟人体分割节点的手脚/头发 MASK，仍受原图人物遮罩约束。"
+      },
+      "exclude_mask": {
+        "name": "明确去除遮罩",
+        "tooltip": "白色强制裁去，可接帽子/头饰分割 MASK；优先级最高。"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "修剪后深度图"
+      },
+      "1": {
+        "name": "人物保留遮罩"
+      },
+      "2": {
+        "name": "修剪对比预览"
+      },
+      "3": {
+        "name": "处理说明"
+      }
+    }
   }
 }

@@ -1,14 +1,16 @@
 # 当前状态 · 交接入口
 
-- 日期：2026-10-13
-- 仓库：guqincheng95/ComfyUI-LL-nodes
-- 整库版本：0.3.0
-- 已完成：原 ResolutionPreset v0.1.2 与 PhotoFinish v0.2.0 合并为一个 ComfyUI 插件入口；模块、前端、中文资源、示例、测试统一归类。
-- 菜单：LL 节点库/图像工具/尺寸与比例；LL 节点库/图像后期/基础调色。
-- 兼容：旧节点 ID、参数名、默认值、顺序保持；根 nodes.py/presets.py 为旧 Python 导入兼容层。
-- 安装：custom_nodes/comfyui-LL-nodes；旧独立目录需用 scripts/migrate_legacy.py --apply 移出，备份在 custom_nodes 外。
-- 更新：Git 安装一次 git pull；离线用户整库 ZIP 覆盖。
-- 本地验证：比例 9 项、整库/迁移 4 项、前端 19 控件/399 位置检查通过；Python 编译检查通过。详见 TEST_REPORT.md。
-- 待验证：用户真实 ComfyUI 安装、UI 渲染及图像执行；本轮未本地重跑 PyTorch 算法测试，已配置独立 CI 任务。
+- 日期：2026-10-24；仓库 guqincheng95/ComfyUI-LL-nodes；整库版本 0.4.0。
+- 新增 LLPersonContourTrim，菜单 LL 节点库/图像工具/人物轮廓，中文搜索“人物轮廓修剪”。
+- 范围：修剪原深度图的外扩裙摆/头饰/宽袖；保留区域使用原深度。不重建、不补全身体。
+- 复用 SDPose/DWPose POSE_KEYPOINT、原图 BEN2 前景 MASK、Pillow 成熟绘图与形态学；可接现有人体分割的 protect/exclude MASK，不下载新模型。
+- 原图可见轮廓通过 foreground_mask 用于局部宽度观测；同裁切的等比例遮罩可自动对齐深度分辨率。
+- 四路输出：修剪深度、保留 MASK、绿保留/红删除预览、处理说明。识别不足安全保留该帧或报错。
+- 连线：深度图 -> 新节点 -> 原混合图像的深度输入；SDPose 原始关键点 -> 新节点；原图 BEN2 mask -> foreground_mask。
+- 验证：PyTorch 2.9.1+cpu，41 项 Python 测试通过（轮廓13、比例9、调色15、整库4）；前端19控件/399位置检查与编译通过。
+- 公开真实人物轮廓样例已目视检查；使用标注骨架与分割，不是模型推理。用户真实 ComfyUI 与完整生图链路仍待验证。
+- CPU 2线程单次22帧752×1392测量2.806秒，仅本开发环境样本。
+- 新节点偏向全身有效骨架；贴身范围内的饰品需 exclude_mask，半身或关键点缺失可能回退保留，不是全自动语义解析。
+- 原比例、调色节点标识/参数不变；更新一次整库 ZIP 或 git pull；不必再次迁移旧目录，除非仍使用拆分插件。
 
-下次接手先读本文件，再按需读 CATEGORIES.md、相关模块与最新 CHANGELOG。历史日志位于 docs/history，不必每次通读。
+下次先读本文件和 docs/CONTOUR_TRIM.md，再按需查看模块、CONTOUR_RESEARCH.md 或最新 CHANGELOG。历史记录不必通读。

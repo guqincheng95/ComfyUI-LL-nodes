@@ -5,6 +5,7 @@
 | 下级分类 | 当前节点 | 源码模块 |
 |---|---|---|
 | 图像工具 / 尺寸与比例 | LL 比例预设 | modules/resolution |
+| 图像工具 / 人物轮廓 | LL 人物轮廓修剪 | modules/contour |
 | 图像后期 / 基础调色 | LL 后期修图 | modules/photo |
 
 Z-Image、Krea 2 等适配属于尺寸预设内部选项或兼容说明，不各自创建重复分类。

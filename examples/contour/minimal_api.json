@@ -1,0 +1,104 @@
+{
+  "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "original_person.png"
+    }
+  },
+  "2": {
+    "class_type": "CheckpointLoaderSimple",
+    "inputs": {
+      "ckpt_name": "sdpose_wholebody_fp16.safetensors"
+    }
+  },
+  "3": {
+    "class_type": "SDPoseKeypointExtractor",
+    "inputs": {
+      "model": [
+        "2",
+        0
+      ],
+      "vae": [
+        "2",
+        2
+      ],
+      "image": [
+        "1",
+        0
+      ],
+      "batch_size": 16
+    }
+  },
+  "4": {
+    "class_type": "DepthAnythingV2Preprocessor",
+    "inputs": {
+      "image": [
+        "1",
+        0
+      ],
+      "ckpt_name": "depth_anything_v2_vitl.pth",
+      "resolution": 1024
+    }
+  },
+  "5": {
+    "class_type": "LLPersonContourTrim",
+    "inputs": {
+      "depth_image": [
+        "4",
+        0
+      ],
+      "keypoints": [
+        "3",
+        0
+      ],
+      "head_scale": 1.0,
+      "torso_scale": 1.0,
+      "arm_scale": 1.0,
+      "leg_scale": 1.0,
+      "padding_px": 4,
+      "feather_px": 2,
+      "confidence": 0.3,
+      "temporal_smoothing": 0.0,
+      "person_index": 0,
+      "background_value": 0.0,
+      "coordinate_mode": "auto",
+      "missing_pose": "keep"
+    }
+  },
+  "6": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "5",
+        0
+      ]
+    }
+  },
+  "7": {
+    "class_type": "MaskToImage",
+    "inputs": {
+      "mask": [
+        "5",
+        1
+      ]
+    }
+  },
+  "8": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "7",
+        0
+      ]
+    }
+  },
+  "9": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "5",
+        2
+      ]
+    }
+  }
+}
