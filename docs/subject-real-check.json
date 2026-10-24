@@ -1,0 +1,112 @@
+{
+  "rgb_only": {
+    "seconds_cpu_two_threads": 4.571506432000206,
+    "chair_roi_mean_keep": 0.0,
+    "skin_points_keep": [
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "report": {
+      "depth_provided": false,
+      "depth_output": "未输入深度：clean_depth是全黑占位，不能作为深度条件",
+      "stage_order": [
+        "初始主体",
+        "RGB/深度提炼",
+        "最终修剪"
+      ],
+      "frames": [
+        {
+          "depth_active": false,
+          "refinement": "RGB watershed",
+          "skin": "关闭",
+          "removed": 0,
+          "sampled_parts": 0,
+          "trim": "完整人物模式",
+          "frame": 1,
+          "backend": "semantic_sam2",
+          "pose_note": "身体主关键点缺失或置信度不足",
+          "retained_fraction": 0.8805
+        }
+      ]
+    }
+  },
+  "with_depth": {
+    "seconds_cpu_two_threads": 3.2245290280006884,
+    "chair_roi_mean_keep": 0.0,
+    "skin_points_keep": [
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "report": {
+      "depth_provided": true,
+      "depth_output": "原深度乘最终遮罩，保持深度原画布",
+      "stage_order": [
+        "初始主体",
+        "RGB/深度提炼",
+        "最终修剪"
+      ],
+      "frames": [
+        {
+          "depth_active": true,
+          "refinement": "RGB+depth watershed",
+          "skin": "关闭",
+          "removed": 0,
+          "sampled_parts": 0,
+          "trim": "完整人物模式",
+          "frame": 1,
+          "backend": "semantic_sam2",
+          "pose_note": "身体主关键点缺失或置信度不足",
+          "retained_fraction": 1.0045
+        }
+      ]
+    }
+  },
+  "with_skin": {
+    "seconds_cpu_two_threads": 3.450279214999682,
+    "chair_roi_mean_keep": 0.0,
+    "skin_points_keep": [
+      1.0,
+      1.0,
+      1.0,
+      1.0
+    ],
+    "report": {
+      "depth_provided": true,
+      "depth_output": "原深度乘最终遮罩，保持深度原画布",
+      "stage_order": [
+        "初始主体",
+        "RGB/深度提炼",
+        "最终修剪"
+      ],
+      "frames": [
+        {
+          "depth_active": true,
+          "refinement": "RGB+depth watershed",
+          "skin": "已执行（自动肤色取样是启发式）",
+          "removed": 533,
+          "sampled_parts": 3,
+          "trim": "完整人物模式",
+          "frame": 1,
+          "backend": "semantic_sam2",
+          "pose_note": "身体主关键点缺失或置信度不足",
+          "retained_fraction": 0.9921
+        }
+      ]
+    }
+  },
+  "astronaut_rgb_no_pose": {
+    "verification": "中心单点漏头问题已修复为语义区域分散提示；真实重跑后头部、躯干目视保留",
+    "final_to_initial_area_ratio": 0.9926
+  },
+  "conditions": {
+    "pose": "手工标注可见关键点，不是用户原始模型输出",
+    "depth": "本地Depth Anything V2 Small新推理，不是截图中深度",
+    "metrics": "局部ROI与4个肢体抽查点，不是完整人工标注IoU/召回率",
+    "model": "DeepLabV3 MobileNetV3 + SAM2.1 Tiny",
+    "gpu_tested": false
+  }
+}

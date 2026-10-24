@@ -1,17 +1,14 @@
 # 当前状态 · 交接入口
 
-- 日期：2026-10-23 UTC；仓库 guqincheng95/ComfyUI-LL-nodes；整库版本 0.5.0。
-- 整库三个节点：ResolutionPreset、AIVisualPhotoFinish、LLPersonContourTrim；单目录安装与更新，中文分级分类。
-- 本轮后期优化：可选 reference_image，off／original／reference 三种模式；总强度、明暗匹配、颜色匹配独立设置。匹配先于既有手动调色。
-- 原图对齐面向同构图不同分辨率的颜色漂移；参考仿色匹配不同图片的明暗分位数及三明度区域颜色统计，非语义风格迁移。
-- 曝光、色温、色调三个默认收起的面板；参数在隐藏时生效、保存恢复展开状态及数值。19 个手动滑块增加黑白／互补色色带，保留精确输入与按钮。
-- 旧 19 个 FLOAT 与布尔控件顺序及节点类型不变，新自动参数为 optional 并追加，旧 API 与工作流默认关闭匹配。
-- PyTorch 2.9.1+cpu、Python 3.12：54 项测试通过（新匹配13、轮廓13、后期15、比例9、整库4）；前端19控件／399位置及折叠／色带检查通过。
-- Chromium 134 真实 DOM 适配器检查通过：展开收起、微调、布尔开关、自动选择器、24个控件值及展开状态保存恢复，控制台无错误。适配器不是完整 ComfyUI 前端。
-- 真实照片加已知模拟色偏与2倍放大的检查已完成；恢复目标颜色接近原图。记录见 photo-match-metrics.json，不能据此保证实际重采样的校正百分比。
-- 用户 ComfyUI 服务端、GPU、实际二次采样图片与完整生图链路仍待实测；没有声称已远程部署。
-- 人物轮廓 v0.4.0 功能保留：接原深度、SDPose／DWPose关键点与可选前景／保护／去除 MASK，修剪外扩服饰，不补画身体。见 CONTOUR_TRIM.md。
-- 比例预设：6种比例包含2:3，原对齐尺寸与 Krea2 适配保留。
-- 更新一次整库 ZIP 或 git pull；重启后 Ctrl+F5。已经完成旧目录迁移的安装无需再次迁移。
+- 日期：2026-10-24（北京时间）；版本v0.6.0。仓库guqincheng95/ComfyUI-LL-nodes。
+- 新增LLPersonSubjectClean；旧ResolutionPreset、AIVisualPhotoFinish、LLPersonContourTrim保留。旧工作流不自动换节点。
+- 已完成：原RGB人物语义引导SAM2.1、局部RGB/深度分水岭提炼、人物/外扩修剪、RGB/RGBA/原深度同MASK输出、强制保留/删除、阶段预览与报告。
+- 肤色增强默认关闭，开关展开3个参数。基于肢体内部色度统计+局部深度异常，只检查边缘；自动皮肤取样是启发式，支持显式skin_mask，缺少深度或可靠样本跳过。
+- 推荐semantic_sam2：需DeepLab MobileNetV3与SAM2.1本地权重。依赖/离线安装见SUBJECT_SETUP.md；节点不下载、不安装、不更换Torch/CUDA。external_mask模式不加载模型。
+- 73项Python测试和2套前端控制检查通过。真实Tiny+人物语义+新推理DepthAnythingV2 Small检查完成；电竞椅样例主要椅背/扶手残留减少，肩后仍有少量残留。
+- 真实样例使用手工可见骨架和重新生成深度；不是用户实际POSE/深度。无骨架半身图已验证自动提取，可能保留多人。GPU/完整ComfyUI/最终SD生图仍待实测。
+- 三阶段预览从左到右：初始主体、RGB/深度提炼、最终修剪；skin_removed_mask只标肤色步骤新增删除区域。
+- 后续优先：拿用户原始RGB+深度+POSE回归；宽裙/头饰/交叉肢体等端到端难例仍需补充。近肤色衣物、同深度家具、缺关键点和强遮挡仍可能误差，不能宣称所有图片自动抠净。
+- 更新整库后需新建“LL人物主体提取”使用增强功能。未接深度时clean_depth是全黑占位，不应接深度条件。
 
-后续优先读本文件与 PHOTO_COLOR_MATCH.md，按需查 PHOTO_MATCH_RESEARCH.md、CONTOUR_TRIM.md 和 CHANGELOG.md。历史验证记录在 history/。
+固定读取顺序：本文件 → SUBJECT_CLEAN.md → 本轮DEVELOPMENT_LOG；按需读SUBJECT_V06_PLAN.md、SUBJECT_SETUP.md、TEST_REPORT.md。无需通读history。v0.5状态和验证归档在history/library-v0.5.0/。

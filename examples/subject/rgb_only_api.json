@@ -1,0 +1,45 @@
+{
+  "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "ORIGINAL_RGB.png"
+    }
+  },
+  "2": {
+    "class_type": "LLPersonSubjectClean",
+    "inputs": {
+      "image": [
+        "1",
+        0
+      ],
+      "segmentation": "semantic_sam2",
+      "model_name": "sam2.1_hiera_tiny.pt",
+      "device": "auto",
+      "mode": "person",
+      "person_index": 0,
+      "confidence": 0.3,
+      "analysis_size": 512,
+      "edge_strength": 0.7,
+      "depth_weight": 0.65,
+      "edge_band": 16,
+      "trim_scale": 1.0,
+      "skin_enabled": false,
+      "skin_strength": 0.5,
+      "skin_band": 10,
+      "skin_protection": 0.7,
+      "feather": 1,
+      "rgb_background": "black",
+      "failure_policy": "stop"
+    }
+  },
+  "3": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "2",
+        0
+      ],
+      "filename_prefix": "LL_Subject_RGB"
+    }
+  }
+}

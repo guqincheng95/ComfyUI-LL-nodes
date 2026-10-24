@@ -52,8 +52,27 @@ test_registration_and_defaults (test_resolution.ResolutionTests.test_registratio
 test_required_five_cases (test_resolution.ResolutionTests.test_required_five_cases) ... ok
 test_two_three_and_krea_alignment (test_resolution.ResolutionTests.test_two_three_and_krea_alignment) ... ok
 test_workflow_links (test_resolution.ResolutionTests.test_workflow_links) ... ok
+test_bad_options_masks_and_frame_counts (test_subject.SubjectTests.test_bad_options_masks_and_frame_counts) ... ok
+test_body_trim_removes_obvious_protrusion (test_subject.SubjectTests.test_body_trim_removes_obvious_protrusion) ... ok
+test_candidate_scoring_prefers_valid_positive_and_negative (test_subject.SubjectTests.test_candidate_scoring_prefers_valid_positive_and_negative) ... ok
+test_default_semantic_mode_works_without_pose (test_subject.SubjectTests.test_default_semantic_mode_works_without_pose) ... ok
+test_depth_actually_changes_boundary_without_cutting_limb (test_subject.SubjectTests.test_depth_actually_changes_boundary_without_cutting_limb) ... ok
+test_download_checksum_failure_preserves_existing_file (test_subject.SubjectTests.test_download_checksum_failure_preserves_existing_file) ... ok
+test_external_partial_pose_trim_falls_back_to_subject (test_subject.SubjectTests.test_external_partial_pose_trim_falls_back_to_subject) ... ok
+test_foreground_hint_is_not_a_hard_intersection (test_subject.SubjectTests.test_foreground_hint_is_not_a_hard_intersection) ... ok
+test_missing_model_does_not_download_or_fallback (test_subject.SubjectTests.test_missing_model_does_not_download_or_fallback) ... ok
+test_native_depth_canvas_and_broadcast (test_subject.SubjectTests.test_native_depth_canvas_and_broadcast) ... ok
+test_no_depth_is_explicit_rgb_only (test_subject.SubjectTests.test_no_depth_is_explicit_rgb_only) ... ok
+test_partial_pose_does_not_crop_near_camera_extrema (test_subject.SubjectTests.test_partial_pose_does_not_crop_near_camera_extrema) ... ok
+test_protection_and_exclusion_priority (test_subject.SubjectTests.test_protection_and_exclusion_priority) ... ok
+test_rgb_rgba_depth_share_mask_and_preserve_source (test_subject.SubjectTests.test_rgb_rgba_depth_share_mask_and_preserve_source) ... ok
+test_semantic_prompts_cover_head_and_body_not_just_torso (test_subject.SubjectTests.test_semantic_prompts_cover_head_and_body_not_just_torso) ... ok
+test_skin_dark_samples_shadows_and_garments (test_subject.SubjectTests.test_skin_dark_samples_shadows_and_garments) ... ok
+test_skin_missing_depth_zero_strength_and_empty_hint_skip (test_subject.SubjectTests.test_skin_missing_depth_zero_strength_and_empty_hint_skip) ... ok
+test_skin_requires_color_and_depth_evidence (test_subject.SubjectTests.test_skin_requires_color_and_depth_evidence) ... ok
+test_zero_strength_exact_and_flat_depth_skips (test_subject.SubjectTests.test_zero_strength_exact_and_flat_depth_skips) ... ok
 
 ----------------------------------------------------------------------
-Ran 54 tests in 0.643s
+Ran 73 tests in 0.507s
 
 OK

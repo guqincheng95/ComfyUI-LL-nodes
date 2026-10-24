@@ -280,5 +280,130 @@
         "name": "处理说明"
       }
     }
+  },
+  "LLPersonSubjectClean": {
+    "display_name": "LL 人物主体提取·深度·肤色净化 · Subject Clean",
+    "description": "从原始RGB重新提取人物，结合局部深度细化边界；同MASK输出RGB和深度。肤色增强默认关闭。SAM2模式需本地模型与骨架或保留提示。",
+    "inputs": {
+      "image": {
+        "name": "原始图像"
+      },
+      "segmentation": {
+        "name": "分割来源",
+        "options": [
+          "人物语义引导SAM2（推荐）",
+          "SAM2骨架／保留提示",
+          "外部人物遮罩细化"
+        ]
+      },
+      "model_name": {
+        "name": "SAM2.1模型"
+      },
+      "device": {
+        "name": "运行设备",
+        "options": [
+          "自动选择",
+          "CPU"
+        ]
+      },
+      "mode": {
+        "name": "提取用途",
+        "options": [
+          "完整人物",
+          "修剪外扩轮廓"
+        ]
+      },
+      "person_index": {
+        "name": "人物序号"
+      },
+      "confidence": {
+        "name": "关键点置信度"
+      },
+      "analysis_size": {
+        "name": "分析最长边"
+      },
+      "edge_strength": {
+        "name": "边界提炼强度"
+      },
+      "depth_weight": {
+        "name": "深度边界权重"
+      },
+      "edge_band": {
+        "name": "边缘检查宽度"
+      },
+      "trim_scale": {
+        "name": "外扩修剪倍率"
+      },
+      "skin_enabled": {
+        "name": "肤色辅助边缘净化"
+      },
+      "skin_strength": {
+        "name": "肤色净化强度"
+      },
+      "skin_band": {
+        "name": "肤色检查宽度"
+      },
+      "skin_protection": {
+        "name": "肢体保护程度"
+      },
+      "feather": {
+        "name": "边缘柔化"
+      },
+      "rgb_background": {
+        "name": "RGB背景填色",
+        "options": [
+          "黑色",
+          "白色"
+        ]
+      },
+      "failure_policy": {
+        "name": "异常处理",
+        "options": [
+          "停止并提示",
+          "保留初始人物并提示"
+        ]
+      },
+      "depth_image": {
+        "name": "原始深度图"
+      },
+      "keypoints": {
+        "name": "骨架关键点"
+      },
+      "foreground_mask": {
+        "name": "前景参考遮罩"
+      },
+      "protect_mask": {
+        "name": "强制保留遮罩"
+      },
+      "exclude_mask": {
+        "name": "强制删除遮罩"
+      },
+      "skin_mask": {
+        "name": "裸露皮肤取样遮罩"
+      }
+    },
+    "outputs": {
+      "0": {
+        "name": "净化RGB"
+      },
+      "1": {
+        "name": "透明RGBA"
+      },
+      "2": {
+        "name": "净化深度"
+      },
+      "3": {
+        "name": "保留遮罩"
+      },
+      "4": {
+        "name": "三阶段对比"
+      },
+      "5": {
+        "name": "肤色步骤删除区域"
+      },
+      "6": {
+        "name": "处理说明"
+      }
+    }
   }
 }

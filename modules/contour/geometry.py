@@ -115,7 +115,7 @@ def _ellipse(draw, center, axis, rx, ry):
     draw.polygon(polygon, fill=255)
 
 
-def observed_width(foreground, centers, normal, base):
+def observed_width(foreground, centers, normal, base, max_scale=1.15):
     """Fit only nearby, continuous foreground boundaries; reject wide garment spans.
 
     A skirt or cape extending beyond the bounded search range cannot inflate the
@@ -124,7 +124,7 @@ def observed_width(foreground, centers, normal, base):
     if foreground is None:
         return base
     h, w = foreground.shape
-    distances = np.linspace(0, base * 1.6, max(8, int(base * 2)))
+    distances = np.linspace(0, base * max(1.6, max_scale * 1.2), max(8, int(base * max(2, max_scale * 2))))
     estimates = []
     for center in centers:
         sides = []
@@ -145,11 +145,12 @@ def observed_width(foreground, centers, normal, base):
             estimates.append(sum(sides) / 2)
     if not estimates:
         return base
-    return float(np.clip(np.median(estimates), base * 0.65, base * 1.15))
+    estimate = np.median(estimates) if max_scale == 1.15 else np.quantile(estimates, .35)
+    return float(np.clip(estimate, base * 0.65, base * max_scale))
 
 
 def render_person(parsed, width, height, *, foreground=None, head_scale=1.0,
-                  torso_scale=1.0, arm_scale=1.0, leg_scale=1.0):
+                  torso_scale=1.0, arm_scale=1.0, leg_scale=1.0, observed_max_scale=1.15):
     body = parsed['body']
     if len(body) != 18 or not all(_valid(body[i]) for i in CORE):
         return None, '身体主关键点缺失或置信度不足，保留原帧'
@@ -164,10 +165,12 @@ def render_person(parsed, width, height, *, foreground=None, head_scale=1.0,
     shoulder_half = max(abs(float(np.dot(p[5] - p[2], normal))) / 2, length * 0.22)
     hip_half = max(abs(float(np.dot(p[11] - p[8], normal))) / 2, length * 0.20)
     # Shoulder/hip landmarks can collapse in profile; torso length supplies a bounded prior.
-    sh = observed_width(foreground, [shoulders], normal, shoulder_half * 1.10) * torso_scale
-    hh = observed_width(foreground, [hips], normal, hip_half * 1.22) * torso_scale
+    fit_width = lambda fg, centers, normal, base: observed_width(fg, centers, normal, base, observed_max_scale)
+    fit_torso = lambda fg, centers, normal, base: observed_width(fg, centers, normal, base, min(observed_max_scale, 1.35))
+    sh = fit_torso(foreground, [shoulders], normal, shoulder_half * 1.10) * torso_scale
+    hh = fit_torso(foreground, [hips], normal, hip_half * 1.22) * torso_scale
     waist = shoulders * 0.42 + hips * 0.58
-    wh = observed_width(foreground, [waist], normal, min(shoulder_half, hip_half) * 0.96) * torso_scale
+    wh = fit_torso(foreground, [waist], normal, min(shoulder_half, hip_half) * 0.96) * torso_scale
     image = Image.new('L', (width, height), 0)
     draw = ImageDraw.Draw(image)
     draw.polygon([tuple(shoulders - normal * sh), tuple(waist - normal * wh), tuple(hips - normal * hh),
@@ -192,14 +195,14 @@ def render_person(parsed, width, height, *, foreground=None, head_scale=1.0,
         for u, v, r1, r2 in ((a, b, 0.12, 0.095), (b, c, 0.095, 0.065)):
             n = _perp(_unit(p[v] - p[u]))
             centers = [p[u] * (1 - t) + p[v] * t for t in (0.3, 0.55, 0.8)]
-            fit = observed_width(foreground, centers, n, length * (r1 + r2) / 2)
+            fit = fit_width(foreground, centers, n, length * (r1 + r2) / 2)
             factor = fit / (length * (r1 + r2) / 2) * arm_scale
             _capsule(draw, p[u], p[v], length * r1 * factor, length * r2 * factor)
     for a, b, c in ((8, 9, 10), (11, 12, 13)):
         for u, v, r1, r2 in ((a, b, 0.18, 0.13), (b, c, 0.13, 0.075)):
             n = _perp(_unit(p[v] - p[u]))
             centers = [p[u] * (1 - t) + p[v] * t for t in (0.3, 0.55, 0.8)]
-            fit = observed_width(foreground, centers, n, length * (r1 + r2) / 2)
+            fit = fit_width(foreground, centers, n, length * (r1 + r2) / 2)
             factor = fit / (length * (r1 + r2) / 2) * leg_scale
             _capsule(draw, p[u], p[v], length * r1 * factor, length * r2 * factor)
     # Wholebody landmarks preserve the observed hands/feet without globally widening limbs.
