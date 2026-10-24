@@ -4,7 +4,7 @@ from .modules.photo.nodes import PhotoFinish
 from .modules.contour.nodes import PersonContourTrim
 from .modules.subject.nodes import PersonSubjectClean
 
-__version__ = "0.6.0"
+__version__ = "0.6.1"
 WEB_DIRECTORY = "./web"
 NODE_CLASS_MAPPINGS = {
     "ResolutionPreset": ResolutionPreset,

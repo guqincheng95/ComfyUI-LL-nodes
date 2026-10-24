@@ -9,9 +9,11 @@ export const SECTIONS = [
 
 function makeBooleanControl(original,change){
  const element=document.createElement('label');
- element.style.cssText='display:flex;align-items:center;gap:10px;height:32px;padding:0 10px;color:#ddd;font:12px sans-serif;background:#282828;box-sizing:border-box;';
+ element.style.cssText='display:flex;align-items:center;gap:10px;width:100%;min-width:0;max-width:100%;height:32px;min-height:0;margin:0;padding:0 10px;color:#ddd;font:12px/16px sans-serif;background:#282828;box-sizing:border-box;overflow:hidden;';
  const input=document.createElement('input');input.type='checkbox';input.checked=Boolean(original.value);
+ input.style.cssText='box-sizing:border-box;flex:0 0 14px;width:14px;min-width:0;max-width:14px;height:14px;min-height:0;margin:0;padding:0;';
  const text=document.createElement('span');text.textContent='保持色彩平衡明度';
+ text.style.cssText='min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;';
  input.setAttribute('aria-label','保持色彩平衡明度');
  input.addEventListener('change',()=>change(input.checked));
  for(const event of ['pointerdown','mousedown','keydown'])element.addEventListener(event,e=>e.stopPropagation());
@@ -25,7 +27,7 @@ export function enhanceNode(node) {
  const controls=new Map(), groups=new Map(), records=[];
  const isOpen=id=>Boolean(node.properties?.llPhotoSections?.[id]);
  function resize(){
-  node.setSize?.([Math.max(node.size?.[0]||0,360),node.computeSize()[1]]);
+  node.setSize?.([Math.max(node.size?.[0]||360,280),node.computeSize()[1]]);
   node.setDirtyCanvas?.(true,true);
  }
  function refresh(){
@@ -33,6 +35,8 @@ export function enhanceNode(node) {
    const open=isOpen(section.id);
    const visible=header || open;
    widget.hidden=!visible;
+   // Older ComfyUI DOM hosts check type rather than the hidden flag.
+   widget.type=visible?'photo_finish_number':'hidden';
    element.style.display=visible?'block':'none';
    control.element.style.display=open?(original.name==='preserve_luminosity'?'flex':'block'):'none';
    if(header){
@@ -61,12 +65,14 @@ export function enhanceNode(node) {
    const control=name==='preserve_luminosity'?makeBooleanControl(original,change):makeControl(name,original.value,change);
    controls.set(name,control);
    const element=document.createElement('div');
-   element.style.cssText='box-sizing:border-box;width:100%;';
+   // DOM host size is the full slot (margin:0 below). Keep the horizontal
+   // inset inside our own border box so it is never subtracted from height.
+   element.style.cssText='box-sizing:border-box;display:block;width:100%;min-width:0;max-width:100%;min-height:0;margin:0;padding:0 10px;overflow:hidden;';
    let header=null;
    if(name===first){
     header=document.createElement('button');header.type='button';
     header.setAttribute('aria-label',`${section.label}折叠区域`);
-    header.style.cssText='box-sizing:border-box;width:100%;height:30px;background:#34434a;color:#eee;border:1px solid #5c737d;border-radius:5px;text-align:left;padding:0 10px;font:13px sans-serif;cursor:pointer;';
+    header.style.cssText='box-sizing:border-box;display:block;width:100%;min-width:0;max-width:100%;height:30px;min-height:0;margin:0;background:#34434a;color:#eee;border:1px solid #5c737d;border-radius:5px;text-align:left;padding:0 10px;font:13px/28px sans-serif;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;cursor:pointer;';
     header.addEventListener('click',()=>{
      node.graph?.beforeChange?.();node.properties??={};
      node.properties.llPhotoSections={...(node.properties.llPhotoSections||{}),[section.id]:!isOpen(section.id)};
@@ -79,7 +85,9 @@ export function enhanceNode(node) {
    const height=()=> (header?30:0) + (isOpen(section.id)?(name==='preserve_luminosity'?32:62):0);
    node.widgets.splice(index,1);
    const widget=node.addDOMWidget(name,'photo_finish_number',element,{
-    ...original.options,serialize:true,hideOnZoom:true,
+    // ComfyUI subtracts 2 * margin from the allocated DOM height. Our height
+    // already describes the whole content, so the default margin of 10 leaves too little space.
+    ...original.options,serialize:true,hideOnZoom:true,margin:0,
     getValue:()=>original.value,
     setValue:value=>{control.setValue(value);original.value=name==='preserve_luminosity'?Boolean(value):control.value;refresh();},
     getMinHeight:height,getMaxHeight:height,
@@ -89,7 +97,8 @@ export function enhanceNode(node) {
      if(header)refresh();
     },
    });
-   widget.computeSize=width=>[width,height()];
+   // Cancel LiteGraph's 4px row gap for fully hidden controls on older hosts.
+   widget.computeSize=width=>[width??node.size?.[0]??360,widget.hidden?-4:height()];
    widget.serializeValue=()=>name==='preserve_luminosity'?Boolean(original.value):Number(original.value);
    node.widgets.splice(node.widgets.indexOf(widget),1);node.widgets.splice(index,0,widget);
    records.push({widget,element,section,header,control,original});

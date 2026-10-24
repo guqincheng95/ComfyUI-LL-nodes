@@ -18,6 +18,16 @@ jobs:
       - run: node tests/frontend.test.mjs
       - run: node tests/subject_frontend.test.mjs
       - run: python -m compileall -q __init__.py modules scripts tests
+  photo-ui-layout:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - run: npm install --no-save --package-lock=false playwright@1.51.1
+      - run: npx playwright install --with-deps chromium
+      - run: node tests/photo_layout.browser.mjs
   image-algorithms:
     runs-on: ubuntu-latest
     steps:

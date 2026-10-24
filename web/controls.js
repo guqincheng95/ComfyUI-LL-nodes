@@ -51,26 +51,26 @@ export function makeControl(name, initial, onChange, doc = document) {
  const limit = limitFor(name), fine = fineStepFor(name);
  let value = clampValue(initial, limit);
  const root = doc.createElement('div');
- root.style.cssText = 'box-sizing:border-box;width:100%;height:62px;padding:3px 8px;color:#ddd;background:#282828;font:12px sans-serif;border-radius:6px;';
+ root.style.cssText = 'box-sizing:border-box;display:block;width:100%;min-width:0;max-width:100%;height:62px;min-height:0;margin:0;padding:3px 8px;color:#ddd;background:#282828;font:12px/normal sans-serif;border-radius:6px;';
  const row = doc.createElement('div');
- row.style.cssText = 'display:flex;align-items:center;gap:5px;height:26px;';
+ row.style.cssText = 'box-sizing:border-box;display:flex;align-items:center;gap:5px;width:100%;min-width:0;height:26px;';
  const label = doc.createElement('span'); label.textContent = LABELS[name];
  label.style.cssText = 'flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;';
  const number = doc.createElement('input'); number.type = 'number';
  number.min = -limit; number.max = limit; number.step = fine;
  number.setAttribute('aria-label', `${LABELS[name]}精确数值`);
- number.style.cssText = 'box-sizing:border-box;width:66px;height:24px;background:#191919;color:#fff;border:1px solid #666;border-radius:4px;text-align:center;appearance:textfield;';
+ number.style.cssText = 'box-sizing:border-box;flex:0 0 66px;width:66px;min-width:0;max-width:66px;height:24px;min-height:0;margin:0;padding:0 2px;background:#191919;color:#fff;border:1px solid #666;border-radius:4px;text-align:center;font:inherit;appearance:textfield;';
  const minus = doc.createElement('button'), plus = doc.createElement('button');
  for (const [button, text, sign] of [[minus,'◀',-1],[plus,'▶',1]]) {
   button.type='button'; button.textContent=text;
   button.title=`${sign < 0 ? '减少' : '增加'} ${fine}`;
   button.setAttribute('aria-label', `${LABELS[name]}${button.title}`);
-  button.style.cssText='width:25px;height:24px;padding:0;border:1px solid #666;border-radius:4px;background:#383838;color:#eee;cursor:pointer;';
+  button.style.cssText='box-sizing:border-box;flex:0 0 25px;width:25px;min-width:0;max-width:25px;height:24px;min-height:0;margin:0;padding:0;border:1px solid #666;border-radius:4px;background:#383838;color:#eee;font:inherit;line-height:22px;cursor:pointer;';
   button.addEventListener('click', () => commit(Number((value+sign*fine).toFixed(6))));
  }
  row.append(label,minus,number,plus);
  const track = doc.createElement('div');
- track.style.cssText='position:relative;height:27px;display:flex;align-items:center;';
+ track.style.cssText='box-sizing:border-box;position:relative;width:100%;min-width:0;height:27px;display:flex;align-items:center;';
  const colorBar=doc.createElement('div');
  colorBar.style.cssText='position:absolute;left:8px;right:8px;top:8px;height:10px;border:1px solid #777;border-radius:5px;box-sizing:border-box;pointer-events:none;';
  colorBar.style.background=gradientFor(name);
@@ -87,7 +87,7 @@ export function makeControl(name, initial, onChange, doc = document) {
  slider.min=-limit; slider.max=limit; slider.step='any';
  slider.setAttribute('aria-label',`${LABELS[name]}滑块`);
  slider.title=`左负右正，各10档；每档 ${limit/10}；双击归零`;
- slider.style.cssText='position:relative;z-index:1;width:100%;height:20px;margin:0;background:transparent;cursor:pointer;';
+ slider.style.cssText='box-sizing:border-box;position:relative;z-index:1;flex:1 1 0;width:100%;min-width:0;max-width:100%;height:20px;min-height:0;margin:0;padding:0;border:0;background:transparent;cursor:pointer;';
  slider.addEventListener('input',()=>commit(snapValue(slider.value,limit)));
  slider.addEventListener('keydown',event=>{
   const delta={ArrowLeft:-1,ArrowDown:-1,ArrowRight:1,ArrowUp:1}[event.key];
