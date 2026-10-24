@@ -1,0 +1,29 @@
+{
+  "barefoot": {
+    "fixture": "synthetic known silhouette; no image model inference",
+    "roi_foreground_pixels": 2835,
+    "before_retained_fraction": 0.17813050746917725,
+    "after_retained_fraction": 1.0
+  },
+  "shoe": {
+    "fixture": "synthetic known silhouette; no image model inference",
+    "roi_foreground_pixels": 3531,
+    "before_retained_fraction": 0.14358538389205933,
+    "after_retained_fraction": 1.0
+  },
+  "hand": {
+    "fixture": "synthetic known silhouette; no image model inference",
+    "roi_foreground_pixels": 2424,
+    "before_retained_fraction": 0.6006600856781006,
+    "after_retained_fraction": 0.9344059228897095
+  },
+  "public_shoe_sample": {
+    "source": "OpenMMLab MMPose COCO WholeBody image 785 / annotation 442619",
+    "pose_and_mask": "public annotations, NOT SDPose/SAM2/BEN2 inference",
+    "metric": "retention within bounded foot ROIs; NOT foot segmentation IoU or overall accuracy",
+    "roi_foreground_pixels": 5362,
+    "before_retained_fraction": 0.6673176288604736,
+    "after_retained_fraction": 1.0,
+    "report": "1 帧；1 帧完成轮廓修剪；0 帧安全保留。 已使用原图前景轮廓观测部位宽度。 手脚保护：脚掌2处，手掌2处，局部估计1处；脚掌范围1.2，手掌范围1.15。"
+  }
+}

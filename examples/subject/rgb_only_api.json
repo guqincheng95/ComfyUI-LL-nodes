@@ -29,7 +29,11 @@
       "skin_protection": 0.7,
       "feather": 1,
       "rgb_background": "black",
-      "failure_policy": "stop"
+      "failure_policy": "stop",
+      "foot_protection": true,
+      "foot_scale": 1.2,
+      "hand_protection": true,
+      "hand_scale": 1.15
     }
   },
   "3": {

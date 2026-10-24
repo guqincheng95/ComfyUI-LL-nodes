@@ -34,6 +34,8 @@ def parse_frames(keypoints):
 
 
 def _points(flat, sx, sy, cw, ch, threshold, normalized):
+    if flat is None:
+        flat = []
     try:
         points = np.asarray(flat, dtype=np.float64)
     except (ValueError, TypeError) as exc:
@@ -60,7 +62,9 @@ def parse_person(person, frame_size, target_size, threshold=0.3, coordinate_mode
         raise ValueError('每个人物必须是 OpenPose 字典。')
     cw, ch = frame_size
     tw, th = target_size
-    raw = person.get('pose_keypoints_2d', [])
+    raw = person.get('pose_keypoints_2d')
+    if raw is None:
+        raw = []
     a = np.asarray(raw, dtype=np.float64)
     if a.size % 3:
         raise ValueError('pose_keypoints_2d 长度必须为 3 的倍数。')
@@ -74,7 +78,7 @@ def parse_person(person, frame_size, target_size, threshold=0.3, coordinate_mode
                            'hand_right_keypoints_2d', 'foot_keypoints_2d')}
     body = values['pose_keypoints_2d']
     if len(body) == 25:
-        if not len(values['foot_keypoints_2d']):
+        if not len(values['foot_keypoints_2d']) or not np.isfinite(values['foot_keypoints_2d']).any():
             values['foot_keypoints_2d'] = body[[19, 20, 21, 22, 23, 24]].copy()
         body = body[list(BODY25_TO_18)]
     elif len(body) not in (0, 18):

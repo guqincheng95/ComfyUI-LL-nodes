@@ -33,7 +33,11 @@
       "depth_image": [
         "4",
         0
-      ]
+      ],
+      "foot_protection": true,
+      "foot_scale": 1.2,
+      "hand_protection": true,
+      "hand_scale": 1.15
     }
   },
   "3": {

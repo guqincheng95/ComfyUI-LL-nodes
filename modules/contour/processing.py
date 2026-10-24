@@ -3,10 +3,12 @@ import math
 import numpy as np
 from PIL import Image
 from .geometry import parse_frames, parse_person, render_person, refine_mask
+from .extremities import extremity_regions, extremity_support
 
 DEFAULTS = dict(head_scale=1.0, torso_scale=1.0, arm_scale=1.0, leg_scale=1.0,
                 padding_px=4, feather_px=2, confidence=0.3, temporal_smoothing=0.0,
-                person_index=0, background_value=0.0, coordinate_mode='auto', missing_pose='keep')
+                person_index=0, background_value=0.0, coordinate_mode='auto', missing_pose='keep',
+                foot_protection=True, foot_scale=1.2, hand_protection=True, hand_scale=1.15)
 
 
 def validate_options(options):
@@ -18,6 +20,7 @@ def validate_options(options):
         'head_scale': (0.4, 2.0), 'torso_scale': (0.4, 2.0), 'arm_scale': (0.4, 2.0),
         'leg_scale': (0.4, 2.0), 'confidence': (0.0, 1.0), 'temporal_smoothing': (0.0, 0.9),
         'background_value': (0.0, 1.0),
+        'foot_scale': (0.5, 3.0), 'hand_scale': (0.5, 3.0),
     }.items():
         v = values[key]
         if isinstance(v, bool) or not isinstance(v, (int, float)) or not math.isfinite(v) or not lo <= v <= hi:
@@ -25,6 +28,9 @@ def validate_options(options):
     for key, lo, hi in [('padding_px', 0, 64), ('feather_px', 0, 32), ('person_index', -1, 99)]:
         if type(values[key]) is not int or not lo <= values[key] <= hi:
             raise ValueError(f'{key} 必须为 {lo}～{hi} 的整数。')
+    for key in ('foot_protection', 'hand_protection'):
+        if type(values[key]) is not bool:
+            raise ValueError(f'{key} 必须为布尔值。')
     if values['coordinate_mode'] not in ('auto', 'pixels', 'normalized'):
         raise ValueError('coordinate_mode 只能为 auto / pixels / normalized。')
     if values['missing_pose'] not in ('keep', 'error'):
@@ -85,13 +91,14 @@ def build_masks(keypoints, batch, height, width, *, foreground_mask=None, protec
     # Work on a bounded mask canvas, never rescale the source IMAGE.
     ratio = min(1.0, 1024 / max(height, width))
     ww, hh = max(1, round(width * ratio)), max(1, round(height * ratio))
-    output, reports, previous = [], [], {}
+    output, reports, previous, part_counts = [], [], {}, {'foot':0, 'hand':0, 'fallback':0}
     for frame_index in range(batch):
         cw, ch, people = frames[0 if len(frames) == 1 else frame_index]
         observed = None if fg is None else fg[0 if len(fg) == 1 else frame_index]
         small_fg = None if observed is None else np.asarray(Image.fromarray(observed).resize((ww, hh), Image.Resampling.BILINEAR))
         indexes = list(range(len(people))) if opts['person_index'] == -1 else [opts['person_index']]
         combined = np.zeros((hh, ww), dtype=np.float32)
+        automatic = np.zeros_like(combined)
         reasons = []
         if not people or any(index >= len(people) for index in indexes):
             reasons.append('未检测到指定人物')
@@ -108,6 +115,12 @@ def build_masks(keypoints, batch, height, width, *, foreground_mask=None, protec
                 else:
                     previous[index] = smoothed
                     combined = np.maximum(combined, mask)
+                    parts = extremity_regions(smoothed, ww, hh, foreground=small_fg,
+                        **{k:opts[k] for k in ('foot_protection','foot_scale','hand_protection','hand_scale')})
+                    automatic = np.maximum(automatic, extremity_support(parts, combined.shape))
+                    for part in parts:
+                        part_counts[part['kind']] += 1
+                        part_counts['fallback'] += part['source'] != 'wholebody_landmarks'
         if reasons:
             if opts['missing_pose'] == 'error':
                 raise ValueError(f'第 {frame_index + 1} 帧：' + '；'.join(reasons))
@@ -117,6 +130,7 @@ def build_masks(keypoints, batch, height, width, *, foreground_mask=None, protec
             previous.clear()
         else:
             combined = refine_mask(combined, round(opts['padding_px'] * ratio), round(opts['feather_px'] * ratio))
+            combined = np.maximum(combined, automatic)
         if (ww, hh) != (width, height):
             combined = np.asarray(Image.fromarray(combined).resize((width, height), Image.Resampling.BILINEAR), dtype=np.float32)
         if protect is not None:
@@ -129,6 +143,9 @@ def build_masks(keypoints, batch, height, width, *, foreground_mask=None, protec
         output.append(np.clip(combined, 0, 1))
     report = f'{batch} 帧；{batch - len(reports)} 帧完成轮廓修剪；{len(reports)} 帧安全保留。'
     report += ' 已使用原图前景轮廓观测部位宽度。' if fg is not None else ' 建议连接原图背景移除的 MASK，提高边界贴合度。'
+    report += f" 手脚保护：脚掌{part_counts['foot']}处，手掌{part_counts['hand']}处，局部估计{part_counts['fallback']}处；脚掌范围{opts['foot_scale']}，手掌范围{opts['hand_scale']}。"
+    if fg is None and (opts['foot_protection'] or opts['hand_protection']):
+        report += ' 未接前景MASK：手脚保护使用有界几何范围，可能保留附近背景。'
     if batch > 1 and len(frames) == 1:
         report += ' 注意：单帧骨架已重复用于全部图像；运动视频应逐帧提供骨架。'
     resized_count = sum(value is not None and np.asarray(value).shape[-2:] != (height, width) for value in (foreground_mask, protect_mask, exclude_mask))

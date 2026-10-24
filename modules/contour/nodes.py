@@ -29,6 +29,10 @@ class PersonContourTrim:
             'foreground_mask': ('MASK', {'tooltip': '推荐：原图经 BEN2 等背景移除得到的 MASK（白色为保留）。必须与深度图同裁切；等比例分辨率自动对齐，支持单帧或逐帧。'}),
             'protect_mask': ('MASK', {'tooltip': '可选：手脚、正常头发等需要额外保留的白色区域；可接成熟人体分割节点的部位遮罩。'}),
             'exclude_mask': ('MASK', {'tooltip': '可选：帽子、头饰等需要明确裁掉的白色区域；最后执行，优先于保留遮罩。'}),
+            'foot_protection': ('BOOLEAN', {'default':True, 'tooltip':'独立保护完整脚掌／鞋；建议连接前景MASK约束边界。'}),
+            'foot_scale': ('FLOAT', {'default':1.2, 'min':.5, 'max':3., 'step':.05, 'tooltip':'脚掌保护范围倍率，不改变小腿倍率；近镜头大脚、长鞋可增加。'}),
+            'hand_protection': ('BOOLEAN', {'default':True, 'tooltip':'独立保护手掌／手指；有21点手部关键点时按完整轮廓构造范围。'}),
+            'hand_scale': ('FLOAT', {'default':1.15, 'min':.5, 'max':3., 'step':.05, 'tooltip':'手掌保护范围倍率，不改变手臂倍率。'}),
         }}
 
     RETURN_TYPES = ('IMAGE', 'MASK', 'IMAGE', 'STRING')

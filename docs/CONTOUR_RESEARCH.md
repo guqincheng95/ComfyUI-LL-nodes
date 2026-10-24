@@ -12,6 +12,10 @@
 
 新增代码负责接线、坐标/批量适配、局部边界观测、保留范围约束和安全回退；不是一个新的分割网络或人体重建模型。直接依赖 ComfyUI 已有 PyTorch、NumPy、Pillow，无网络请求。
 
+2026-10-25复核：官方SDPose仍分别输出脚6点与双手21点；comfyui_controlnet_aux的DWPose JSON序列化部分输出无脚部字段、手／脸可为null。v0.6.2兼容这些缺省，按可用细点构造完整脚掌／掌心范围，鞋型预留局部上下文，缺细点则使用有界局部估计并报告。复用Pillow绘图与已有前景MASK，不增加新的检测模型或依赖；无法从粗骨架精确辨别鞋／家具材质。
+
+额外复核源码：https://github.com/Fannovel16/comfyui_controlnet_aux/blob/main/src/custom_controlnet_aux/dwpose/__init__.py 。
+
 来源：
 - https://github.com/Comfy-Org/ComfyUI/blob/master/comfy_extras/nodes_sdpose.py
 - https://github.com/Fannovel16/comfyui_controlnet_aux/blob/main/node_wrappers/depth_anything_v2.py

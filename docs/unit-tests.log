@@ -24,6 +24,18 @@ test_scale_controls_and_feather_preserve_range (test_contour.ContourTests.test_s
 test_sdpose_pixel_and_normalized_and_body25 (test_contour.ContourTests.test_sdpose_pixel_and_normalized_and_body25) ... ok
 test_temporal_state_is_local_and_large_jump_resets (test_contour.ContourTests.test_temporal_state_is_local_and_large_jump_resets) ... ok
 test_trims_protrusions_keeps_body_and_canvas (test_contour.ContourTests.test_trims_protrusions_keeps_body_and_canvas) ... ok
+test_bare_sole_and_shoe_fallback_recover_old_overtrim (test_extremities.ExtremityTests.test_bare_sole_and_shoe_fallback_recover_old_overtrim) ... ok
+test_body25_feet_mapping_null_optional_parts_and_normalized_coordinates (test_extremities.ExtremityTests.test_body25_feet_mapping_null_optional_parts_and_normalized_coordinates) ... ok
+test_broadcast_soft_alpha_and_invalid_controls (test_extremities.ExtremityTests.test_broadcast_soft_alpha_and_invalid_controls) ... ok
+test_detailed_feet_prompt_sam_and_cover_full_sole (test_extremities.ExtremityTests.test_detailed_feet_prompt_sam_and_cover_full_sole) ... ok
+test_exclusion_wins_and_skin_and_feather_cannot_recut_protected_feet (test_extremities.ExtremityTests.test_exclusion_wins_and_skin_and_feather_cannot_recut_protected_feet) ... ok
+test_foot_range_is_independent_of_calf_and_hands (test_extremities.ExtremityTests.test_foot_range_is_independent_of_calf_and_hands) ... ok
+test_initial_missing_foot_cannot_be_painted_back (test_extremities.ExtremityTests.test_initial_missing_foot_cannot_be_painted_back) ... ok
+test_legacy_node_also_has_independent_hand_and_foot_controls (test_extremities.ExtremityTests.test_legacy_node_also_has_independent_hand_and_foot_controls) ... ok
+test_new_options_append_after_old_widgets_and_legacy_calls_remain_valid (test_extremities.ExtremityTests.test_new_options_append_after_old_widgets_and_legacy_calls_remain_valid) ... ok
+test_no_pose_or_missing_endpoints_skips_without_inventing_regions (test_extremities.ExtremityTests.test_no_pose_or_missing_endpoints_skips_without_inventing_regions) ... ok
+test_palm_and_finger_protection_and_independent_range (test_extremities.ExtremityTests.test_palm_and_finger_protection_and_independent_range) ... ok
+test_shoe_color_and_skin_color_do_not_change_whole_foot_protection (test_extremities.ExtremityTests.test_shoe_color_and_skin_color_do_not_change_whole_foot_protection) ... ok
 test_existing_api_workflows_resolve (test_library.LibraryTests.test_existing_api_workflows_resolve) ... ok
 test_migration_preview_backup_and_repeat (test_library.LibraryTests.test_migration_preview_backup_and_repeat) ... ok
 test_migration_rejects_unrecognized_directory (test_library.LibraryTests.test_migration_rejects_unrecognized_directory) ... ok
@@ -73,6 +85,6 @@ test_skin_requires_color_and_depth_evidence (test_subject.SubjectTests.test_skin
 test_zero_strength_exact_and_flat_depth_skips (test_subject.SubjectTests.test_zero_strength_exact_and_flat_depth_skips) ... ok
 
 ----------------------------------------------------------------------
-Ran 73 tests in 0.507s
+Ran 85 tests in 4.342s
 
 OK

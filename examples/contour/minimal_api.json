@@ -62,7 +62,11 @@
       "person_index": 0,
       "background_value": 0.0,
       "coordinate_mode": "auto",
-      "missing_pose": "keep"
+      "missing_pose": "keep",
+      "foot_protection": true,
+      "foot_scale": 1.2,
+      "hand_protection": true,
+      "hand_scale": 1.15
     }
   },
   "6": {

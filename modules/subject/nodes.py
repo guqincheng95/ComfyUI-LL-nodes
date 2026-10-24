@@ -37,13 +37,18 @@ class PersonSubjectClean:
             'protect_mask':('MASK',{'tooltip':'强制保留，也为SAM2提供正提示。'}),
             'exclude_mask':('MASK',{'tooltip':'强制排除，也为SAM2提供负提示；最终优先于保留。'}),
             'skin_mask':('MASK',{'tooltip':'可选：来自人体解析的可靠裸露皮肤区域，限定肤色取样。不是人体完整轮廓。'}),
+            'foot_protection':('BOOLEAN',{'default':True,'tooltip':'保护完整脚掌／鞋；仅保留初始分割已有区域，需要有效脚踝关键点。'}),
+            'foot_scale':('FLOAT',{'default':1.2,'min':.5,'max':3.,'step':.05,'tooltip':'只调脚掌保护范围，不放大小腿；近镜头大脚或长鞋可逐步增加。'}),
+            'hand_protection':('BOOLEAN',{'default':True,'tooltip':'独立保护手掌／手指；与脚掌、肤色开关互不依赖。'}),
+            'hand_scale':('FLOAT',{'default':1.15,'min':.5,'max':3.,'step':.05,'tooltip':'只调手掌保护范围；保护过宽时缩小或接明确删除遮罩。'}),
         }}
 
     def clean(self,image,segmentation='semantic_sam2',model_name='sam2.1_hiera_tiny.pt',device='auto',mode='person',
               person_index=0,confidence=.3,analysis_size=512,edge_strength=.7,depth_weight=.65,edge_band=16,
               trim_scale=1.,skin_enabled=False,skin_strength=.5,skin_band=10,skin_protection=.7,feather=1,
               rgb_background='black',failure_policy='stop',depth_image=None,keypoints=None,
-              foreground_mask=None,protect_mask=None,exclude_mask=None,skin_mask=None):
+              foreground_mask=None,protect_mask=None,exclude_mask=None,skin_mask=None,
+              foot_protection=True,foot_scale=1.2,hand_protection=True,hand_scale=1.15):
         import json
         import math
         import warnings
@@ -63,12 +68,14 @@ class PersonSubjectClean:
                 raise ValueError(label+'必须是0～1有限浮点IMAGE。')
         validate_image(image,'原图')
         for name,value,lo,hi in [('confidence',confidence,0,1),('edge_strength',edge_strength,0,1),('depth_weight',depth_weight,0,1),
-              ('trim_scale',trim_scale,.5,1.8),('skin_strength',skin_strength,0,1),('skin_protection',skin_protection,0,1)]:
+              ('trim_scale',trim_scale,.5,1.8),('skin_strength',skin_strength,0,1),('skin_protection',skin_protection,0,1),
+              ('foot_scale',foot_scale,.5,3),('hand_scale',hand_scale,.5,3)]:
             if isinstance(value,bool) or not isinstance(value,(int,float)) or not math.isfinite(value) or not lo<=value<=hi:
                 raise ValueError(f'{name}范围为{lo}～{hi}。')
         for name,value,lo,hi in [('analysis_size',analysis_size,256,1024),('person_index',person_index,0,99),('edge_band',edge_band,1,64),('skin_band',skin_band,1,48),('feather',feather,0,8)]:
             if type(value)is not int or not lo<=value<=hi:raise ValueError(name+'整数范围无效。')
         if type(skin_enabled)is not bool:raise ValueError('skin_enabled必须为布尔值。')
+        if type(foot_protection)is not bool or type(hand_protection)is not bool:raise ValueError('手掌／脚掌保护必须为布尔值。')
         if segmentation not in ('semantic_sam2','sam2','external_mask') or mode not in ('person','body_trim') or device not in ('auto','cpu') or rgb_background not in ('black','white') or failure_policy not in ('stop','keep_subject') or model_name not in MODELS:
             raise ValueError('增强提取选项无效。')
         b,h,w,_=image.shape
@@ -98,7 +105,8 @@ class PersonSubjectClean:
                 parsed=None;reason='未提供骨架';box=None;geometry=np.zeros(rgb.shape[:2],np.float32)
                 positive=np.empty((0,2),np.float32)
                 if frames is not None:
-                    parsed,positive,box,geometry,reason=pose_guides(frames[0 if len(frames)==1 else i],person_index,*size,confidence)
+                    parsed,positive,box,geometry,reason=pose_guides(frames[0 if len(frames)==1 else i],person_index,*size,confidence,
+                        include_feet=foot_protection,include_hands=hand_protection)
                 if 'protect' in masks:positive=np.concatenate([positive,sparse_points(masks['protect'])])
                 negative=sparse_points(masks['exclude']) if 'exclude' in masks else np.empty((0,2),np.float32)
                 if segmentation in ('semantic_sam2','sam2'):
@@ -126,7 +134,8 @@ class PersonSubjectClean:
                 keep,stages,detail=clean_frame(rgb,initial,parsed,positive,negative,depth=depth,
                     protect=masks.get('protect'),exclude=masks.get('exclude'),skin_hint=masks.get('skin_hint'),
                     mode=mode,edge_strength=edge_strength,depth_weight=depth_weight,edge_band=edge_band,trim_scale=trim_scale,
-                    skin_enabled=skin_enabled,skin_strength=skin_strength,skin_band=skin_band,skin_protection=skin_protection,feather=feather)
+                    skin_enabled=skin_enabled,skin_strength=skin_strength,skin_band=skin_band,skin_protection=skin_protection,feather=feather,
+                    foot_protection=foot_protection,foot_scale=foot_scale,hand_protection=hand_protection,hand_scale=hand_scale)
                 baseline=(initial>.5)&~(masks['exclude']>.5) if 'exclude' in masks else initial>.5
                 coverage=float((keep>.5).sum()/max(1,baseline.sum()))
                 if coverage<.3:

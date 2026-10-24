@@ -264,6 +264,18 @@
       "exclude_mask": {
         "name": "明确去除遮罩",
         "tooltip": "白色强制裁去，可接帽子/头饰分割 MASK；优先级最高。"
+      },
+      "foot_protection": {
+        "name": "脚掌保护"
+      },
+      "foot_scale": {
+        "name": "脚掌保护范围倍率"
+      },
+      "hand_protection": {
+        "name": "手掌保护"
+      },
+      "hand_scale": {
+        "name": "手掌保护范围倍率"
       }
     },
     "outputs": {
@@ -380,6 +392,18 @@
       },
       "skin_mask": {
         "name": "裸露皮肤取样遮罩"
+      },
+      "foot_protection": {
+        "name": "脚掌保护"
+      },
+      "foot_scale": {
+        "name": "脚掌保护范围倍率"
+      },
+      "hand_protection": {
+        "name": "手掌保护"
+      },
+      "hand_scale": {
+        "name": "手掌保护范围倍率"
       }
     },
     "outputs": {

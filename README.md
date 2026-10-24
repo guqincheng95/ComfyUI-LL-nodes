@@ -1,6 +1,6 @@
 # comfyui-LL-nodes · LL 个人节点库
 
-**v0.6.1** · 一个目录安装 · 一次更新全部节点 · 中文分类与搜索
+**v0.6.2** · 一个目录安装 · 一次更新全部节点 · 中文分类与搜索
 
 | ComfyUI 分类 | 节点 | 功能 |
 |---|---|---|
@@ -9,7 +9,9 @@
 | LL 节点库 / 图像工具 / 人物轮廓 | LL 人物主体提取 | 原始RGB人物语义引导SAM2，深度边界提炼，RGB/深度同MASK输出，可开关肤色净化 |
 | LL 节点库 / 图像后期 / 基础调色 | LL 后期修图 | 原图对齐、参考仿色；曝光／色温／色调折叠面板，19 项彩色滑块及数值微调 |
 
-本版修复后期折叠条和滑块超出节点边界，适配窄节点与画布缩放；原因和验证见[PHOTO_UI_LAYOUT.md](docs/PHOTO_UI_LAYOUT.md)。已有依赖和模型继续使用。
+本版修复脚掌／鞋与掌心过度裁切，给新旧轮廓节点增加独立脚掌／手掌保护和范围倍率，默认开启；完整接线、肤色开关、场景组合和排错已整理进[使用指南](docs/SUBJECT_CLEAN.md)。已有依赖和模型继续使用。
+
+保留v0.6.1后期折叠／滑块布局修复，记录见[PHOTO_UI_LAYOUT.md](docs/PHOTO_UI_LAYOUT.md)。
 
 v0.6新增增强人物主体提取节点。接线见 [SUBJECT_CLEAN.md](docs/SUBJECT_CLEAN.md)，首次依赖与两份模型安装见 [SUBJECT_SETUP.md](docs/SUBJECT_SETUP.md)，立项与验收记录见 [SUBJECT_V06_PLAN.md](docs/SUBJECT_V06_PLAN.md)。旧节点保留兼容，需新建增强节点使用新功能。
 
@@ -34,11 +36,11 @@ git clone https://github.com/guqincheng95/ComfyUI-LL-nodes.git custom_nodes/comf
 
 ## 从两个独立插件迁移（只需一次）
 
-停止 ComfyUI 后，把 `comfyui-LL-nodes-v0.6.1.zip` 上传至 `custom_nodes`：
+停止 ComfyUI 后，把 `comfyui-LL-nodes-v0.6.2.zip` 上传至 `custom_nodes`：
 
 ```bash
 cd /root/autodl-tmp/AI_Workspace/ComfyUI/custom_nodes
-python -m zipfile -e comfyui-LL-nodes-v0.6.1.zip .
+python -m zipfile -e comfyui-LL-nodes-v0.6.2.zip .
 python comfyui-LL-nodes/scripts/migrate_legacy.py --apply
 ```
 

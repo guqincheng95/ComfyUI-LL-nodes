@@ -6,7 +6,7 @@ from ..contour.geometry import parse_person, render_person
 LIMBS = ((2,3),(3,4),(5,6),(6,7),(8,9),(9,10),(11,12),(12,13))
 
 
-def pose_guides(frame, index, width, height, confidence=.3):
+def pose_guides(frame, index, width, height, confidence=.3,*,include_feet=True,include_hands=True):
     cw,ch,people=frame
     if not 0 <= index < len(people):
         raise ValueError('没有检测到指定人物，请检查关键点或提供人物保留提示。')
@@ -22,6 +22,13 @@ def pose_guides(frame, index, width, height, confidence=.3):
         if good[a] and good[b]:points.append((body[a,:2]+body[b,:2])*.5)
     if all(good[i] for i in (2,5,8,11)):
         points.extend([body[[2,5,8,11],:2].mean(0),body[[8,11],:2].mean(0)])
+    # Ankles/wrists are not sole or palm extrema. Detailed visible points also
+    # prompt SAM2, so coverage is improved before later mask protection.
+    names=(['foot_keypoints_2d'] if include_feet else [])+(['hand_left_keypoints_2d','hand_right_keypoints_2d'] if include_hands else [])
+    for name in names:
+        detail=parsed[name]
+        indices=range(len(detail)) if name=='foot_keypoints_2d' else (4,5,8,9,12,13,16,17,20)
+        points.extend(detail[i,:2] for i in indices if i<len(detail) and np.isfinite(detail[i]).all())
     points=np.asarray(points,dtype=np.float32).reshape(-1,2)
     points=points[(points[:,0]>=0)&(points[:,0]<width)&(points[:,1]>=0)&(points[:,1]<height)]
     if len(points)<3:raise ValueError('有效人物提示不足3点，无法可靠定位人物。')
