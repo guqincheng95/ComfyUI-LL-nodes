@@ -46,3 +46,19 @@ for(const comfyClass of ['LLPersonSubjectClean','LLPersonContourTrim']){
  assert.equal(n.size[0],320);assert.equal(n.widgets[0].hidden,undefined);
 }
 console.log('PASS: independent foot/hand switches and ranges on new and legacy nodes; native values/order and loaded states preserved.');
+{
+ const n={comfyClass:'LLPersonSubjectClean',size:[360,600],widgets:[
+  {name:'semantic_pruning',type:'combo',value:'off'},
+  {name:'remove_headwear',type:'toggle',value:true},
+  {name:'garment_margin',type:'number',value:.1},
+  {name:'preserve_foreground',type:'toggle',value:true},
+ ],computeSize(){return [360,600];},setSize(size){this.size=size;},setDirtyCanvas(){}};
+ enhanceSubject(n);assert.equal(n.widgets[1].hidden,true);
+ n.widgets[0].value='atr_onnx';n.widgets[0].callback('atr_onnx');
+ assert.equal(n.widgets[1].hidden,false);assert.equal(n.widgets[2].hidden,false);
+ n.widgets[0].value='external_masks';app.extension.loadedGraphNode(n);
+ assert.equal(n.widgets[2].value,.1);assert.equal(n.widgets[2].hidden,false);
+ n.widgets[0].value='off';n.widgets[0].callback('off');
+ assert.equal(n.widgets[2].hidden,true);assert.equal(n.widgets[3].hidden,undefined);
+}
+console.log('PASS: semantic pruning off/local/external modes preserve values and independently reveal headwear/garment controls.');

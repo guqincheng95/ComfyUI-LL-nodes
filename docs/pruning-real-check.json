@@ -1,0 +1,82 @@
+{
+  "date": "2026-10-28 Asia/Shanghai",
+  "source": "User screenshot right-hand RMBG preview crop (803,541,1179,1239), 376x698; original RGB/matte/POSE/depth not supplied",
+  "foreground_source": "non-black preview pixel estimate, NOT native RMBG soft matte",
+  "annotation_use": "User grey brush marks were NOT used as algorithm inputs",
+  "model": {
+    "repo": "mattmdjaga/segformer_b2_clothes",
+    "revision": "584abc1e1d260e23c0fc627c5217a09b2b461046",
+    "file": "onnx/model.onnx",
+    "sha256": "a93a8dac171b5c1fcc53632a8bfc180bfd9759ea69a3e207451bb07f76add54f",
+    "runtime": "ONNX Runtime CPU, two threads; full-frame and automatic head crop"
+  },
+  "settings": {
+    "segmentation": "external_mask",
+    "input_image_mode": "cutout_black",
+    "semantic_pruning": "atr_onnx",
+    "preserve_foreground": true,
+    "mode": "body_trim",
+    "trim_scale": 1,
+    "garment_margin": 0.1,
+    "analysis_size": 1024,
+    "skin_enabled": false,
+    "feather": 1
+  },
+  "hand_roi": {
+    "foreground_pixels": 787,
+    "max_rgb_difference_8bit_export": 0.0,
+    "note": "bounded hand/wrist ROI, not whole-person quality score"
+  },
+  "flower_bright_roi": {
+    "pixels": 799,
+    "fraction_nearly_black_after": 1.0,
+    "note": "bright pixels in a manually selected evaluation ROI, not ground-truth instance segmentation IoU"
+  },
+  "report": {
+    "depth_provided": false,
+    "depth_output": "未输入深度：clean_depth是全黑占位，不能作为深度条件",
+    "stage_order": [
+      "初始主体",
+      "RGB/深度与语义提炼",
+      "最终修剪"
+    ],
+    "frames": [
+      {
+        "depth_active": false,
+        "refinement": "前景保真：无有效深度时不重复进行RGB抠像",
+        "skin": "关闭",
+        "removed": 0,
+        "sampled_parts": 0,
+        "trim": "按可见部位与躯干连接范围删除外扩衣料，不补画身体",
+        "matte_preservation": true,
+        "extremities": {
+          "feet_enabled": true,
+          "foot_scale": 1.2,
+          "hands_enabled": true,
+          "hand_scale": 1.15,
+          "parts": [],
+          "note": "保护初始分割已存在的手脚；未提供有效骨架时跳过，初始漏分区域需保留提示或修正分割"
+        },
+        "semantic_pruning": {
+          "source": "local ATR ONNX; full-frame plus head crop",
+          "garment": "按可见部位与躯干连接范围删除外扩衣料，不补画身体",
+          "garment_removed_pixels": 24527,
+          "headwear_removed_pixels": 1119,
+          "head_box": [
+            105,
+            96,
+            254,
+            221
+          ],
+          "body_pixels": 25005
+        },
+        "frame": 1,
+        "backend": "external_mask",
+        "pose_note": "未提供骨架",
+        "retained_fraction": 1.0
+      }
+    ]
+  },
+  "limits": "No user ComfyUI/GPU/SD generation; no real full-resolution matte test. Synthetic soft alpha/fingers/duplicate compositing covered separately.",
+  "upstream_compositing_verified": "EasyUse py/nodes/image.py imageRemBg add_background uses PIL alpha paste; screenshot uses black"
+}

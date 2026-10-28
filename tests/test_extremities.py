@@ -137,9 +137,10 @@ class ExtremityTests(unittest.TestCase):
         native=[name for name,definition in schema['required'].items() if name!='image']
         self.assertEqual(native,old)
         appended=['foot_protection','foot_scale','hand_protection','hand_scale']
-        self.assertEqual(list(schema['optional'])[-4:],appended)
+        self.assertEqual(list(schema['optional'])[6:10],appended)
         for cls in pkg.NODE_CLASS_MAPPINGS['LLPersonSubjectClean'],pkg.NODE_CLASS_MAPPINGS['LLPersonContourTrim']:
-            self.assertEqual(list(cls.INPUT_TYPES()['optional'])[-4:],appended)
+            names=list(cls.INPUT_TYPES()['optional'])
+            self.assertEqual(names[names.index('foot_protection'):names.index('foot_protection')+4],appended)
 
     def test_initial_missing_foot_cannot_be_painted_back(self):
         frame,fg=sample('shoe');fg[376:,30:130]=0

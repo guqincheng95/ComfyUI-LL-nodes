@@ -55,6 +55,22 @@ test_tone_monotone_extremes (test_photo.PhotoTests.test_tone_monotone_extremes) 
 test_tone_regions_distinct (test_photo.PhotoTests.test_tone_regions_distinct) ... ok
 test_transfer_roundtrip (test_photo.PhotoTests.test_transfer_roundtrip) ... ok
 test_white_balance_signs (test_photo.PhotoTests.test_white_balance_signs) ... ok
+test_black_and_white_cutouts_do_not_apply_alpha_twice (test_pruning.PruningTests.test_black_and_white_cutouts_do_not_apply_alpha_twice) ... ok
+test_explicit_protect_overrides_semantic_cut_exclude_still_wins (test_pruning.PruningTests.test_explicit_protect_overrides_semantic_cut_exclude_still_wins) ... ok
+test_head_only_samples_do_not_delete_whole_dress (test_pruning.PruningTests.test_head_only_samples_do_not_delete_whole_dress) ... ok
+test_headwear_switch_off_and_person_mode_keep_garments (test_pruning.PruningTests.test_headwear_switch_off_and_person_mode_keep_garments) ... ok
+test_input_validation_and_external_masks_require_real_parts (test_pruning.PruningTests.test_input_validation_and_external_masks_require_real_parts) ... ok
+test_missing_model_never_downloads_and_off_never_loads_parser (test_pruning.PruningTests.test_missing_model_never_downloads_and_off_never_loads_parser) ... ok
+test_native_thin_fingers_survive_analysis_downscale (test_pruning.PruningTests.test_native_thin_fingers_survive_analysis_downscale) ... ok
+test_new_cut_feathers_but_original_soft_boundary_does_not (test_pruning.PruningTests.test_new_cut_feathers_but_original_soft_boundary_does_not) ... ok
+test_no_garment_means_no_spurious_top_left_cut (test_pruning.PruningTests.test_no_garment_means_no_spurious_top_left_cut) ... ok
+test_old_widget_prefix_is_preserved_new_controls_append (test_pruning.PruningTests.test_old_widget_prefix_is_preserved_new_controls_append) ... ok
+test_parser_normalization_contract_and_wrong_class_count (test_pruning.PruningTests.test_parser_normalization_contract_and_wrong_class_count) ... ok
+test_partial_pose_can_run_semantic_pruning_instead_of_global_skip (test_pruning.PruningTests.test_partial_pose_can_run_semantic_pruning_instead_of_global_skip) ... ok
+test_rmbg_soft_hand_matte_and_pixels_are_identity_without_new_cuts (test_pruning.PruningTests.test_rmbg_soft_hand_matte_and_pixels_are_identity_without_new_cuts) ... ok
+test_semantic_garment_and_headwear_removed_body_and_hand_kept (test_pruning.PruningTests.test_semantic_garment_and_headwear_removed_body_and_hand_kept) ... ok
+test_soft_exclusion_applies_opacity_once (test_pruning.PruningTests.test_soft_exclusion_applies_opacity_once) ... ok
+test_whole_person_skin_hint_is_reported_and_ignored (test_pruning.PruningTests.test_whole_person_skin_hint_is_reported_and_ignored) ... ok
 test_all_162_builtin_combinations (test_resolution.ResolutionTests.test_all_162_builtin_combinations) ... ok
 test_custom_unchanged (test_resolution.ResolutionTests.test_custom_unchanged) ... ok
 test_family_tables_independent (test_resolution.ResolutionTests.test_family_tables_independent) ... ok
@@ -85,6 +101,6 @@ test_skin_requires_color_and_depth_evidence (test_subject.SubjectTests.test_skin
 test_zero_strength_exact_and_flat_depth_skips (test_subject.SubjectTests.test_zero_strength_exact_and_flat_depth_skips) ... ok
 
 ----------------------------------------------------------------------
-Ran 85 tests in 4.342s
+Ran 101 tests in 1.569s
 
 OK

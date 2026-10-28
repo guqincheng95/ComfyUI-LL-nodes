@@ -1,0 +1,3 @@
+# Optional local ATR ONNX adapter. Existing installation is reused if available.
+# Weights have the separate NVIDIA SegFormer research/evaluation license.
+onnxruntime>=1.17,<2

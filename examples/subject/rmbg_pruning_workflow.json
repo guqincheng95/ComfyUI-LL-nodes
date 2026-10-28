@@ -1,0 +1,365 @@
+{
+  "last_node_id": 6,
+  "last_link_id": 5,
+  "nodes": [
+    {
+      "id": 1,
+      "type": "LoadImage",
+      "title": "同一次RMBG输出的黑底图",
+      "pos": [
+        40,
+        50
+      ],
+      "size": [
+        320,
+        400
+      ],
+      "flags": {},
+      "order": 0,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            1
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "RMBG_BLACK_CUTOUT.png",
+        "image"
+      ]
+    },
+    {
+      "id": 2,
+      "type": "LoadImage",
+      "title": "同一次RMBG输出的白前景MASK",
+      "pos": [
+        40,
+        520
+      ],
+      "size": [
+        320,
+        400
+      ],
+      "flags": {},
+      "order": 1,
+      "mode": 0,
+      "inputs": [],
+      "outputs": [
+        {
+          "name": "IMAGE",
+          "type": "IMAGE",
+          "links": [
+            2
+          ]
+        },
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LoadImage"
+      },
+      "widgets_values": [
+        "RMBG_WHITE_FOREGROUND_MASK.png",
+        "image"
+      ]
+    },
+    {
+      "id": 3,
+      "type": "ImageToMask",
+      "title": "灰度图取红通道，不取透明度反相MASK",
+      "pos": [
+        390,
+        620
+      ],
+      "size": [
+        240,
+        90
+      ],
+      "flags": {},
+      "order": 2,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 2
+        }
+      ],
+      "outputs": [
+        {
+          "name": "MASK",
+          "type": "MASK",
+          "links": [
+            3
+          ]
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "ImageToMask"
+      },
+      "widgets_values": [
+        "red"
+      ]
+    },
+    {
+      "id": 4,
+      "type": "LLPersonSubjectClean",
+      "title": "RMBG保真／部位剪枝／头饰清理",
+      "pos": [
+        680,
+        50
+      ],
+      "size": [
+        430,
+        950
+      ],
+      "flags": {},
+      "order": 3,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "image",
+          "type": "IMAGE",
+          "link": 1
+        },
+        {
+          "name": "depth_image",
+          "type": "IMAGE",
+          "link": null
+        },
+        {
+          "name": "keypoints",
+          "type": "POSE_KEYPOINT",
+          "link": null
+        },
+        {
+          "name": "foreground_mask",
+          "type": "MASK",
+          "link": 3
+        },
+        {
+          "name": "protect_mask",
+          "type": "MASK",
+          "link": null
+        },
+        {
+          "name": "exclude_mask",
+          "type": "MASK",
+          "link": null
+        },
+        {
+          "name": "skin_mask",
+          "type": "MASK",
+          "link": null
+        },
+        {
+          "name": "body_part_mask",
+          "type": "MASK",
+          "link": null
+        },
+        {
+          "name": "garment_mask",
+          "type": "MASK",
+          "link": null
+        },
+        {
+          "name": "headwear_mask",
+          "type": "MASK",
+          "link": null
+        }
+      ],
+      "outputs": [
+        {
+          "name": "clean_rgb",
+          "type": "IMAGE",
+          "links": [
+            4
+          ]
+        },
+        {
+          "name": "rgba",
+          "type": "IMAGE",
+          "links": []
+        },
+        {
+          "name": "clean_depth",
+          "type": "IMAGE",
+          "links": []
+        },
+        {
+          "name": "keep_mask",
+          "type": "MASK",
+          "links": []
+        },
+        {
+          "name": "stage_preview",
+          "type": "IMAGE",
+          "links": [
+            5
+          ]
+        },
+        {
+          "name": "skin_removed_mask",
+          "type": "MASK",
+          "links": []
+        },
+        {
+          "name": "report",
+          "type": "STRING",
+          "links": []
+        }
+      ],
+      "properties": {
+        "Node name for S&R": "LLPersonSubjectClean"
+      },
+      "widgets_values": [
+        "external_mask",
+        "sam2.1_hiera_tiny.pt",
+        "auto",
+        "body_trim",
+        0,
+        0.3,
+        1024,
+        0.7,
+        0.6,
+        16,
+        1.0,
+        false,
+        0.5,
+        10,
+        0.7,
+        1,
+        "black",
+        "stop",
+        true,
+        1.2,
+        true,
+        1.25,
+        "cutout_black",
+        true,
+        "atr_onnx",
+        true,
+        0.1
+      ]
+    },
+    {
+      "id": 5,
+      "type": "SaveImage",
+      "title": "净化RGB",
+      "pos": [
+        1190,
+        50
+      ],
+      "size": [
+        340,
+        400
+      ],
+      "flags": {},
+      "order": 4,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 4
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "SaveImage"
+      },
+      "widgets_values": [
+        "LL_RMBG_Pruned"
+      ]
+    },
+    {
+      "id": 6,
+      "type": "PreviewImage",
+      "title": "三阶段对比",
+      "pos": [
+        1190,
+        520
+      ],
+      "size": [
+        600,
+        450
+      ],
+      "flags": {},
+      "order": 5,
+      "mode": 0,
+      "inputs": [
+        {
+          "name": "images",
+          "type": "IMAGE",
+          "link": 5
+        }
+      ],
+      "outputs": [],
+      "properties": {
+        "Node name for S&R": "PreviewImage"
+      },
+      "widgets_values": []
+    }
+  ],
+  "links": [
+    [
+      1,
+      1,
+      0,
+      4,
+      0,
+      "IMAGE"
+    ],
+    [
+      2,
+      2,
+      0,
+      3,
+      0,
+      "IMAGE"
+    ],
+    [
+      3,
+      3,
+      0,
+      4,
+      3,
+      "MASK"
+    ],
+    [
+      4,
+      4,
+      0,
+      5,
+      0,
+      "IMAGE"
+    ],
+    [
+      5,
+      4,
+      4,
+      6,
+      0,
+      "IMAGE"
+    ]
+  ],
+  "groups": [],
+  "config": {},
+  "extra": {},
+  "version": 0.4
+}

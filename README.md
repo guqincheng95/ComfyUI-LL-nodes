@@ -1,15 +1,17 @@
 # comfyui-LL-nodes · LL 个人节点库
 
-**v0.6.2** · 一个目录安装 · 一次更新全部节点 · 中文分类与搜索
+**v0.7.0** · 一个目录安装 · 一次更新全部节点 · 中文分类与搜索
 
 | ComfyUI 分类 | 节点 | 功能 |
 |---|---|---|
 | LL 节点库 / 图像工具 / 尺寸与比例 | LL 比例预设 | 6 种比例、3 档尺寸、方向与自定义宽高；含 2:3 |
 | LL 节点库 / 图像工具 / 人物轮廓 | LL 人物轮廓修剪 | 结合原图前景与骨架裁掉头饰、裙摆等外扩深度；支持批量和对比预览 |
-| LL 节点库 / 图像工具 / 人物轮廓 | LL 人物主体提取 | 原始RGB人物语义引导SAM2，深度边界提炼，RGB/深度同MASK输出，可开关肤色净化 |
+| LL 节点库 / 图像工具 / 人物轮廓 | LL 人物主体提取 | 原始RGB／RMBG保真，深度细化，可选部位语义去裙尾／头饰，同MASK输出RGB／深度 |
 | LL 节点库 / 图像后期 / 基础调色 | LL 后期修图 | 原图对齐、参考仿色；曝光／色温／色调折叠面板，19 项彩色滑块及数值微调 |
 
-本版修复脚掌／鞋与掌心过度裁切，给新旧轮廓节点增加独立脚掌／手掌保护和范围倍率，默认开启；完整接线、肤色开关、场景组合和排错已整理进[使用指南](docs/SUBJECT_CLEAN.md)。已有依赖和模型继续使用。
+本版新增RMBG原抠像保真、已合成黑／白底输入、可选部位语义剪枝与头饰清理；设置与一次配置见[SUBJECT_PRUNING.md](docs/SUBJECT_PRUNING.md)。本地ATR需额外约110MB ONNX和CPU运行时，权重限研究／评估；已获授权的人体部位MASK可从external_masks接入，不需要该模型。语义默认关闭，不自动下载或修改Torch/CUDA。
+
+独立手脚保护及完整功能见[SUBJECT_CLEAN.md](docs/SUBJECT_CLEAN.md)。
 
 保留v0.6.1后期折叠／滑块布局修复，记录见[PHOTO_UI_LAYOUT.md](docs/PHOTO_UI_LAYOUT.md)。
 
@@ -36,11 +38,11 @@ git clone https://github.com/guqincheng95/ComfyUI-LL-nodes.git custom_nodes/comf
 
 ## 从两个独立插件迁移（只需一次）
 
-停止 ComfyUI 后，把 `comfyui-LL-nodes-v0.6.2.zip` 上传至 `custom_nodes`：
+停止 ComfyUI 后，把 `comfyui-LL-nodes-v0.7.0.zip` 上传至 `custom_nodes`：
 
 ```bash
 cd /root/autodl-tmp/AI_Workspace/ComfyUI/custom_nodes
-python -m zipfile -e comfyui-LL-nodes-v0.6.2.zip .
+python -m zipfile -e comfyui-LL-nodes-v0.7.0.zip .
 python comfyui-LL-nodes/scripts/migrate_legacy.py --apply
 ```
 

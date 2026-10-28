@@ -295,7 +295,7 @@
   },
   "LLPersonSubjectClean": {
     "display_name": "LL 人物主体提取·深度·肤色净化 · Subject Clean",
-    "description": "从原始RGB重新提取人物，结合局部深度细化边界；同MASK输出RGB和深度。肤色增强默认关闭。SAM2模式需本地模型与骨架或保留提示。",
+    "description": "人物提取／RMBG前景保真剪枝，同MASK输出RGB和深度；可选部位语义去外扩衣料及头饰，独立模型或外部部位MASK。肤色默认关。",
     "inputs": {
       "image": {
         "name": "原始图像"
@@ -404,6 +404,40 @@
       },
       "hand_scale": {
         "name": "手掌保护范围倍率"
+      },
+      "input_image_mode": {
+        "name": "输入图像类型",
+        "options": [
+          "原始RGB／RGBA",
+          "已抠黑底图（RMBG）",
+          "已抠白底图"
+        ]
+      },
+      "preserve_foreground": {
+        "name": "保留原抠像细节"
+      },
+      "semantic_pruning": {
+        "name": "部位语义剪枝",
+        "options": [
+          "关闭",
+          "本地ATR人体部位模型",
+          "外部部位MASK"
+        ]
+      },
+      "remove_headwear": {
+        "name": "清理头饰"
+      },
+      "garment_margin": {
+        "name": "贴身衣料保留量"
+      },
+      "body_part_mask": {
+        "name": "身体部位保留MASK"
+      },
+      "garment_mask": {
+        "name": "可剪衣料MASK"
+      },
+      "headwear_mask": {
+        "name": "头饰MASK"
       }
     },
     "outputs": {

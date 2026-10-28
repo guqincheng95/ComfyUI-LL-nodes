@@ -5,6 +5,7 @@ from .prompts import LIMBS
 from .refinement import refine_subject, skin_cleanup
 from ..contour.geometry import render_person, observed_width
 from ..contour.extremities import extremity_regions, extremity_support, extremity_summary
+from .pruning import feather_new_cuts
 
 
 def resize(array,size,nearest=False):
@@ -37,17 +38,26 @@ def limb_regions(parsed,shape,subject):
 def clean_frame(rgb,initial,parsed,positive,negative,*,depth=None,protect=None,exclude=None,skin_hint=None,
                 mode='person',edge_strength=.7,depth_weight=.65,edge_band=12,trim_scale=1.,
                 skin_enabled=False,skin_strength=.5,skin_band=8,skin_protection=.7,feather=1,
-                foot_protection=True,foot_scale=1.2,hand_protection=True,hand_scale=1.15):
+                foot_protection=True,foot_scale=1.2,hand_protection=True,hand_scale=1.15,
+                preserve_matte=False,part_protect=None):
     initial=np.clip(initial,0,1)
     parts=extremity_regions(parsed,rgb.shape[1],rgb.shape[0],foreground=initial,
         foot_protection=foot_protection,foot_scale=foot_scale,hand_protection=hand_protection,hand_scale=hand_scale)
     automatic=extremity_support(parts,initial.shape)
+    if part_protect is not None:automatic=np.maximum(automatic,part_protect)
     effective_protect=automatic if protect is None else np.maximum(automatic,protect)
     refined,detail=refine_subject(rgb,initial,positive,negative,depth,edge_strength,depth_weight,edge_band,effective_protect,exclude)
+    if preserve_matte:
+        if not detail.get('depth_active'):
+            refined=initial.copy();detail['refinement']='前景保真：无有效深度时不重复进行RGB抠像'
+        else:
+            # Keep the incoming subpixel alpha instead of thresholding it away.
+            deleted=(initial>.5)&(refined<.5)
+            refined=initial.copy();refined[deleted]=0
     # Keep observed hands/feet from being lost at any later stage. Explicit
     # exclusion still has final priority; no missing foreground is fabricated.
     refined=np.maximum(refined,automatic)
-    if exclude is not None:refined*=1-exclude
+    if exclude is not None:refined[exclude>=1]=0
     trimmed=refined.copy();trim_reason='完整人物模式'
     if mode=='body_trim':
         geometry,reason=render_person(parsed,rgb.shape[1],rgb.shape[0],foreground=refined,
@@ -63,19 +73,19 @@ def clean_frame(rgb,initial,parsed,positive,negative,*,depth=None,protect=None,e
                                      skin_strength,skin_band,skin_protection)
     removed_by_skin=(before_skin>.5)&(trimmed<.5)
     trimmed=np.maximum(trimmed,effective_protect)
-    if exclude is not None:trimmed*=1-exclude
+    if exclude is not None:trimmed[exclude>=1]=0
     # Preserve every component associated with a valid body seed; not just the largest component.
     labels,_=ndi.label(trimmed>.5)
     ids=np.unique(labels[positive[:,1].astype(int),positive[:,0].astype(int)]) if len(positive) else np.unique(labels)
     ids=np.union1d(ids,np.unique(labels[effective_protect>.5]))
-    if len(ids[ids>0]):trimmed*=np.isin(labels,ids[ids>0])
+    if not preserve_matte and len(ids[ids>0]):trimmed*=np.isin(labels,ids[ids>0])
     if feather:
-        smooth=ndi.gaussian_filter(trimmed,float(feather))
-        trimmed=np.minimum(trimmed,smooth)
+        trimmed=feather_new_cuts(initial,trimmed,feather)
+    trimmed=np.maximum(trimmed,effective_protect)
     if exclude is not None:trimmed*=1-exclude
-    trimmed=np.maximum(trimmed,effective_protect*(1-exclude if exclude is not None else 1))
     stages=np.stack([initial,refined,trimmed],axis=0)
     detail.update(skin_info);detail['trim']=trim_reason
+    detail['matte_preservation']=bool(preserve_matte)
     detail['extremities']={'feet_enabled':foot_protection,'foot_scale':foot_scale,
         'hands_enabled':hand_protection,'hand_scale':hand_scale,'parts':extremity_summary(parts),
         'note':'保护初始分割已存在的手脚；未提供有效骨架时跳过，初始漏分区域需保留提示或修正分割'}
