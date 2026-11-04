@@ -1,4 +1,104 @@
 {
+  "LLImageAspectScale": {
+    "display_name": "LL 图像比例控制 · Image Aspect Scale",
+    "description": "图像和遮罩同步调整尺寸，支持裁切、补边、拉伸与比例反转。",
+    "inputs": {
+      "aspect_ratio": {
+        "name": "画面比例",
+        "options": {
+          "original": "原图比例",
+          "custom": "自定义比例"
+        }
+      },
+      "fit": {
+        "name": "适配方式",
+        "options": {
+          "crop": "居中裁切",
+          "letterbox": "等比补边",
+          "fill": "拉伸填满"
+        }
+      },
+      "scale_to_side": {
+        "name": "尺寸依据",
+        "options": {
+          "longest": "最长边",
+          "shortest": "最短边",
+          "width": "宽度",
+          "height": "高度",
+          "total_kpixels": "总像素（千像素）",
+          "none": "保留原长边"
+        }
+      },
+      "rounding": {
+        "name": "取整方向",
+        "options": {
+          "nearest": "就近",
+          "up": "向上",
+          "down": "向下"
+        }
+      },
+      "mask_method": {
+        "name": "遮罩插值",
+        "options": {
+          "same": "与图像相同",
+          "nearest": "最近邻",
+          "bilinear": "双线性"
+        }
+      },
+      "method": {
+        "name": "图像插值",
+        "options": {
+          "lanczos": "Lanczos",
+          "bicubic": "双三次",
+          "hamming": "Hamming",
+          "bilinear": "双线性",
+          "box": "Box",
+          "nearest": "最近邻"
+        }
+      },
+      "proportional_width": {
+        "name": "自定义比例宽"
+      },
+      "proportional_height": {
+        "name": "自定义比例高"
+      },
+      "round_to_multiple": {
+        "name": "像素倍数"
+      },
+      "scale_to_length": {
+        "name": "目标值"
+      },
+      "background_color": {
+        "name": "补边颜色"
+      },
+      "flip_ratio": {
+        "name": "反转宽高比例"
+      },
+      "image": {
+        "name": "图像"
+      },
+      "mask": {
+        "name": "遮罩"
+      }
+    },
+    "outputs": {
+      "image": {
+        "name": "图像"
+      },
+      "mask": {
+        "name": "遮罩"
+      },
+      "original_size": {
+        "name": "原始尺寸"
+      },
+      "width": {
+        "name": "输出宽度"
+      },
+      "height": {
+        "name": "输出高度"
+      }
+    }
+  },
   "ResolutionPreset": {
     "display_name": "LL 比例预设 · Resolution Preset",
     "description": "按比例、档位和方向输出宽高。自定义宽高仅在自定义模式生效；Krea 2 可使用 Z-Image 尺寸预设。",

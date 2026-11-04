@@ -1,6 +1,9 @@
 # 当前状态 · 交接入口
 
-- 日期：2026-10-28（北京时间）；版本v0.7.0。仓库guqincheng95/ComfyUI-LL-nodes。
+- 日期：2026-11-04（北京时间）；版本 v0.8.0。仓库 guqincheng95/ComfyUI-LL-nodes。
+- 本轮新增 LL 图像比例控制；功能、中文设置与示例见 [IMAGE_ASPECT_SCALE.md](IMAGE_ASPECT_SCALE.md)。原比例预设继续使用原参数。110 项 Python 与前端回归通过。
+
+以下为 v0.7.0 历史记录：
 - 本轮：RMBG保真门控保留原生软边，新增已合成黑／白底输入，避免重复Alpha；只柔化新裁切边界。
 - 可选atr_onnx／external_masks部位语义，剪外扩衣料／头饰并保留身体部位，缺整套骨架也可执行；语义默认off，仅更新不会自动去头饰。
 - 本地约110MB ONNX＋CPU onnxruntime；执行时不联网、不改Torch/CUDA。权重限NVIDIA研究／评估，不随ZIP分发；商业流程接已获授权外部部位MASK。
@@ -25,4 +28,4 @@
 - 后续优先：拿用户原始RGB+深度+POSE回归；宽裙/头饰/交叉肢体等端到端难例仍需补充。近肤色衣物、同深度家具、缺关键点和强遮挡仍可能误差，不能宣称所有图片自动抠净。
 - 更新整库后需新建“LL人物主体提取”使用增强功能。未接深度时clean_depth是全黑占位，不应接深度条件。
 
-固定读取顺序：本文件 → 对应模块文档（当前RMBG／去饰品读SUBJECT_PRUNING.md，总功能读SUBJECT_CLEAN.md，后期UI读PHOTO_UI_LAYOUT.md）→ 本轮DEVELOPMENT_LOG；按需读SUBJECT_SETUP.md、TEST_REPORT.md。无需通读history。v0.5状态和验证归档在history/library-v0.5.0/。
+固定读取顺序：本文件 → 对应模块文档（比例控制读 IMAGE_ASPECT_SCALE.md；RMBG／去饰品读SUBJECT_PRUNING.md，总功能读SUBJECT_CLEAN.md，后期UI读PHOTO_UI_LAYOUT.md）→ 本轮DEVELOPMENT_LOG；按需读SUBJECT_SETUP.md、TEST_REPORT.md。无需通读history。v0.5状态和验证归档在history/library-v0.5.0/。
