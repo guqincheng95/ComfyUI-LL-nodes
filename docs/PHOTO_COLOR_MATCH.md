@@ -1,5 +1,7 @@
 # 后期修图：自动对齐、参考仿色与折叠调色
 
+换装后需要把脸部与身体的肤色分开匹配时，请使用 [LL 人像色彩对齐](PORTRAIT_COLOR_ALIGN.md)。
+
 更新整个 `comfyui-LL-nodes` 后重启 ComfyUI，再在浏览器 Ctrl+F5。节点仍在“LL 节点库 / 图像后期 / 基础调色”，可搜索“LL 后期修图”“自动仿色”“曝光”“白平衡”或 `AIVisualPhotoFinish`。
 
 ## 接线与模式

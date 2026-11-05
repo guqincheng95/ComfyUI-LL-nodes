@@ -22,16 +22,25 @@ function makeBooleanControl(original,change){
 }
 
 export function enhanceNode(node) {
- if(node.comfyClass !== 'AIVisualPhotoFinish' || node.__photoFinishUI) return;
+ if(!['AIVisualPhotoFinish','LLPortraitColorAlign'].includes(node.comfyClass) || node.__photoFinishUI) return;
  if(typeof node.addDOMWidget !== 'function') return;
  const controls=new Map(), groups=new Map(), records=[];
  const isOpen=id=>Boolean(node.properties?.llPhotoSections?.[id]);
+ const nodeWidth=()=>[node.size?.[0],node.width].find(w=>Number.isFinite(w)&&w>0)??360;
+ function syncWidth(widget){
+  // ComfyUI's DOM overlay prefers widget.width over the node width when set.
+  // A fixed or stale widget width otherwise wins over CSS width:100%.
+  const width=nodeWidth();
+  if(widget.width!==width)widget.width=width;
+ }
  function resize(){
-  node.setSize?.([Math.max(node.size?.[0]||360,280),node.computeSize()[1]]);
+  node.setSize?.([nodeWidth(),node.computeSize()[1]]);
+  for(const {widget} of records)syncWidth(widget);
   node.setDirtyCanvas?.(true,true);
  }
  function refresh(){
   for(const {widget,element,section,header,control,original} of records){
+   syncWidth(widget);
    const open=isOpen(section.id);
    const visible=header || open;
    widget.hidden=!visible;
@@ -84,21 +93,24 @@ export function enhanceNode(node) {
    element.append(control.element);
    const height=()=> (header?30:0) + (isOpen(section.id)?(name==='preserve_luminosity'?32:62):0);
    node.widgets.splice(index,1);
-   const widget=node.addDOMWidget(name,'photo_finish_number',element,{
+   let widget;
+   widget=node.addDOMWidget(name,'photo_finish_number',element,{
     // ComfyUI subtracts 2 * margin from the allocated DOM height. Our height
     // already describes the whole content, so the default margin of 10 leaves too little space.
     ...original.options,serialize:true,hideOnZoom:true,margin:0,
     getValue:()=>original.value,
     setValue:value=>{control.setValue(value);original.value=name==='preserve_luminosity'?Boolean(value):control.value;refresh();},
     getMinHeight:height,getMaxHeight:height,
+    afterResize:()=>{if(widget)syncWidth(widget);},
     onDraw:()=>{
+     if(widget)syncWidth(widget);
      control.setValue(original.value);
      control.setDisabled(Boolean(node.inputs?.some(input=>input.widget?.name===name && input.link!=null)));
      if(header)refresh();
     },
    });
    // Cancel LiteGraph's 4px row gap for fully hidden controls on older hosts.
-   widget.computeSize=width=>[width??node.size?.[0]??360,widget.hidden?-4:height()];
+   widget.computeSize=width=>[width??nodeWidth(),widget.hidden?-4:height()];
    widget.serializeValue=()=>name==='preserve_luminosity'?Boolean(original.value):Number(original.value);
    node.widgets.splice(node.widgets.indexOf(widget),1);node.widgets.splice(index,0,widget);
    records.push({widget,element,section,header,control,original});

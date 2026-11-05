@@ -163,6 +163,141 @@
       }
     }
   },
+  "LLPortraitColorAlign": {
+    "display_name": "LL 人像色彩对齐 · Portrait Color Align",
+    "description": "先用中性色校正白平衡，再匹配脸部和可见身体皮肤，最后手动微调。",
+    "inputs": {
+      "image": {
+        "name": "输入图像",
+        "tooltip": "连接加载图像或 VAE 解码后的图像。"
+      },
+      "exposure": {
+        "name": "曝光（EV）",
+        "tooltip": "曝光补偿，以 EV 为单位。正值提亮，负值压暗。"
+      },
+      "contrast": {
+        "name": "对比度",
+        "tooltip": "对比度"
+      },
+      "highlights": {
+        "name": "高光",
+        "tooltip": "高光"
+      },
+      "shadows": {
+        "name": "阴影",
+        "tooltip": "阴影"
+      },
+      "whites": {
+        "name": "白色",
+        "tooltip": "白色"
+      },
+      "blacks": {
+        "name": "黑色",
+        "tooltip": "黑色"
+      },
+      "temperature": {
+        "name": "色温（冷 ← → 暖）",
+        "tooltip": "负值偏冷、正值偏暖；相对调整，不是 Kelvin 色温。"
+      },
+      "tint": {
+        "name": "色调（绿 ← → 洋红）",
+        "tooltip": "负值偏绿，正值偏洋红。"
+      },
+      "vibrance": {
+        "name": "自然饱和度",
+        "tooltip": "正值优先增强低饱和色彩；不包含肤色识别。"
+      },
+      "saturation": {
+        "name": "饱和度",
+        "tooltip": "饱和度"
+      },
+      "preserve_luminosity": {
+        "name": "保持明度",
+        "tooltip": "保持色彩平衡前的线性亮度；不撤销曝光和光影调整。"
+      },
+      "shadow_cyan_red": {
+        "name": "阴影·青 ← → 红",
+        "tooltip": "负值偏青、正值偏红；仅对相应明度区域按平滑权重调整。"
+      },
+      "shadow_magenta_green": {
+        "name": "阴影·洋红 ← → 绿",
+        "tooltip": "负值偏洋红、正值偏绿；仅对相应明度区域按平滑权重调整。"
+      },
+      "shadow_yellow_blue": {
+        "name": "阴影·黄 ← → 蓝",
+        "tooltip": "负值偏黄、正值偏蓝；仅对相应明度区域按平滑权重调整。"
+      },
+      "midtone_cyan_red": {
+        "name": "中间调·青 ← → 红",
+        "tooltip": "负值偏青、正值偏红；仅对相应明度区域按平滑权重调整。"
+      },
+      "midtone_magenta_green": {
+        "name": "中间调·洋红 ← → 绿",
+        "tooltip": "负值偏洋红、正值偏绿；仅对相应明度区域按平滑权重调整。"
+      },
+      "midtone_yellow_blue": {
+        "name": "中间调·黄 ← → 蓝",
+        "tooltip": "负值偏黄、正值偏蓝；仅对相应明度区域按平滑权重调整。"
+      },
+      "highlight_cyan_red": {
+        "name": "高光·青 ← → 红",
+        "tooltip": "负值偏青、正值偏红；仅对相应明度区域按平滑权重调整。"
+      },
+      "highlight_magenta_green": {
+        "name": "高光·洋红 ← → 绿",
+        "tooltip": "负值偏洋红、正值偏绿；仅对相应明度区域按平滑权重调整。"
+      },
+      "highlight_yellow_blue": {
+        "name": "高光·黄 ← → 蓝",
+        "tooltip": "负值偏黄、正值偏蓝；仅对相应明度区域按平滑权重调整。"
+      },
+      "reference_image": {
+        "name": "参考图"
+      },
+      "skin_source": {
+        "name": "肤色分区来源",
+        "options": {
+          "external_masks": "外部遮罩",
+          "atr_onnx": "本地人体分割 ATR",
+          "white_balance_only": "仅白平衡"
+        }
+      },
+      "white_balance_strength": {
+        "name": "白平衡强度"
+      },
+      "face_strength": {
+        "name": "脸部肤色强度"
+      },
+      "body_strength": {
+        "name": "身体肤色强度"
+      },
+      "skin_luminance": {
+        "name": "肤色明暗匹配"
+      },
+      "neutral_mask": {
+        "name": "待调图中性取样"
+      },
+      "face_mask": {
+        "name": "待调图脸部皮肤"
+      },
+      "body_mask": {
+        "name": "待调图身体皮肤"
+      },
+      "reference_neutral_mask": {
+        "name": "参考图中性取样"
+      },
+      "reference_face_mask": {
+        "name": "参考图脸部皮肤"
+      },
+      "reference_body_mask": {
+        "name": "参考图身体皮肤"
+      }
+    },
+    "outputs": {
+      "image": "修图结果",
+      "report": "自动校正报告"
+    }
+  },
   "AIVisualPhotoFinish": {
     "display_name": "LL 后期修图·自动仿色·曝光·白平衡 · Photo Finish",
     "description": "原图对齐修正放大或二次采样色差；参考仿色匹配明暗/色彩统计，之后可使用曝光、色温、色调三个折叠区微调。",

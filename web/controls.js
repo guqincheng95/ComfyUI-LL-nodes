@@ -59,13 +59,13 @@ export function makeControl(name, initial, onChange, doc = document) {
  const number = doc.createElement('input'); number.type = 'number';
  number.min = -limit; number.max = limit; number.step = fine;
  number.setAttribute('aria-label', `${LABELS[name]}精确数值`);
- number.style.cssText = 'box-sizing:border-box;flex:0 0 66px;width:66px;min-width:0;max-width:66px;height:24px;min-height:0;margin:0;padding:0 2px;background:#191919;color:#fff;border:1px solid #666;border-radius:4px;text-align:center;font:inherit;appearance:textfield;';
+ number.style.cssText = 'box-sizing:border-box;flex:0 1 66px;width:32%;min-width:0;max-width:min(66px,32%);height:24px;min-height:0;margin:0;padding:0 2px;background:#191919;color:#fff;border:1px solid #666;border-radius:4px;text-align:center;font:inherit;appearance:textfield;';
  const minus = doc.createElement('button'), plus = doc.createElement('button');
  for (const [button, text, sign] of [[minus,'◀',-1],[plus,'▶',1]]) {
   button.type='button'; button.textContent=text;
   button.title=`${sign < 0 ? '减少' : '增加'} ${fine}`;
   button.setAttribute('aria-label', `${LABELS[name]}${button.title}`);
-  button.style.cssText='box-sizing:border-box;flex:0 0 25px;width:25px;min-width:0;max-width:25px;height:24px;min-height:0;margin:0;padding:0;border:1px solid #666;border-radius:4px;background:#383838;color:#eee;font:inherit;line-height:22px;cursor:pointer;';
+  button.style.cssText='box-sizing:border-box;flex:0 1 25px;width:14%;min-width:0;max-width:min(25px,14%);height:24px;min-height:0;margin:0;padding:0;border:1px solid #666;border-radius:4px;background:#383838;color:#eee;font:inherit;line-height:22px;cursor:pointer;';
   button.addEventListener('click', () => commit(Number((value+sign*fine).toFixed(6))));
  }
  row.append(label,minus,number,plus);

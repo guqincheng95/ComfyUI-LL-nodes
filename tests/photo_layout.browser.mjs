@@ -30,11 +30,11 @@ try {
     ...['auto_mode','match_strength','match_luminance','match_color'].map((name,i)=>({name,value:i?1:'off',options:{}})),
    ],graph:{beforeChange(){},afterChange(){}},
    computeSize(){return [280,54+this.widgets.reduce((sum,w)=>sum+(w.computeSize?.(this.size[0])[1]??24)+4,0)];},
-   setSize(size){this.size=size;this.layout?.();},
+   setSize(size){this.size=size;for(const w of this.widgets)w.options?.afterResize?.();this.layout?.();},
    setDirtyCanvas(){this.layout?.();},
    addDOMWidget(name,type,element,options){
     const host=document.createElement('div');host.className='dom-widget';host.append(element);nodeElement.append(host);
-    const w={name,type,element,host,options,get value(){return options.getValue();},set value(v){options.setValue(v);}};
+    const w={name,type,element,host,options,width:150,get value(){return options.getValue();},set value(v){options.setValue(v);}};
     this.widgets.push(w);return w;
    },
    layout(){
@@ -46,7 +46,7 @@ try {
       // Canvas DOMWidgets.vue: position += margin; size -= margin * 2.
       const margin=w.options.margin??10;
       const visible=!w.hidden && w.type!=='hidden';
-      Object.assign(w.host.style,{display:visible?'block':'none',left:margin+'px',top:(y+margin)+'px',width:(this.size[0]-2*margin)+'px',height:Math.max(0,h-2*margin)+'px'});
+      Object.assign(w.host.style,{display:visible?'block':'none',left:margin+'px',top:(y+margin)+'px',width:((w.width??this.size[0])-2*margin)+'px',height:Math.max(0,h-2*margin)+'px'});
      }
      y+=h;
     }
@@ -59,6 +59,7 @@ try {
    for(const r of n.__photoFinishUI.records){
     if(r.widget.hidden)continue;
     const host=r.widget.host.getBoundingClientRect();
+    if(Math.abs(host.width-frame.width)>1)failures.push({name:r.original.name,hostWidth:host.width,nodeWidth:frame.width});
     const items=[r.element,...r.element.querySelectorAll('button,input')];
     for(const element of items){
      if(!element.getClientRects().length)continue;
@@ -76,7 +77,7 @@ try {
  const initialValues=await page.evaluate(()=>n.widgets.map(w=>w.value));
  assert.deepEqual(await page.evaluate(()=>layoutErrors()),[],'collapsed headers must fit their allocated slots');
  let layouts=0;
- for(const width of [280,360,640]){
+ for(const width of [210,280,360,640]){
   for(const scale of [.5,1,1.75]){
    for(const open of [false,true]){
     await page.evaluate(({width,scale,open})=>{
@@ -90,7 +91,8 @@ try {
     if(open){
      const slider=page.getByRole('slider',{name:'对比度滑块',exact:true});
      const box=await slider.boundingBox();
-     await page.mouse.click(box.x+box.width*.75,box.y+box.height*.5);
+     // The 16px thumb center travels between the inset endpoints.
+     await page.mouse.click(box.x+box.width*.75-4*scale,box.y+box.height*.5);
      assert.equal(await page.getByRole('spinbutton',{name:'对比度精确数值',exact:true}).inputValue(),'50','pointer must track the scaled slider');
      await page.evaluate(()=>n.widgets.find(w=>w.name==='contrast').value=0);
     }
@@ -99,6 +101,12 @@ try {
    }
   }
  }
+ // Simulate a live width drag on an already-open node; it must not need a toggle.
+ await page.evaluate(()=>{n.setSize([480,n.size[1]]);});
+ assert.deepEqual(await page.evaluate(()=>layoutErrors()),[],'live width resize must fill the node');
+ // Some canvas paths update the node width before notifying DOM overlays.
+ await page.evaluate(()=>{n.size[0]=310;for(const w of n.widgets)w.options?.onDraw?.();n.layout();});
+ assert.deepEqual(await page.evaluate(()=>layoutErrors()),[],'canvas draw must refresh stale widget widths');
  // Do not enlarge a manually narrowed node each time a section opens/closes.
  await page.evaluate(()=>{n.size[0]=280;n.__photoFinishUI.resize();});
  assert.equal(await page.evaluate(()=>n.size[0]),280);
@@ -117,7 +125,7 @@ try {
  await page.addStyleTag({content:'button,input{min-width:100px;min-height:36px;padding:8px;margin:4px}'});
  assert.deepEqual(await page.evaluate(()=>layoutErrors()),[],'theme sizing must not override control dimensions');
  assert.deepEqual(errors,[]);
- console.log(JSON.stringify({browser:browser.version(),layouts,checks:'allocated DOM bounds; whole node bounds; no clipped controls; narrow/normal/wide; canvas zoom and pointer tracking; collapse; exact buttons; hidden compatibility; save/reload; theme sizing',errors}));
+ console.log(JSON.stringify({browser:browser.version(),layouts,checks:'allocated DOM bounds; full node width with stale 150px widget size; live resize; no clipped controls; narrow/normal/wide; canvas zoom and pointer tracking; collapse; exact buttons; hidden compatibility; save/reload; theme sizing',errors}));
 } finally {await browser.close();}
 
 // Check the ratio node color controls in the same browser regression job.

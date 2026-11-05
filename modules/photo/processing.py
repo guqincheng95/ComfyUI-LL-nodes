@@ -10,6 +10,8 @@ import torch
 from .parameters import PARAMETERS
 
 WEIGHTS = (0.2126, 0.7152, 0.0722)
+TEMPERATURE_GAIN = 0.7
+TINT_GAIN = 0.35
 
 
 def validate_parameters(values):
@@ -85,7 +87,9 @@ def process_rgb(rgb, p, preserve_luminosity):
     rgb = srgb_to_linear(rgb)
     if p['temperature'] or p['tint']:
         temp, tint = p['temperature'] / 100, p['tint'] / 100
-        gains = rgb.new_tensor([2 ** (0.7 * temp + 0.35 * tint), 2 ** (-0.35 * tint), 2 ** (-0.7 * temp + 0.35 * tint)])
+        gains = rgb.new_tensor([2 ** (TEMPERATURE_GAIN * temp + TINT_GAIN * tint),
+                                2 ** (-TINT_GAIN * tint),
+                                2 ** (-TEMPERATURE_GAIN * temp + TINT_GAIN * tint)])
         gains = gains / (gains * rgb.new_tensor(WEIGHTS)).sum()
         rgb = rgb * gains
     if p['exposure']:
