@@ -1,7 +1,8 @@
 # 当前状态 · 交接入口
 
-- 日期：2026-11-04（北京时间）；版本 v0.8.0。仓库 guqincheng95/ComfyUI-LL-nodes。
-- 本轮新增 LL 图像比例控制；功能、中文设置与示例见 [IMAGE_ASPECT_SCALE.md](IMAGE_ASPECT_SCALE.md)。原比例预设继续使用原参数。110 项 Python 与前端回归通过。
+- 日期：2026-11-05（北京时间）；版本 v0.8.1。仓库 guqincheng95/ComfyUI-LL-nodes。
+- 补边颜色新增吸管和调色盘，保留旧工作流颜色参数。
+- v0.8.0 新增 LL 图像比例控制；功能、中文设置与示例见 [IMAGE_ASPECT_SCALE.md](IMAGE_ASPECT_SCALE.md)。原比例预设继续使用原参数。110 项 Python 与前端回归通过。
 
 以下为 v0.7.0 历史记录：
 - 本轮：RMBG保真门控保留原生软边，新增已合成黑／白底输入，避免重复Alpha；只柔化新裁切边界。

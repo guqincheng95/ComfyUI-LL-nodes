@@ -119,3 +119,6 @@ try {
  assert.deepEqual(errors,[]);
  console.log(JSON.stringify({browser:browser.version(),layouts,checks:'allocated DOM bounds; whole node bounds; no clipped controls; narrow/normal/wide; canvas zoom and pointer tracking; collapse; exact buttons; hidden compatibility; save/reload; theme sizing',errors}));
 } finally {await browser.close();}
+
+// Check the ratio node color controls in the same browser regression job.
+await import("./aspect_color.browser.mjs");
