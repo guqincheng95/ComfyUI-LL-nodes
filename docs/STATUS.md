@@ -1,6 +1,7 @@
 # 当前状态 · 交接入口
 
-- 日期：2026-11-05（北京时间）；版本 v0.9.0。仓库 guqincheng95/ComfyUI-LL-nodes。
+- 日期：2026-11-06（北京时间）；版本 v0.10.0。仓库 guqincheng95/ComfyUI-LL-nodes。
+- 两个调色节点支持手动滑块实时预览；旧后期节点归入兼容分类。详见 [PHOTO_LIVE_PREVIEW.md](PHOTO_LIVE_PREVIEW.md)。
 - 新增「LL 人像色彩对齐」：中性取样校白平衡，独立匹配脸部与可见身体肤色，再进行手动调整；接线见 [PORTRAIT_COLOR_ALIGN.md](PORTRAIT_COLOR_ALIGN.md)。
 - 调色折叠条和滑块跟随节点宽度，窄节点控件可收缩；见 [PHOTO_UI_LAYOUT.md](PHOTO_UI_LAYOUT.md)。
 - 后期「参考仿色」改用低饱和中亮区域估计色偏，减少换装引起的肤色偏移；旧行为可选「整图调色板」。见 [PHOTO_COLOR_MATCH.md](PHOTO_COLOR_MATCH.md)。

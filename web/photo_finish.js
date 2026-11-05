@@ -1,5 +1,6 @@
 import { app } from '../../scripts/app.js';
 import { LABELS, makeControl } from './controls.js';
+import { installPhotoPreview } from './photo_live_preview.js';
 
 export const SECTIONS = [
  {id:'exposure',label:'曝光',names:['exposure','contrast','highlights','shadows','whites','blacks']},
@@ -25,6 +26,7 @@ export function enhanceNode(node) {
  if(!['AIVisualPhotoFinish','LLPortraitColorAlign'].includes(node.comfyClass) || node.__photoFinishUI) return;
  if(typeof node.addDOMWidget !== 'function') return;
  const controls=new Map(), groups=new Map(), records=[];
+ let preview=null;
  const isOpen=id=>Boolean(node.properties?.llPhotoSections?.[id]);
  const nodeWidth=()=>[node.size?.[0],node.width].find(w=>Number.isFinite(w)&&w>0)??360;
  function syncWidth(widget){
@@ -70,6 +72,7 @@ export function enhanceNode(node) {
     node.graph?.beforeChange?.();original.value=value;
     original.callback?.call(original,value,app.canvas,node);
     node.graph?.afterChange?.();refresh();node.setDirtyCanvas?.(true,true);
+    preview?.poll();
    };
    const control=name==='preserve_luminosity'?makeBooleanControl(original,change):makeControl(name,original.value,change);
    controls.set(name,control);
@@ -99,7 +102,7 @@ export function enhanceNode(node) {
     // already describes the whole content, so the default margin of 10 leaves too little space.
     ...original.options,serialize:true,hideOnZoom:true,margin:0,
     getValue:()=>original.value,
-    setValue:value=>{control.setValue(value);original.value=name==='preserve_luminosity'?Boolean(value):control.value;refresh();},
+    setValue:value=>{control.setValue(value);original.value=name==='preserve_luminosity'?Boolean(value):control.value;refresh();preview?.poll();},
     getMinHeight:height,getMaxHeight:height,
     afterResize:()=>{if(widget)syncWidth(widget);},
     onDraw:()=>{
@@ -116,7 +119,8 @@ export function enhanceNode(node) {
    records.push({widget,element,section,header,control,original});
   }
  }
- node.__photoFinishUI={controls,groups,records,refresh,resize};
+ preview=installPhotoPreview(node,{records,nodeWidth,syncWidth,resize});
+ node.__photoFinishUI={controls,groups,records,refresh,resize,preview};
  refresh();resize();
 }
 app.registerExtension({
@@ -125,5 +129,6 @@ app.registerExtension({
  loadedGraphNode(node){
   enhanceNode(node);
   node.__photoFinishUI?.refresh();node.__photoFinishUI?.resize();
+  node.__photoFinishUI?.preview?.poll();
  },
 });

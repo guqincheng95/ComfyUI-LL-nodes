@@ -1,6 +1,6 @@
 # comfyui-LL-nodes · LL 个人节点库
 
-**v0.9.0** · 一个目录安装 · 一次更新全部节点 · 中文分类与搜索
+**v0.10.0** · 一个目录安装 · 一次更新全部节点 · 中文分类与搜索
 
 | ComfyUI 分类 | 节点 | 功能 |
 |---|---|---|
@@ -8,10 +8,10 @@
 | LL 节点库 / 图像工具 / 尺寸与比例 | LL 图像比例控制 | 可独立计算宽高；图像与遮罩同步裁切、补边、拉伸 |
 | LL 节点库 / 图像工具 / 人物轮廓 | LL 人物轮廓修剪 | 结合原图前景与骨架裁掉头饰、裙摆等外扩深度；支持批量和对比预览 |
 | LL 节点库 / 图像工具 / 人物轮廓 | LL 人物主体提取 | 原始RGB／RMBG保真，深度细化，可选部位语义去裙尾／头饰，同MASK输出RGB／深度 |
-| LL 节点库 / 图像后期 / 基础调色 | LL 后期修图 | 原图对齐、参考仿色；曝光／色温／色调折叠面板，19 项彩色滑块及数值微调 |
-| LL 节点库 / 图像后期 / 基础调色 | LL 人像色彩对齐 | 中性色校白平衡，脸部与可见身体皮肤分区匹配，可继续手动微调 |
+| LL 节点库 / 图像后期 / 基础调色 | LL 人像色彩对齐 | 中性色校白平衡、分区肤色匹配、手动调色实时预览 |
+| LL 节点库 / 图像后期 / 兼容与整图仿色 | LL 后期修图（兼容版） | 原图对齐、整图仿色、手动调色实时预览 |
 
-换装或换背景时，参见 [人像色彩对齐](docs/PORTRAIT_COLOR_ALIGN.md)。
+换装或换背景时，参见 [人像色彩对齐](docs/PORTRAIT_COLOR_ALIGN.md)。预览开关和重复安装清理见 [实时预览](docs/PHOTO_LIVE_PREVIEW.md)。
 
 图像比例控制可不接图像或遮罩，直接按比例、目标尺寸和像素倍数输出宽高。旧比例预设照常使用。用法及示例见 [IMAGE_ASPECT_SCALE.md](docs/IMAGE_ASPECT_SCALE.md)。
 
@@ -44,15 +44,15 @@ git clone https://github.com/guqincheng95/ComfyUI-LL-nodes.git custom_nodes/comf
 
 ## 从两个独立插件迁移（只需一次）
 
-停止 ComfyUI 后，把 `comfyui-LL-nodes-v0.9.0.zip` 上传至 `custom_nodes`：
+停止 ComfyUI 后，把 `comfyui-LL-nodes-v0.10.0.zip` 上传至 `custom_nodes`：
 
 ```bash
 cd /root/autodl-tmp/AI_Workspace/ComfyUI/custom_nodes
-python -m zipfile -e comfyui-LL-nodes-v0.9.0.zip .
+python -m zipfile -e comfyui-LL-nodes-v0.10.0.zip .
 python comfyui-LL-nodes/scripts/migrate_legacy.py --apply
 ```
 
-迁移脚本将已识别的旧 `ComfyUI-ResolutionPreset`、`ComfyUI-PhotoFinish`（含 `-main`）目录移到 ComfyUI 根目录的 `ll-nodes-backups/时间戳/`，不删除旧文件。避免新旧插件同时注册同名节点。其他改过名字的旧目录需要自行移到 `custom_nodes` 外。
+迁移脚本将已识别的旧 `ComfyUI-ResolutionPreset`、`ComfyUI-PhotoFinish`（含 `-main`）及重复的统一节点库目录移到 ComfyUI 根目录的 `ll-nodes-backups/时间戳/`，不删除旧文件。避免新旧插件同时注册同名节点。其他改过名字的旧目录需要自行移到 `custom_nodes` 外。
 
 若过去手工修改过 `presets.py`，自定义内容仍在备份中，可按需合并到新版 `modules/resolution/presets.py`；脚本不会擅自覆盖新版预设。
 

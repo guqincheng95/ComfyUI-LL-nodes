@@ -1,4 +1,7 @@
 from .parameters import PARAMETERS
+from .live_preview import preview_result
+
+PREVIEW_INPUT = ('BOOLEAN', {'default': False, 'tooltip': '启用后先运行一次，再拖手动滑块看首张图；自动匹配或换图后需重新运行。'})
 
 LABELS = {
     'exposure': '曝光 EV', 'contrast': '对比度', 'highlights': '高光',
@@ -32,20 +35,24 @@ class PhotoFinish:
         return {'required': required, 'optional': {
             'reference_image': ('IMAGE', {'tooltip': '接原图或需要仿色的参考图。原图对齐要求同构图；参考仿色允许不同内容、尺寸和画幅。'}),
             **auto_controls,
+            'live_preview': PREVIEW_INPUT,
         }}
 
     RETURN_TYPES = ('IMAGE',)
     RETURN_NAMES = ('image',)
     FUNCTION = 'apply'
-    CATEGORY = 'LL 节点库/图像后期/基础调色'
+    CATEGORY = 'LL 节点库/图像后期/兼容与整图仿色'
     DESCRIPTION = '自动原图对齐／参考仿色后进行手动调色。曝光、色温、色调三个可折叠区域。'
 
     def apply(self, image, preserve_luminosity=True, reference_image=None, auto_mode='off',
-              match_strength=1.0, match_luminance=1.0, match_color=1.0, **values):
+              match_strength=1.0, match_luminance=1.0, match_color=1.0, live_preview=False, **values):
         from .processing import adjust_image
         from .color_match import match_image
         image = match_image(image, reference_image, auto_mode, match_strength, match_luminance, match_color)
-        return (adjust_image(image, preserve_luminosity=preserve_luminosity, **values),)
+        result = (adjust_image(image, preserve_luminosity=preserve_luminosity, **values),)
+        return preview_result(result, live_preview, image, {**values, 'preserve_luminosity': preserve_luminosity},
+                              dict(auto_mode=auto_mode, match_strength=match_strength,
+                                   match_luminance=match_luminance, match_color=match_color))
 
 
 class PortraitColorAlign(PhotoFinish):
@@ -69,16 +76,18 @@ class PortraitColorAlign(PhotoFinish):
                 ('body', '可见身体皮肤 MASK，排除衣物、手套、饰品。不要接整人 MASK。'),
             ):
                 optional[f'{prefix}{region}_mask'] = ('MASK', {'tooltip': tip})
-        return {'required': required, 'optional': optional}
+        return {'required': required, 'optional': {**optional, 'live_preview': PREVIEW_INPUT}}
 
     RETURN_TYPES = ('IMAGE', 'STRING')
     RETURN_NAMES = ('image', 'report')
+    CATEGORY = 'LL 节点库/图像后期/基础调色'
     DESCRIPTION = '中性色对齐白平衡 → 分区匹配脸部和可见身体皮肤 → 手动微调。报告列出实际自动数值与跳过原因。'
 
     def apply(self, image, reference_image, preserve_luminosity=True,
               skin_source='external_masks', white_balance_strength=.85, face_strength=.8,
               body_strength=.8, skin_luminance=0., neutral_mask=None, face_mask=None, body_mask=None,
-              reference_neutral_mask=None, reference_face_mask=None, reference_body_mask=None, **values):
+              reference_neutral_mask=None, reference_face_mask=None, reference_body_mask=None,
+              live_preview=False, **values):
         import json
         from .portrait_match import align_portrait
         from .processing import adjust_image
@@ -87,5 +96,10 @@ class PortraitColorAlign(PhotoFinish):
             image, reference_image, skin_source, white_balance_strength, face_strength, body_strength,
             skin_luminance, {'neutral': neutral_mask, 'face': face_mask, 'body': body_mask},
             {'neutral': reference_neutral_mask, 'face': reference_face_mask, 'body': reference_body_mask})
-        return (adjust_image(corrected, preserve_luminosity=preserve_luminosity, **values),
-                json.dumps({'skin_source': skin_source, 'frames': report}, ensure_ascii=False, indent=2))
+        result = (adjust_image(corrected, preserve_luminosity=preserve_luminosity, **values),
+                  json.dumps({'skin_source': skin_source, 'frames': report}, ensure_ascii=False, indent=2))
+        return preview_result(result, live_preview, corrected,
+                              {**values, 'preserve_luminosity': preserve_luminosity},
+                              dict(skin_source=skin_source, white_balance_strength=white_balance_strength,
+                                   face_strength=face_strength, body_strength=body_strength,
+                                   skin_luminance=skin_luminance))

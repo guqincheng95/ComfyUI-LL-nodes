@@ -38,7 +38,8 @@ for(const name of Object.keys(LABELS)){
 }
 const source=(await fs.readFile(new URL('../web/photo_finish.js',import.meta.url),'utf8'))
  .replace("import { app } from '../../scripts/app.js';",'const app = globalThis.testApp;')
- .replace("'./controls.js'",JSON.stringify(new URL('../web/controls.js',import.meta.url).href));
+ .replace("'./controls.js'",JSON.stringify(new URL('../web/controls.js',import.meta.url).href))
+ .replace("'./photo_live_preview.js'",JSON.stringify(new URL('../web/photo_live_preview.js',import.meta.url).href));
 globalThis.testApp={canvas:{},registerExtension(extension){this.extension=extension;}};
 const {enhanceNode}=await import('data:text/javascript;base64,'+Buffer.from(source).toString('base64'));
 const names=Object.keys(LABELS);

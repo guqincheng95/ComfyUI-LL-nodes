@@ -2,6 +2,7 @@
 import argparse
 from datetime import datetime
 from pathlib import Path
+import re
 import shutil
 
 LEGACY = {
@@ -10,6 +11,16 @@ LEGACY = {
     'ComfyUI-PhotoFinish': 'AIVisualPhotoFinish',
     'ComfyUI-PhotoFinish-main': 'AIVisualPhotoFinish',
 }
+UNIFIED_NAME = re.compile(r'comfyui-ll-nodes(?:-main|-master|-v\d+\.\d+\.\d+)?', re.IGNORECASE)
+UNIFIED_MARKERS = ('NODE_CLASS_MAPPINGS', 'ResolutionPreset', 'AIVisualPhotoFinish')
+
+
+def _recognized(path, markers):
+    init = path / '__init__.py'
+    if path.is_symlink() or not init.is_file():
+        return False
+    code = init.read_text(encoding='utf-8')
+    return all(marker in code for marker in markers)
 
 
 def migrate(root, apply=False):
@@ -18,12 +29,16 @@ def migrate(root, apply=False):
     if custom_nodes.name != 'custom_nodes':
         raise ValueError('请将节点库安装在 ComfyUI/custom_nodes 下再运行迁移。')
     pending = []
-    for name, marker in LEGACY.items():
-        source = custom_nodes / name
-        if source == root or not source.exists():
+    candidates = {custom_nodes / name: (marker,) for name, marker in LEGACY.items()}
+    for source in sorted(custom_nodes.iterdir()):
+        if source != root and UNIFIED_NAME.fullmatch(source.name) and (source.is_dir() or source.is_symlink()):
+            if not _recognized(root, UNIFIED_MARKERS):
+                raise ValueError(f'无法确认当前节点库身份，请先检查：{root}')
+            candidates[source] = UNIFIED_MARKERS
+    for source, markers in candidates.items():
+        if source == root or (not source.exists() and not source.is_symlink()):
             continue
-        init = source / '__init__.py'
-        if source.is_symlink() or not init.is_file() or marker not in init.read_text(encoding='utf-8'):
+        if not _recognized(source, markers):
             raise ValueError(f'无法确认旧插件身份，请手动检查：{source}')
         pending.append(source)
     if not apply:
@@ -42,7 +57,7 @@ def migrate(root, apply=False):
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--apply', action='store_true', help='将已确认的旧目录移到 ComfyUI/ll-nodes-backups')
+    parser.add_argument('--apply', action='store_true', help='将已确认的旧独立插件或重复整库目录移到 ComfyUI/ll-nodes-backups')
     args = parser.parse_args()
     try:
         results = migrate(Path(__file__).resolve().parents[1], args.apply)

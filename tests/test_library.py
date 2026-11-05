@@ -55,5 +55,19 @@ class LibraryTests(unittest.TestCase):
             with self.assertRaises(ValueError): migrate(root, True)
             self.assertTrue(old.exists())
 
+    def test_migration_archives_only_recognized_library_duplicates(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp) / 'ComfyUI/custom_nodes/comfyui-LL-nodes'; root.mkdir(parents=True)
+            duplicate = root.parent / 'ComfyUI-LL-nodes-v0.9.0'
+            unrelated = root.parent / 'my-other-nodes'
+            for folder in (root, duplicate, unrelated):
+                folder.mkdir(exist_ok=True)
+                (folder / '__init__.py').write_text('NODE_CLASS_MAPPINGS = {"ResolutionPreset": A, "AIVisualPhotoFinish": B}')
+            self.assertEqual(migrate(root), [str(duplicate)])
+            moved, = migrate(root, True)
+            self.assertEqual(Path(moved).name, duplicate.name)
+            self.assertTrue(root.exists() and unrelated.exists())
+            self.assertFalse(duplicate.exists())
+
 
 if __name__ == '__main__': unittest.main()

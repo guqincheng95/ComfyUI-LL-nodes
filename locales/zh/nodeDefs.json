@@ -167,6 +167,7 @@
     "display_name": "LL 人像色彩对齐 · Portrait Color Align",
     "description": "先用中性色校正白平衡，再匹配脸部和可见身体皮肤，最后手动微调。",
     "inputs": {
+      "live_preview": {"name": "实时预览"},
       "image": {
         "name": "输入图像",
         "tooltip": "连接加载图像或 VAE 解码后的图像。"
@@ -299,9 +300,10 @@
     }
   },
   "AIVisualPhotoFinish": {
-    "display_name": "LL 后期修图·自动仿色·曝光·白平衡 · Photo Finish",
+    "display_name": "LL 后期修图（兼容版）· Photo Finish",
     "description": "原图对齐修正放大或二次采样色差；参考仿色匹配明暗/色彩统计，之后可使用曝光、色温、色调三个折叠区微调。",
     "inputs": {
+      "live_preview": {"name": "实时预览"},
       "image": {
         "name": "输入图像",
         "tooltip": "连接加载图像或 VAE 解码后的图像。"

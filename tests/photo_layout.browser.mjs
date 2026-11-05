@@ -2,8 +2,9 @@
 // This adapter does not run a full ComfyUI server or Vue renderer.
 import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
+import {deflateSync} from 'node:zlib';
 const { chromium } = await import(process.env.LL_PLAYWRIGHT_MODULE || 'playwright');
-const browser = await chromium.launch({headless:true,args:['--no-sandbox']});
+const browser = await chromium.launch({headless:true,args:['--no-sandbox','--enable-unsafe-swiftshader','--use-gl=angle','--use-angle=swiftshader']});
 const page = await browser.newPage({viewport:{width:1500,height:1000}});
 const errors=[];
 page.on('pageerror',error=>errors.push(String(error)));
@@ -22,9 +23,9 @@ try {
  await page.waitForFunction(()=>window.extension);
  await page.evaluate(async()=>{
   const {LABELS}=await import('/extensions/ll/controls.js');
-  window.makeNode=()=>{
+  window.makeNode=(comfyClass='AIVisualPhotoFinish',live=false)=>{
    const nodeElement=document.querySelector('#node');nodeElement.replaceChildren();
-   const n={comfyClass:'AIVisualPhotoFinish',size:[360,500],properties:{},inputs:[],widgets:[
+   const n={comfyClass,size:[360,500],properties:{},inputs:[],widgets:[
     ...Object.keys(LABELS).map(name=>({name,value:name==='exposure'?.3:0,options:{}})),
     {name:'preserve_luminosity',value:true,options:{}},
     ...['auto_mode','match_strength','match_luminance','match_color'].map((name,i)=>({name,value:i?1:'off',options:{}})),
@@ -51,6 +52,7 @@ try {
      y+=h;
     }
    }};
+   if(live)n.widgets.push({name:'live_preview',value:false,options:{}});
    extension.nodeCreated(n);n.layout();return n;
   };
   window.n=makeNode();
@@ -121,10 +123,64 @@ try {
  await page.evaluate(saved=>{n=makeNode();n.properties=saved.properties;n.size=saved.size;saved.values.forEach((v,i)=>n.widgets[i].value=v);extension.loadedGraphNode(n);},saved);
  assert.deepEqual(await page.evaluate(()=>layoutErrors()),[]);
  assert.deepEqual(await page.evaluate(()=>n.widgets.map(w=>w.value)),saved.values);
+ const fixture=JSON.parse(await fs.readFile(new URL('./photo_preview_fixture.json',import.meta.url),'utf8'));
+ const pixelError=await page.evaluate(async fixture=>{
+  const {createPhotoRenderer}=await import('/extensions/ll/photo_preview_gl.js');
+  const canvas=document.createElement('canvas');
+  const renderer=createPhotoRenderer(canvas,{preserveDrawingBuffer:true});
+  renderer.upload(fixture.width,fixture.height,new Uint16Array(fixture.rgba16));
+  const gl=canvas.getContext('webgl2');
+  const actual=new Uint8Array(fixture.width*fixture.height*4);
+  let max=0;
+  for(const {params,rgba8} of fixture.cases){
+   renderer.draw(params);
+   gl.readPixels(0,0,fixture.width,fixture.height,gl.RGBA,gl.UNSIGNED_BYTE,actual);
+   for(let y=0;y<fixture.height;y++)for(let x=0;x<fixture.width*4;x++)
+    max=Math.max(max,Math.abs(actual[(fixture.height-1-y)*fixture.width*4+x]-rgba8[y*fixture.width*4+x]));
+  }
+  renderer.dispose();
+  return max;
+ },fixture);
+ assert.ok(pixelError<=1,`GPU and Python color fixtures diverged: ${pixelError}/255`);
+ // Preserve the test framebuffer so we can read after animation frames.
+ await page.evaluate(()=>{
+  const get=HTMLCanvasElement.prototype.getContext;
+  HTMLCanvasElement.prototype.getContext=function(type,options){
+   return get.call(this,type,type==='webgl2'?{...options,preserveDrawingBuffer:true}:options);
+  };
+ });
+ const bytes=Buffer.alloc(fixture.rgba16.length*2);
+ fixture.rgba16.forEach((value,i)=>bytes.writeUInt16LE(value,i*2));
+ const payload={version:1,width:fixture.width,height:fixture.height,batch:2,manual:{},automatic:{auto_mode:'off'},pixels:deflateSync(bytes).toString('base64')};
+ for(const nodeClass of ['AIVisualPhotoFinish','LLPortraitColorAlign']){
+  await page.evaluate(nodeClass=>{n=makeNode(nodeClass,true);n.properties.llPhotoSections={exposure:true};n.__photoFinishUI.refresh();n.__photoFinishUI.resize();},nodeClass);
+  assert.equal(await page.getByRole('status').isVisible(),false);
+  await page.evaluate(payload=>{
+   const toggle=n.widgets.find(w=>w.name==='live_preview');toggle.value=true;toggle.callback();
+   n.onExecuted({ll_photo_preview:[payload]});
+  },payload);
+  await page.getByText('实时预览 · 批次首张',{exact:true}).waitFor();
+  const preview=page.getByLabel('后期实时预览',{exact:true});
+  const rendered=()=>preview.evaluate(canvas=>canvas.toDataURL());
+  const first=await rendered();
+  await page.getByRole('button',{name:'曝光（EV）增加 0.05',exact:true}).click();
+  await page.waitForFunction(first=>document.querySelector('canvas').toDataURL()!==first,first);
+  await page.getByRole('button',{name:'看校正底图',exact:true}).click();
+  await page.getByText('校正底图',{exact:true}).waitFor();
+  await page.evaluate(()=>{n.setSize([220,n.size[1]]);n.__photoFinishUI.resize();});
+  assert.deepEqual(await page.evaluate(()=>layoutErrors()),[]);
+  const widths=await page.evaluate(()=>[n.size[0],n.__photoFinishUI.preview.widget.host.getBoundingClientRect().width]);
+  assert.deepEqual(widths,[220,220]);
+  await page.evaluate(()=>{n.inputs.push({name:'image',link:3});n.__photoFinishUI.preview.poll();});
+  await page.getByText('自动设置或接线已变，请重新运行',{exact:true}).waitFor();
+  await page.evaluate(()=>{const toggle=n.widgets.find(w=>w.name==='live_preview');toggle.value=false;toggle.callback();});
+  assert.equal(await preview.isVisible(),false);
+ }
  // Shared theme rules must not grow the controls beyond the reported height.
  await page.addStyleTag({content:'button,input{min-width:100px;min-height:36px;padding:8px;margin:4px}'});
  assert.deepEqual(await page.evaluate(()=>layoutErrors()),[],'theme sizing must not override control dimensions');
  assert.deepEqual(errors,[]);
+ console.log(`PASS: live preview on both nodes; Python color parity max ${pixelError}/255; slider redraw, comparison, narrow layout and stale-data state.`);
  console.log(JSON.stringify({browser:browser.version(),layouts,checks:'allocated DOM bounds; full node width with stale 150px widget size; live resize; no clipped controls; narrow/normal/wide; canvas zoom and pointer tracking; collapse; exact buttons; hidden compatibility; save/reload; theme sizing',errors}));
 } finally {await browser.close();}
 
