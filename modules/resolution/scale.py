@@ -28,6 +28,11 @@ def target_size(source, aspect_ratio, proportional_width, proportional_height,
     _positive_int(round_to_multiple, "像素倍数", 512)
     if type(flip_ratio) is not bool:
         raise ValueError("反转宽高比例须为布尔值。")
+    if source is None:
+        if aspect_ratio == "original":
+            raise ValueError("未连接图像或遮罩，请将「画面比例」改为固定比例或自定义比例。")
+        if scale_to_side == "none":
+            raise ValueError("未连接图像或遮罩，「保留原长边」不可用，请将「尺寸依据」改为「最长边」或其他目标尺寸。")
     if aspect_ratio == "original":
         ratio = Fraction(*source)
     elif aspect_ratio == "custom":

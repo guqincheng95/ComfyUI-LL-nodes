@@ -15,6 +15,28 @@ node = package.NODE_CLASS_MAPPINGS["LLImageAspectScale"]()
 
 
 class ImageAspectScaleTests(unittest.TestCase):
+    def test_size_only_portrait_with_multiple(self):
+        result = node.scale(aspect_ratio="9:16", round_to_multiple=16,
+                            scale_to_side="longest", scale_to_length=1280)
+        self.assertEqual(result, (None, None, None, 720, 1280))
+        self.assertTrue(all(type(value) is int for value in result[-2:]))
+
+    def test_size_only_matches_connected_custom_ratio_and_rounding(self):
+        options = dict(aspect_ratio="custom", proportional_width=3, proportional_height=2,
+                       flip_ratio=True, scale_to_length=100, round_to_multiple=16)
+        for rounding, expected in (("nearest", (64, 96)), ("down", (64, 96)), ("up", (80, 112))):
+            with self.subTest(rounding=rounding):
+                size_only = node.scale(rounding=rounding, **options)
+                with_mask = node.scale(mask=torch.ones((4, 8)), rounding=rounding, **options)
+                self.assertEqual(size_only[-2:], expected)
+                self.assertEqual(size_only[-2:], with_mask[-2:])
+
+    def test_size_only_requires_explicit_ratio_and_length_basis(self):
+        with self.assertRaisesRegex(ValueError, "画面比例"):
+            node.scale(aspect_ratio="original")
+        with self.assertRaisesRegex(ValueError, "保留原长边"):
+            node.scale(aspect_ratio="9:16", scale_to_side="none")
+
     def test_source_ratio_and_custom_multiple(self):
         image = torch.zeros((1, 1392, 752, 3))
         result, mask, original, w, h = node.scale(image=image, method="bilinear")
@@ -92,7 +114,7 @@ class ImageAspectScaleTests(unittest.TestCase):
 
     def test_mismatched_inputs_fail_with_actionable_error(self):
         image = torch.zeros((2, 4, 8, 3))
-        for kwargs, reason in (({}, "至少连接"), ({"image":image, "mask":torch.zeros(4, 4)}, "宽高比"),
+        for kwargs, reason in (({"image":image, "mask":torch.zeros(4, 4)}, "宽高比"),
                                ({"image":image, "mask":torch.zeros(3, 4, 8)}, "批次"),
                                ({"image":image, "round_to_multiple":0}, "像素倍数"),
                                ({"image":image, "scale_to_length":64000}, "超出限制"),

@@ -1,7 +1,7 @@
 {
   "LLImageAspectScale": {
     "display_name": "LL 图像比例控制 · Image Aspect Scale",
-    "description": "图像和遮罩同步调整尺寸，支持裁切、补边、拉伸与比例反转。",
+    "description": "可不接图像和遮罩，按比例、目标值与像素倍数输出宽高；接入后可同步裁切、补边或拉伸。",
     "inputs": {
       "aspect_ratio": {
         "name": "画面比例",

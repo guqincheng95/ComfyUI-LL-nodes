@@ -50,7 +50,7 @@ class ImageAspectScale:
     def INPUT_TYPES(cls):
         from .scale import RATIOS, FITS, METHODS, SCALE_SIDES, ROUNDING
         return {"required": {
-            "aspect_ratio": (list(RATIOS), {"default": "original"}),
+            "aspect_ratio": (list(RATIOS), {"default": "original", "tooltip": "不接图像或遮罩时，选择固定比例或自定义比例即可单独计算宽高。"}),
             "proportional_width": ("INT", {"default": 1, "min": 1, "max": 10000}),
             "proportional_height": ("INT", {"default": 1, "min": 1, "max": 10000}),
             "fit": (list(FITS), {"default": "crop"}),
@@ -68,26 +68,30 @@ class ImageAspectScale:
     RETURN_NAMES = ("image", "mask", "original_size", "width", "height")
     FUNCTION = "scale"
     CATEGORY = ResolutionPreset.CATEGORY
-    DESCRIPTION = "按目标宽高比与尺寸同步处理图像和遮罩。支持居中裁切、等比补边、拉伸、自定义倍数及比例反转。"
+    DESCRIPTION = "不接图像或遮罩也可按比例、目标值与像素倍数输出宽高。接入图像或遮罩后，可同步裁切、补边或拉伸。"
 
     def scale(self, aspect_ratio="original", proportional_width=1, proportional_height=1,
               fit="crop", method="lanczos", round_to_multiple=8, scale_to_side="longest",
               scale_to_length=1280, background_color="#000000", flip_ratio=False,
               rounding="nearest", mask_method="same", image=None, mask=None):
         from .scale import target_size, transform
-        if image is None and mask is None:
-            raise ValueError("请至少连接图像或遮罩中的一个输入。")
-        source = image if image is not None else mask
-        shape = getattr(source, "shape", ())
-        if image is not None and len(shape) == 4:
-            h, w = shape[1:3]
-        elif image is None and len(shape) in (2, 3):
-            h, w = shape[-2:]
-        else:
-            raise ValueError("图像须为 [B,H,W,C]；遮罩须为 [B,H,W] 或 [H,W]。")
-        if not h or not w:
-            raise ValueError("输入尺寸不能为空。")
-        width, height = target_size((w, h), aspect_ratio, proportional_width, proportional_height,
+        source_size = None
+        if image is not None or mask is not None:
+            source = image if image is not None else mask
+            shape = getattr(source, "shape", ())
+            if image is not None and len(shape) == 4:
+                h, w = shape[1:3]
+            elif image is None and len(shape) in (2, 3):
+                h, w = shape[-2:]
+            else:
+                raise ValueError("图像须为 [B,H,W,C]；遮罩须为 [B,H,W] 或 [H,W]。")
+            if not h or not w:
+                raise ValueError("输入尺寸不能为空。")
+            source_size = (w, h)
+
+        width, height = target_size(source_size, aspect_ratio, proportional_width, proportional_height,
                                     scale_to_side, scale_to_length, round_to_multiple, rounding, flip_ratio)
+        if source_size is None:
+            return None, None, None, width, height
         out, matte = transform(image, mask, (width, height), fit, method, mask_method, background_color)
-        return out, matte, [w, h], width, height
+        return out, matte, list(source_size), width, height
