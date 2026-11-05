@@ -261,7 +261,8 @@
         "options": {
           "off": "关闭",
           "original": "原图对齐（同画面）",
-          "reference": "参考仿色（不同图片）"
+          "reference": "参考仿色（不同图片）",
+          "reference_palette": "整图调色板（旧版仿色）"
         }
       },
       "match_strength": {
@@ -274,7 +275,7 @@
       },
       "match_color": {
         "name": "色彩匹配",
-        "tooltip": "控制颜色匹配程度；参考仿色含暗部、中间调、亮部统计。设0只匹配明暗。"
+        "tooltip": "控制色彩匹配程度。参考仿色从低饱和区域估计色偏；设 0 只匹配明暗。"
       }
     },
     "outputs": {

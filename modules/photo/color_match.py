@@ -1,7 +1,8 @@
 """Reference color matching without resampling the output image.
 
-Same-scene: robust spatial linear-RGB fit. Look transfer: monotone luminance
-quantile matching + Reinhard-style chroma statistics in three tonal regions.
+Same-scene: robust spatial linear-RGB fit. Reference: luminance quantiles and a
+bounded chroma shift estimated from low-chroma midtones and highlights. Palette
+transfer also offers the legacy three-region Reinhard-style chroma statistics.
 Oklab matrices are adapted from Bjorn Ottosson's public-domain implementation:
 https://bottosson.github.io/posts/oklab/ (2021 matrix update).
 No GPL color-matcher source is copied or required.
@@ -11,7 +12,7 @@ import torch
 import torch.nn.functional as F
 from .processing import srgb_to_linear, linear_to_srgb, gamut_at_luminance, luminance, region_weights
 
-AUTO_MODES = ('off', 'original', 'reference')
+AUTO_MODES = ('off', 'original', 'reference', 'reference_palette')
 
 
 def linear_to_oklab(rgb):
@@ -129,15 +130,33 @@ def _moments(lab):
     return moments
 
 
-def _reference_mapping(source, reference):
-    source_lab, reference_lab = _usable_lab(source), _usable_lab(reference)
-    x, y = _tone_curve(source_lab[:, 0], reference_lab[:, 0])
+def _palette_chroma(source_lab, reference_lab):
     chroma = []
     for (sm, ss), (rm, rs) in zip(_moments(source_lab), _moments(reference_lab)):
         # A nearly neutral source has no meaningful color variance to amplify.
         gain = torch.where(ss > .003, (rs / ss.clamp_min(.003)).clamp(.5, 2), torch.ones_like(ss))
         chroma.append((gain, (rm - sm * gain).clamp(-.25, .25)))
-    return x, y, chroma
+    return chroma
+
+
+def _neutral_anchor(lab):
+    """Find a robust chroma anchor without using dark or colorful subjects."""
+    lightness, ab = lab[:, 0], lab[:, 1:]
+    chroma = torch.linalg.vector_norm(ab, dim=-1)
+    valid = (lightness >= .38) & (lightness <= .96) & (chroma <= .05)
+    if valid.count_nonzero().item() < max(16, math.ceil(len(lab) * .02)):
+        return None
+    return ab[valid].median(dim=0).values
+
+
+def _neutral_shift(source_lab, reference_lab):
+    source = _neutral_anchor(source_lab)
+    reference = _neutral_anchor(reference_lab)
+    if source is None or reference is None:
+        return source_lab.new_zeros(2)
+    shift = reference - source
+    # Bound the whole chroma vector. Never amplify one channel's variance.
+    return shift * (.035 / torch.linalg.vector_norm(shift).clamp_min(.035))
 
 
 def match_image(image, reference_image=None, auto_mode='off', match_strength=1.0,
@@ -182,9 +201,15 @@ def match_image(image, reference_image=None, auto_mode='off', match_strength=1.0
                 matrix = _fit_original(sample, reference).to(image.device)
             else:
                 reference = _sample(ref)
-                x, y, chroma = _reference_mapping(sample, reference)
-                x, y = x.to(image.device), y.to(image.device)
-                chroma = [(gain.to(image.device), bias.to(image.device)) for gain, bias in chroma]
+                source_lab, reference_lab = _usable_lab(sample), _usable_lab(reference)
+                if match_luminance:
+                    x, y = _tone_curve(source_lab[:, 0], reference_lab[:, 0])
+                    x, y = x.to(image.device), y.to(image.device)
+                if auto_mode == 'reference':
+                    shift = _neutral_shift(source_lab, reference_lab).to(image.device)
+                else:
+                    palette = [(gain.to(image.device), bias.to(image.device))
+                               for gain, bias in _palette_chroma(source_lab, reference_lab)]
             for row in range(0, image.shape[1], tile_rows):
                 source = image[batch, row:row+tile_rows].float()
                 linear = srgb_to_linear(source[..., :3])
@@ -194,13 +219,22 @@ def match_image(image, reference_image=None, auto_mode='off', match_strength=1.0
                     desired = linear_to_oklab(candidate)
                 else:
                     desired = original_lab.clone()
-                    desired[..., 0] = _interpolate(original_lab[..., 0], x, y)
-                    adjusted_ab = torch.zeros_like(original_lab[..., 1:])
-                    for weight, (gain, bias) in zip(region_weights(original_lab[..., :1]), chroma):
-                        adjusted_ab += weight * (original_lab[..., 1:] * gain + bias)
+                    if match_luminance:
+                        desired[..., 0] = _interpolate(original_lab[..., 0], x, y)
+                    ab = original_lab[..., 1:]
+                    if auto_mode == 'reference':
+                        # A white-balance estimate should affect colorful pixels more gently.
+                        chroma = torch.linalg.vector_norm(ab, dim=-1, keepdim=True)
+                        influence = 1 - .75 * ((chroma - .07) / .09).clamp(0, 1)
+                        delta = shift * influence
+                    else:
+                        adjusted_ab = torch.zeros_like(ab)
+                        for weight, (gain, bias) in zip(region_weights(original_lab[..., :1]), palette):
+                            adjusted_ab += weight * (ab * gain + bias)
+                        delta = adjusted_ab - ab
                     # Preserve irrecoverable black/white endpoints; avoid tinting clipped whites.
                     envelope = torch.minimum(original_lab[..., :1] / .05, (1 - original_lab[..., :1]) / .05).clamp(0, 1)
-                    desired[..., 1:] = original_lab[..., 1:] + envelope * (adjusted_ab - original_lab[..., 1:])
+                    desired[..., 1:] = ab + envelope * delta
                 factor = source.new_tensor([match_luminance, match_color, match_color]) * match_strength
                 lab = original_lab + (desired - original_lab) * factor
                 rgb = oklab_to_linear(lab)

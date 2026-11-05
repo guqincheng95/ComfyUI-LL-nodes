@@ -24,7 +24,7 @@ class PhotoFinish:
             'tooltip': '保持色彩平衡前的线性亮度；不撤销曝光和光影调整。'})
         # Append controls after all v1 widgets: old workflows keep their positional values.
         auto_controls = {
-            'auto_mode': (['off', 'original', 'reference'], {'default': 'off', 'tooltip': '原图对齐修正同画面放大/二次采样色差；参考仿色匹配其他图片的色调统计。'}),
+            'auto_mode': (['off', 'original', 'reference', 'reference_palette'], {'default': 'off', 'tooltip': '原图对齐用于同一构图；参考仿色优先依据低饱和区域校正色偏；整图调色板沿用旧版统计仿色。'}),
             'match_strength': ('FLOAT', {'default': 1.0, 'min': 0.0, 'max': 1.0, 'step': 0.05, 'tooltip': '自动匹配总强度，0为原样；不影响手动调色。'}),
             'match_luminance': ('FLOAT', {'default': 1.0, 'min': 0.0, 'max': 1.0, 'step': 0.05, 'tooltip': '明暗与色阶匹配强度。'}),
             'match_color': ('FLOAT', {'default': 1.0, 'min': 0.0, 'max': 1.0, 'step': 0.05, 'tooltip': '颜色匹配强度，0只匹配明暗。'}),

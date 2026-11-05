@@ -33,7 +33,7 @@ class ColorMatchTests(unittest.TestCase):
         self.assertEqual(corrected.shape,target.shape)
         self.assertLess((corrected-up(self.original)).square().mean(),(target-up(self.original)).square().mean()*.1)
 
-    def test_reference_matches_luminance_and_chroma_statistics(self):
+    def test_reference_matches_luminance_and_low_chroma_cast(self):
         # A continuous ramp provides all three tonal regions without clipping.
         x=torch.linspace(.08,.9,9000).reshape(1,100,30,3)
         lab=linear_to_oklab(srgb_to_linear(x));ref=lab.clone()
@@ -43,6 +43,33 @@ class ColorMatchTests(unittest.TestCase):
         result=match_image(x,ref,'reference')
         measure=lambda a:linear_to_oklab(srgb_to_linear(a)).mean((0,1,2))
         self.assertLess((measure(result)-measure(ref)).abs().mean(),(measure(x)-measure(ref)).abs().mean()*.3)
+
+    def test_reference_face_color_is_stable_across_wardrobe_changes(self):
+        scene = torch.empty((1, 96, 80, 3))
+        scene[:] = torch.tensor([.67, .65, .63])
+        face = (slice(None), slice(8, 28), slice(26, 54))
+        scene[face] = torch.tensor([.76, .57, .50])
+        blue, black = scene.clone(), scene.clone()
+        blue[:, 29:, 13:67] = torch.tensor([.21, .47, .57])
+        black[:, 29:, 13:67] = torch.tensor([.13, .14, .15])
+        ref = blue.clone()
+        ref[:, :8] = torch.tensor([.62, .63, .64])
+        node = pkg.NODE_CLASS_MAPPINGS['AIVisualPhotoFinish']()
+
+        def face_after(image, mode):
+            return node.apply(image, reference_image=ref, auto_mode=mode, match_luminance=0)[0][face]
+
+        new_blue, new_black = (face_after(image, 'reference') for image in (blue, black))
+        old_blue, old_black = (face_after(image, 'reference_palette') for image in (blue, black))
+        torch.testing.assert_close(new_blue, new_black, atol=2e-6, rtol=0)
+        torch.testing.assert_close(new_black, black[face], atol=2e-6, rtol=0)
+        self.assertGreater((old_black[..., 0] - old_blue[..., 0]).mean().item(), .025)
+
+    def test_reference_skips_color_when_neutral_samples_are_missing(self):
+        subject = torch.full((1, 32, 32, 3), 0.0) + torch.tensor([.78, .43, .30])
+        ref = torch.full_like(subject, .62)
+        corrected = match_image(subject, ref, 'reference', match_luminance=0)
+        torch.testing.assert_close(corrected, subject, atol=2e-6, rtol=0)
 
     def test_modes_zero_identity_and_same_image(self):
         self.assertIs(match_image(self.changed,None,'off'),self.changed)

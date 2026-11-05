@@ -1,6 +1,6 @@
 # comfyui-LL-nodes · LL 个人节点库
 
-**v0.8.2** · 一个目录安装 · 一次更新全部节点 · 中文分类与搜索
+**v0.8.3** · 一个目录安装 · 一次更新全部节点 · 中文分类与搜索
 
 | ComfyUI 分类 | 节点 | 功能 |
 |---|---|---|
@@ -41,11 +41,11 @@ git clone https://github.com/guqincheng95/ComfyUI-LL-nodes.git custom_nodes/comf
 
 ## 从两个独立插件迁移（只需一次）
 
-停止 ComfyUI 后，把 `comfyui-LL-nodes-v0.8.2.zip` 上传至 `custom_nodes`：
+停止 ComfyUI 后，把 `comfyui-LL-nodes-v0.8.3.zip` 上传至 `custom_nodes`：
 
 ```bash
 cd /root/autodl-tmp/AI_Workspace/ComfyUI/custom_nodes
-python -m zipfile -e comfyui-LL-nodes-v0.8.2.zip .
+python -m zipfile -e comfyui-LL-nodes-v0.8.3.zip .
 python comfyui-LL-nodes/scripts/migrate_legacy.py --apply
 ```
 
