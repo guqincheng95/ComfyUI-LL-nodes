@@ -237,14 +237,16 @@ class WorkerLifecycleTests(unittest.TestCase):
         from modules.dlss.native.session import DlssSession
         from modules.dlss.native.paths import RuntimeLayout
         from modules.dlss.native.settings import DlssOptions
+        class Cancelled(Exception):
+            pass
         def cancelled():
-            raise RuntimeError('test cancellation')
+            raise Cancelled('test cancellation')
         with tempfile.TemporaryDirectory() as tmp:
             worker = Path(tmp) / 'nvngx.dll'
             worker.write_text('#!/usr/bin/env python3\nimport time\ntime.sleep(15)\n')
             worker.chmod(0o755)
             with patch('modules.dlss.native.session.ensure_supported', return_value=({}, {})):
-                with self.assertRaisesRegex(RuntimeError, '已取消'):
+                with self.assertRaises(Cancelled):
                     DlssSession(RuntimeLayout(Path(tmp)), DlssOptions(), input_width=64,
                                 input_height=64, frame_count=1, timeout=10., cancel_check=cancelled)
 

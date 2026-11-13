@@ -67,6 +67,7 @@ class DlssSession:
         self._monitor_stop = threading.Event()
         self._operation_started = time.monotonic()
         self._monitor_reason = ''
+        self._cancel_exception = None
         self._monitor_thread = None
         # Filesystem timestamps can lag slightly behind the clock.
         self._started_at = time.time() - 1.0
@@ -108,7 +109,10 @@ class DlssSession:
             try:
                 if self._cancel_check:
                     self._cancel_check()
-            except Exception:
+            except Exception as exc:
+                # Interrupt checks can consume ComfyUI's flag; preserve the
+                # exception type and forward it to the main execution thread.
+                self._cancel_exception = exc
                 self._monitor_reason = '任务已取消。'
             started = self._operation_started
             if started is not None and time.monotonic() - started > self._timeout:
@@ -146,6 +150,8 @@ class DlssSession:
                 self._worker.stdout, protocol.SETUP_RESPONSE.size
             )
         except (EOFError, BrokenPipeError, OSError) as exc:
+            if self._cancel_exception is not None:
+                raise self._cancel_exception from exc
             try:
                 code = self._worker.wait(timeout=10)
             except subprocess.TimeoutExpired:
@@ -238,6 +244,8 @@ class DlssSession:
 
     def _raise_worker_failure(self, index: int, cause: BaseException) -> NoReturn:
         """Turn a dead worker into an actionable error and never return."""
+        if self._cancel_exception is not None:
+            raise self._cancel_exception from cause
         try:
             exit_code = self._worker.wait(timeout=10)
         except subprocess.TimeoutExpired:
@@ -323,6 +331,8 @@ class DlssSession:
         self._stop_monitor()
         self._close_pipes()
         self._join_log_thread()
+        if self._cancel_exception is not None:
+            raise self._cancel_exception
         if exit_code:
             raise RuntimeError(
                 f"The native DLSS worker exited with code {exit_code}:\n"
