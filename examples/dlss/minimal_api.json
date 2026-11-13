@@ -1,0 +1,98 @@
+{
+  "1": {
+    "class_type": "LoadImage",
+    "inputs": {
+      "image": "original.png"
+    }
+  },
+  "2": {
+    "class_type": "LoadImageMask",
+    "inputs": {
+      "image": "person_mask.png",
+      "channel": "red"
+    }
+  },
+  "3": {
+    "class_type": "LLDLSS5Settings",
+    "inputs": {
+      "preset": "人像保真",
+      "upscaling": "1x",
+      "model": "M",
+      "style": "自然",
+      "tone": 1.0,
+      "structure": 1.2,
+      "skin_structure": 0.6,
+      "automatic_skin_mask": true,
+      "region_mode": "unified_lighting",
+      "person_strength": 0.35,
+      "background_strength": 1.0,
+      "lighting_strength": 0.7,
+      "neutral_protection": 0.35,
+      "skin_protection": 0.6,
+      "edge_guard": 0.7,
+      "feather": 6.0,
+      "mask_expand": 0.0,
+      "temporal_mask_strength": 0.4
+    }
+  },
+  "4": {
+    "class_type": "LLDLSS5RegionEnhance",
+    "inputs": {
+      "image": [
+        "1",
+        0
+      ],
+      "settings": [
+        "3",
+        0
+      ],
+      "batch_mode": "independent_images",
+      "preview_mode": false,
+      "preview_long_edge": 1024,
+      "person_mask": [
+        "2",
+        0
+      ]
+    }
+  },
+  "5": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": [
+        "4",
+        0
+      ],
+      "filename_prefix": "LL_DLSS5"
+    }
+  },
+  "6": {
+    "class_type": "LLDLSS5Compare",
+    "inputs": {
+      "original": [
+        "1",
+        0
+      ],
+      "enhanced": [
+        "4",
+        0
+      ],
+      "x": 0.0,
+      "y": 0.0,
+      "width": 1.0,
+      "height": 1.0,
+      "roi_mask": [
+        "2",
+        0
+      ]
+    }
+  },
+  "7": {
+    "class_type": "PreviewImage",
+    "inputs": {
+      "images": [
+        "6",
+        0
+      ]
+    }
+  }
+}

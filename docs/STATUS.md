@@ -1,6 +1,9 @@
 # 当前状态 · 交接入口
 
-- 日期：2026-11-06（北京时间）；版本 v0.10.0。仓库 guqincheng95/ComfyUI-LL-nodes。
+- 日期：2026-11-13；版本 v0.11.0。仓库 guqincheng95/ComfyUI-LL-nodes。
+- 新增 LL DLSS5 增强设置／分区光影增强／局部对比，见 [DLSS5.md](DLSS5.md)。一次整图渲染，外接完整人物和可见皮肤MASK；统一光影近似分离、线性融合、边缘／肤色保护、视频光流与切镜重置。
+- DLSS5首次环境部署：setup_dlss5.bat自动定位秋叶／便携Python；Manager标准安装有install.py钩子。固定兼容v3.0＋发布包SHA256，支持已有runtime、离线ZIP、Python镜像／下载前缀；检测缺失才补齐，不改Torch/CUDA/驱动。普通git更新后请主动运行一次脚本。
+- DLSS5仅Windows＋兼容NVIDIA RTX；本轮CPU／模拟后端／安装器检查通过，当前环境没有Windows/NVIDIA，真实DLSS效果与本机自检待验证。其余节点不依赖DLSS环境。
 - 两个调色节点支持手动滑块实时预览；旧后期节点归入兼容分类。详见 [PHOTO_LIVE_PREVIEW.md](PHOTO_LIVE_PREVIEW.md)。
 - 新增「LL 人像色彩对齐」：中性取样校白平衡，独立匹配脸部与可见身体肤色，再进行手动调整；接线见 [PORTRAIT_COLOR_ALIGN.md](PORTRAIT_COLOR_ALIGN.md)。
 - 调色折叠条和滑块跟随节点宽度，窄节点控件可收缩；见 [PHOTO_UI_LAYOUT.md](PHOTO_UI_LAYOUT.md)。
@@ -34,4 +37,4 @@
 - 后续优先：拿用户原始RGB+深度+POSE回归；宽裙/头饰/交叉肢体等端到端难例仍需补充。近肤色衣物、同深度家具、缺关键点和强遮挡仍可能误差，不能宣称所有图片自动抠净。
 - 更新整库后需新建“LL人物主体提取”使用增强功能。未接深度时clean_depth是全黑占位，不应接深度条件。
 
-固定读取顺序：本文件 → 对应模块文档（比例控制读 IMAGE_ASPECT_SCALE.md；RMBG／去饰品读SUBJECT_PRUNING.md，总功能读SUBJECT_CLEAN.md，后期UI读PHOTO_UI_LAYOUT.md）→ 本轮DEVELOPMENT_LOG；按需读SUBJECT_SETUP.md、TEST_REPORT.md。无需通读history。v0.5状态和验证归档在history/library-v0.5.0/。
+固定读取顺序：本文件 → 对应模块文档（DLSS5读DLSS5.md；比例控制读 IMAGE_ASPECT_SCALE.md；RMBG／去饰品读SUBJECT_PRUNING.md，总功能读SUBJECT_CLEAN.md，后期UI读PHOTO_UI_LAYOUT.md）→ 本轮DEVELOPMENT_LOG；按需读SUBJECT_SETUP.md、TEST_REPORT.md。无需通读history。v0.5状态和验证归档在history/library-v0.5.0/。

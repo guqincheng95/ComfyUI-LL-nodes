@@ -167,7 +167,9 @@
     "display_name": "LL 人像色彩对齐 · Portrait Color Align",
     "description": "先用中性色校正白平衡，再匹配脸部和可见身体皮肤，最后手动微调。",
     "inputs": {
-      "live_preview": {"name": "实时预览"},
+      "live_preview": {
+        "name": "实时预览"
+      },
       "image": {
         "name": "输入图像",
         "tooltip": "连接加载图像或 VAE 解码后的图像。"
@@ -303,7 +305,9 @@
     "display_name": "LL 后期修图（兼容版）· Photo Finish",
     "description": "原图对齐修正放大或二次采样色差；参考仿色匹配明暗/色彩统计，之后可使用曝光、色温、色调三个折叠区微调。",
     "inputs": {
-      "live_preview": {"name": "实时预览"},
+      "live_preview": {
+        "name": "实时预览"
+      },
       "image": {
         "name": "输入图像",
         "tooltip": "连接加载图像或 VAE 解码后的图像。"
@@ -698,6 +702,185 @@
         "name": "肤色步骤删除区域"
       },
       "6": {
+        "name": "处理说明"
+      }
+    }
+  },
+  "LLDLSS5Settings": {
+    "display_name": "LL DLSS5 增强设置 · Settings",
+    "description": "整图仅渲染一次；预设决定原生参数和区域强度。自定义可逐项调整。首次使用先运行 setup_dlss5.bat。",
+    "inputs": {
+      "preset": {
+        "name": "增强预设",
+        "tooltip": "预设会覆盖下方光影、结构、区域和保护参数；选择自定义才使用这些数值。"
+      },
+      "upscaling": {
+        "name": "输出倍率"
+      },
+      "model": {
+        "name": "原生模型",
+        "options": {
+          "Default": "原生默认"
+        }
+      },
+      "style": {
+        "name": "渲染风格"
+      },
+      "tone": {
+        "name": "原生光影强度",
+        "tooltip": "原生光影／色调参数，不是区域混合强度。"
+      },
+      "structure": {
+        "name": "原生结构强度"
+      },
+      "skin_structure": {
+        "name": "原生皮肤结构"
+      },
+      "automatic_skin_mask": {
+        "name": "原生皮肤识别",
+        "tooltip": "原生皮肤识别，只控制皮肤结构；不替代外接人物 MASK。"
+      },
+      "region_mode": {
+        "name": "区域融合方式",
+        "options": {
+          "unified_lighting": "统一光影・细节分区",
+          "regional_all": "全部变化分区"
+        },
+        "tooltip": "统一光影：低频光影共享，细节分区；全部分区：所有变化都按区域混合。"
+      },
+      "person_strength": {
+        "name": "人物细节强度",
+        "tooltip": "统一光影模式下主要控制人物细节；设为0仍保留统一光影。"
+      },
+      "background_strength": {
+        "name": "环境细节强度"
+      },
+      "lighting_strength": {
+        "name": "统一光影强度",
+        "tooltip": "统一光影模式的全图低频变化强度；全部分区模式忽略。"
+      },
+      "neutral_protection": {
+        "name": "中性色保护",
+        "tooltip": "用原图中性区域限制色偏，保留新的亮度变化；无可靠样本则跳过。"
+      },
+      "skin_protection": {
+        "name": "肤色色度保护",
+        "tooltip": "须接可见皮肤 MASK。限制肤色色度变化，保留增强亮度，不把衣服当皮肤。"
+      },
+      "edge_guard": {
+        "name": "边缘保护",
+        "tooltip": "在人物边界降低细节混合差异；无法保证消除模型引起的位移。"
+      },
+      "feather": {
+        "name": "遮罩羽化像素",
+        "tooltip": "按原图像素设置，放大时同比换算。"
+      },
+      "mask_expand": {
+        "name": "遮罩扩缩像素"
+      },
+      "temporal_mask_strength": {
+        "name": "视频遮罩稳定",
+        "tooltip": "仅视频序列：按光流传播遮罩并与当前遮罩核对，切镜重置。"
+      },
+      "runtime_dir": {
+        "name": "运行时目录",
+        "tooltip": "留空使用安装脚本记录的目录；可复用原作者节点的兼容 v3.0 runtime。"
+      },
+      "release_comfy_models": {
+        "name": "渲染前释放显存",
+        "tooltip": "渲染前卸载 ComfyUI 已加载模型，释放显存；后续节点可能需要重新加载。"
+      },
+      "worker_timeout": {
+        "name": "原生响应超时秒"
+      },
+      "scene_change_threshold": {
+        "name": "切镜检测阈值"
+      }
+    },
+    "outputs": {
+      "settings": {
+        "name": "增强设置"
+      }
+    }
+  },
+  "LLDLSS5RegionEnhance": {
+    "display_name": "LL DLSS5 分区光影增强 · Region Enhance",
+    "description": "全画面单次 DLSS5 渲染，再按外接人物／皮肤 MASK 控制增强。无需新分割模型。预览模式输出低分辨率，正式导出请关闭。",
+    "inputs": {
+      "image": {
+        "name": "输入图像"
+      },
+      "settings": {
+        "name": "增强设置"
+      },
+      "batch_mode": {
+        "name": "批次类型",
+        "options": {
+          "independent_images": "独立图片・逐张重置",
+          "video_sequence": "视频序列・光流引导"
+        },
+        "tooltip": "独立图片逐张重置历史；视频必须按帧顺序输入，并建议提供逐帧 MASK。"
+      },
+      "preview_mode": {
+        "name": "整图预览模式",
+        "tooltip": "缩小完整画面后增强，保留上下文。输出也是预览尺寸，不能当作原尺寸成片。"
+      },
+      "preview_long_edge": {
+        "name": "预览输出最长边"
+      },
+      "person_mask": {
+        "name": "完整人物遮罩",
+        "tooltip": "白色人物、黑色环境。推荐使用分割模型的完整人物 MASK，勿用删除头发／裙摆后的轮廓修剪结果。"
+      },
+      "skin_mask": {
+        "name": "可见皮肤遮罩",
+        "tooltip": "可见皮肤：脸／身体／手，可合并；排除眼唇、衣服和遮挡。缺省不执行外部肤色保护。"
+      }
+    },
+    "outputs": {
+      "image": {
+        "name": "增强图像"
+      },
+      "person_mask": {
+        "name": "处理后人物遮罩"
+      },
+      "report": {
+        "name": "处理说明"
+      }
+    }
+  },
+  "LLDLSS5Compare": {
+    "display_name": "LL DLSS5 局部对比 · ROI Compare",
+    "description": "左原图、右增强；先完整渲染再裁出 ROI，不改变光照上下文。仅首帧检查，可接预览图像节点。",
+    "inputs": {
+      "original": {
+        "name": "原图"
+      },
+      "enhanced": {
+        "name": "增强结果"
+      },
+      "x": {
+        "name": "局部起点X"
+      },
+      "y": {
+        "name": "局部起点Y"
+      },
+      "width": {
+        "name": "局部宽度"
+      },
+      "height": {
+        "name": "局部高度"
+      },
+      "roi_mask": {
+        "name": "局部检查遮罩",
+        "tooltip": "优先用白色区域的包围框作为检查范围；未接时使用上方0～1坐标。"
+      }
+    },
+    "outputs": {
+      "comparison": {
+        "name": "左原图・右增强"
+      },
+      "report": {
         "name": "处理说明"
       }
     }

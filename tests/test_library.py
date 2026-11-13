@@ -15,7 +15,7 @@ from ll_library_test.scripts.migrate_legacy import migrate
 
 class LibraryTests(unittest.TestCase):
     def test_unified_registration_and_assets(self):
-        self.assertEqual(set(pkg.NODE_CLASS_MAPPINGS), {'ResolutionPreset', 'AIVisualPhotoFinish', 'LLPortraitColorAlign', 'LLPersonContourTrim', 'LLPersonSubjectClean', 'LLImageAspectScale'})
+        self.assertEqual(set(pkg.NODE_CLASS_MAPPINGS), {'ResolutionPreset', 'AIVisualPhotoFinish', 'LLPortraitColorAlign', 'LLPersonContourTrim', 'LLPersonSubjectClean', 'LLImageAspectScale', 'LLDLSS5Settings', 'LLDLSS5RegionEnhance', 'LLDLSS5Compare'})
         self.assertTrue((ROOT / pkg.WEB_DIRECTORY / 'photo_finish.js').is_file())
         translations = json.loads((ROOT / 'locales/zh/nodeDefs.json').read_text())
         for key, node in pkg.NODE_CLASS_MAPPINGS.items():
@@ -24,13 +24,13 @@ class LibraryTests(unittest.TestCase):
         self.assertFalse((ROOT / 'addons').exists())
 
     def test_existing_api_workflows_resolve(self):
-        for folder in ['resolution', 'photo']:
+        for folder in ['resolution', 'photo', 'dlss']:
             prompt = json.loads((ROOT / 'examples' / folder / 'minimal_api.json').read_text())
             for data in prompt.values():
                 if data['class_type'] not in pkg.NODE_CLASS_MAPPINGS:
                     continue
-                schema = pkg.NODE_CLASS_MAPPINGS[data['class_type']].INPUT_TYPES()['required']
-                self.assertTrue(set(data['inputs']) <= set(schema))
+                schema = pkg.NODE_CLASS_MAPPINGS[data['class_type']].INPUT_TYPES()
+                self.assertTrue(set(data['inputs']) <= (set(schema['required']) | set(schema.get('optional', {}))))
 
     def test_migration_preview_backup_and_repeat(self):
         with tempfile.TemporaryDirectory() as temp:

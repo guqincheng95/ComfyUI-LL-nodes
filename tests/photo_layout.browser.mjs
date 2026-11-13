@@ -4,7 +4,7 @@ import assert from 'node:assert/strict';
 import fs from 'node:fs/promises';
 import {deflateSync} from 'node:zlib';
 const { chromium } = await import(process.env.LL_PLAYWRIGHT_MODULE || 'playwright');
-const browser = await chromium.launch({headless:true,args:['--no-sandbox','--enable-unsafe-swiftshader','--use-gl=angle','--use-angle=swiftshader']});
+const browser = await chromium.launch({headless:true,executablePath:process.env.LL_CHROMIUM_EXECUTABLE,args:['--no-sandbox','--enable-unsafe-swiftshader','--use-gl=angle','--use-angle=swiftshader']});
 const page = await browser.newPage({viewport:{width:1500,height:1000}});
 const errors=[];
 page.on('pageerror',error=>errors.push(String(error)));

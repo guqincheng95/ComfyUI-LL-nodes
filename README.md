@@ -1,6 +1,8 @@
 # comfyui-LL-nodes · LL 个人节点库
 
-**v0.10.0** · 一个目录安装 · 一次更新全部节点 · 中文分类与搜索
+**v0.11.0** · 一个目录安装 · 一次更新全部节点 · 中文分类与搜索
+
+新增 [DLSS5 分区光影增强](docs/DLSS5.md)：一次整图神经渲染，人物／环境分区强度、统一光影、边缘与肤色保护、局部对比及视频帧光流稳定。首次使用双击 `setup_dlss5.bat` 自动检查并补齐兼容运行时；ComfyUI-Manager 标准安装可通过 `install.py` 自动调用。需 Windows＋兼容 NVIDIA RTX，驱动／画质仍需本机自检。普通git更新不执行安装脚本。
 
 | ComfyUI 分类 | 节点 | 功能 |
 |---|---|---|
@@ -10,6 +12,9 @@
 | LL 节点库 / 图像工具 / 人物轮廓 | LL 人物主体提取 | 原始RGB／RMBG保真，深度细化，可选部位语义去裙尾／头饰，同MASK输出RGB／深度 |
 | LL 节点库 / 图像后期 / 基础调色 | LL 人像色彩对齐 | 中性色校白平衡、分区肤色匹配、手动调色实时预览 |
 | LL 节点库 / 图像后期 / 兼容与整图仿色 | LL 后期修图（兼容版） | 原图对齐、整图仿色、手动调色实时预览 |
+| LL 节点库 / 图像后期 / DLSS5 神经增强 | LL DLSS5 增强设置 | 人像／均衡／环境预设、原生光影与结构、区域和边缘参数 |
+| LL 节点库 / 图像后期 / DLSS5 神经增强 | LL DLSS5 分区光影增强 | 完整RGB＋人物／皮肤MASK，一次渲染、线性融合、可选整图预览 |
+| LL 节点库 / 图像后期 / DLSS5 神经增强 | LL DLSS5 局部对比 | 完整增强后裁ROI，左原图右结果；支持检查遮罩 |
 
 换装或换背景时，参见 [人像色彩对齐](docs/PORTRAIT_COLOR_ALIGN.md)。预览开关和重复安装清理见 [实时预览](docs/PHOTO_LIVE_PREVIEW.md)。
 
@@ -40,15 +45,15 @@ git clone https://github.com/guqincheng95/ComfyUI-LL-nodes.git custom_nodes/comf
 
 也可把交付 ZIP 上传至 `custom_nodes` 后解压，最终入口为 `custom_nodes/comfyui-LL-nodes/__init__.py`。不要把 `modules` 中的文件夹单独安装。
 
-旧三个节点沿用现有依赖。新增增强人物节点需要额外依赖和本地模型，按 SUBJECT_SETUP.md 配置；代码ZIP不包含模型。节点执行时不会自动下载或安装。
+原节点沿用现有依赖。增强人物节点需要额外依赖和本地模型，按 SUBJECT_SETUP.md 配置；代码ZIP不包含模型。DLSS5 依赖使用上方独立脚本自动部署，支持离线 ZIP、已有运行时和自选镜像；安装脚本不更换 Torch/CUDA/驱动。节点导入和执行时不会自动下载或安装。
 
 ## 从两个独立插件迁移（只需一次）
 
-停止 ComfyUI 后，把 `comfyui-LL-nodes-v0.10.0.zip` 上传至 `custom_nodes`：
+停止 ComfyUI 后，把 `comfyui-LL-nodes-v0.11.0.zip` 上传至 `custom_nodes`：
 
 ```bash
 cd /root/autodl-tmp/AI_Workspace/ComfyUI/custom_nodes
-python -m zipfile -e comfyui-LL-nodes-v0.10.0.zip .
+python -m zipfile -e comfyui-LL-nodes-v0.11.0.zip .
 python comfyui-LL-nodes/scripts/migrate_legacy.py --apply
 ```
 
@@ -80,6 +85,8 @@ ZIP 安装：下载新的整库 ZIP 并在 `custom_nodes` 覆盖解压。ZIP 安
 | `modules/subject/` | 增强人物语义、SAM2、深度与肤色净化 |
 | `modules/contour/` | 人物轮廓、关键点适配和遮罩处理 |
 | `modules/photo/` | 后期节点、参数定义、图像算法 |
+| `modules/dlss/` | DLSS5 适配、固定版本部署与第三方 MIT 原生客户端 |
+| `setup_dlss5.bat`、`setup_dlss5.py`、`install.py` | Windows便捷安装／环境检查与Manager安装钩子 |
 | `web/` | 随整库加载的后期滑块前端 |
 | `locales/zh/` | 整库中文翻译 |
 | `examples/resolution/`、`examples/photo/`、`examples/contour/`、`examples/subject/` | 各功能 UI/API 示例 |

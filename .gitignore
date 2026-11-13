@@ -1,3 +1,7 @@
 __pycache__/
 *.py[cod]
 acceptance-output/
+.venv/
+node_modules/
+runtime/dlss5/
+.cache/dlss5/
