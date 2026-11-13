@@ -20,7 +20,8 @@ jobs:
       - run: python -m unittest discover -s tests -p test_dlss_setup.py -v
       - run: python -m compileall -q __init__.py modules scripts tests setup_dlss5.py install.py
   photo-ui-layout:
-    runs-on: ubuntu-latest
+    # Playwright 1.51.1's browser/dependency build supports Ubuntu 24.04.
+    runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
