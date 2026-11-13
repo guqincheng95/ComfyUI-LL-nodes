@@ -9,7 +9,7 @@ import numpy as np
 import torch
 
 from modules.dlss import processing as p
-from modules.dlss.nodes import DLSS5Settings, DLSS5Compare
+from modules.dlss.nodes import DLSS5Settings, DLSS5Compare, DLSS5RegionEnhance
 from modules.dlss import runner
 
 
@@ -169,7 +169,7 @@ class RunnerTests(unittest.TestCase):
         class Progress:
             def __init__(self, count): pass
             def update(self, count): pass
-        return runner.enhance(self.image, self.settings,
+        return runner.enhance(self.image, kwargs.pop('settings', self.settings),
             kwargs.pop('mode', 'independent_images'), kwargs.pop('preview', False), kwargs.pop('long_edge', 1024),
             kwargs.pop('person_mask', None), None, _session_factory=FakeSession,
             _callbacks=lambda release: (lambda: None, Progress), _platform='Windows', **kwargs)
@@ -216,6 +216,54 @@ class RunnerTests(unittest.TestCase):
         preset, = DLSS5Settings().build(preset='环境增强', person_strength=.17, tone=.8)
         self.assertEqual(preset['mix']['person_strength'], .3)
         self.assertEqual(preset['options'].local_tone_strength, 1.2)
+
+    def test_image_only_is_exact_native_rgb_without_ll_postprocessing(self):
+        from modules.dlss.native.settings import DlssOptions
+        native = np.full((64, 96, 4), 157, np.uint8)
+        with patch.object(FakeSession, 'submit', return_value=(native, 0)), \
+             patch.object(runner, 'compose', side_effect=AssertionError('should bypass LL mixing')):
+            output, mask, report = self.run_node(settings=None)
+        report = json.loads(report)
+        torch.testing.assert_close(output[..., :3], torch.full_like(output[..., :3], 157 / 255), rtol=0, atol=0)
+        torch.testing.assert_close(output[..., 3], self.image[..., 3], rtol=0, atol=0)
+        self.assertEqual(report['native_settings'], DlssOptions().native())
+        self.assertEqual(report['processing_mode'], 'native')
+        self.assertIsNone(report['regional_settings'])
+        self.assertEqual(report['warnings'], [])
+        self.assertEqual(float(mask.sum()), 0.)
+
+    def test_explicit_native_keeps_connected_settings_but_skips_masks(self):
+        with patch.object(runner, 'compose', side_effect=AssertionError('should bypass LL mixing')):
+            _, _, report = self.run_node(processing_mode='native', person_mask=torch.ones((3, 1, 1)))
+        report = json.loads(report)
+        self.assertEqual(report['native_settings']['local_structure'], self.settings['options'].local_structure_strength)
+        self.assertEqual(report['processing_mode'], 'native')
+        self.assertTrue(any('忽略' in w for w in report['warnings']))
+
+    def test_mask_without_settings_automatically_enables_region_defaults(self):
+        _, _, report = self.run_node(settings=None, person_mask=torch.ones((1, 64, 96)))
+        report = json.loads(report)
+        self.assertEqual(report['processing_mode'], 'regional')
+        self.assertEqual(report['preset'], '人像保真')
+
+    def test_explicit_region_without_settings_is_supported(self):
+        _, _, report = self.run_node(settings=None, processing_mode='regional')
+        self.assertEqual(json.loads(report)['processing_mode'], 'regional')
+
+    def test_connected_settings_keep_old_automatic_region_behavior(self):
+        _, _, report = self.run_node()
+        self.assertEqual(json.loads(report)['processing_mode'], 'regional')
+
+    def test_invalid_processing_mode_fails_before_worker(self):
+        with self.assertRaisesRegex(ValueError, '处理方式'):
+            self.run_node(processing_mode='invalid')
+        self.assertEqual(FakeSession.created, 0)
+
+    def test_settings_socket_optional_and_existing_widget_order_preserved(self):
+        schema = DLSS5RegionEnhance.INPUT_TYPES()
+        self.assertNotIn('settings', schema['required'])
+        self.assertEqual(list(schema['optional'])[:3], ['settings', 'person_mask', 'skin_mask'])
+        self.assertEqual(list(schema['required']), ['image', 'batch_mode', 'preview_mode', 'preview_long_edge'])
 
 
 @unittest.skipIf(os.name == 'nt', 'POSIX fake worker exercises pipe lifecycle without Windows/GPU')

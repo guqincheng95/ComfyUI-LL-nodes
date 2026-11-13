@@ -31,8 +31,9 @@ def _comfy_callbacks(release):
     return model_management.throw_exception_if_processing_interrupted, ProgressBar
 
 
-def enhance(images, settings, batch_mode, preview_mode, preview_long_edge, person_mask, skin_mask,
-            *, _session_factory=None, _callbacks=None, _platform=None):
+def enhance(images, settings=None, batch_mode='independent_images', preview_mode=False,
+            preview_long_edge=1024, person_mask=None, skin_mask=None,
+            *, processing_mode='auto', _session_factory=None, _callbacks=None, _platform=None):
     """Injected backend/callbacks are test seams, never an exposed fallback renderer."""
     if (_platform or platform.system()) != 'Windows':
         raise RuntimeError('DLSS5 原生渲染需要 Windows 64位＋受支持的 NVIDIA RTX 显卡；其它 LL 节点仍可使用。')
@@ -40,6 +41,18 @@ def enhance(images, settings, batch_mode, preview_mode, preview_long_edge, perso
         raise ValueError('批次类型必须是独立图片或视频序列。')
     if images.ndim != 4 or min(images.shape) < 1 or images.shape[-1] not in (3, 4):
         raise ValueError('输入需要非空 [B,H,W,3/4] IMAGE。')
+    if processing_mode not in ('auto', 'native', 'regional'):
+        raise ValueError('处理方式需为自动、原生直出或分区增强。')
+    regional = processing_mode == 'regional' or (processing_mode == 'auto' and
+        (settings is not None or person_mask is not None or skin_mask is not None))
+    if settings is None:
+        from .nodes import DLSS5Settings
+        from .native.settings import DlssOptions
+        settings, = DLSS5Settings().build()
+        if not regional:
+            # Match upstream's actual defaults, not the LL portrait preset.
+            settings['options'] = DlssOptions()
+            settings['preset'] = '原生默认'
     options = settings['options']
     count, source_h, source_w, channels = images.shape
     in_w, in_h = source_w, source_h
@@ -53,12 +66,14 @@ def enhance(images, settings, batch_mode, preview_mode, preview_long_edge, perso
     if output_bytes > 2 * 1024 ** 3:
         raise ValueError('本批输出图像＋遮罩超过2GiB，请拆分视频帧批次或使用预览模式。')
     # Fail on misaligned masks before unloading models or starting native rendering.
-    people = mask_batch(person_mask, count, (source_h, source_w), (out_h, out_w), '人物遮罩')
-    skins = mask_batch(skin_mask, count, (source_h, source_w), (out_h, out_w), '皮肤遮罩')
+    people = mask_batch(person_mask, count, (source_h, source_w), (out_h, out_w), '人物遮罩') if regional else None
+    skins = mask_batch(skin_mask, count, (source_h, source_w), (out_h, out_w), '皮肤遮罩') if regional else None
     sequence = batch_mode == 'video_sequence'
     warnings = []
-    if people is None:
+    if regional and people is None:
         warnings.append('未接人物遮罩，区域细节强度全图采用环境值。原生自动皮肤结构仍由设置控制。')
+    if not regional and (person_mask is not None or skin_mask is not None):
+        warnings.append('原生直出模式忽略外接遮罩，不执行LL分区／色彩保护。')
     if sequence and count > 1:
         if people is not None and len(people) == 1:
             warnings.append('视频只有一张人物遮罩，将广播到每帧；运动主体建议使用逐帧分割遮罩。')
@@ -95,18 +110,27 @@ def enhance(images, settings, batch_mode, preview_mode, preview_long_edge, perso
                 motion = guide.process(rgba)
                 reset = motion.reset if sequence else True
                 enhanced, _ = session.submit(index=index, rgba=rgba, motion=motion.motion, reset=reset, pts=index)
-                source = resize_image(raw, out_w, out_h)
                 p = None if people is None else people[0 if len(people) == 1 else index]
                 s = None if skins is None else skins[0 if len(skins) == 1 else index]
                 if sequence:
                     p = temporal_person.process(p, motion.motion, reset)
                     s = temporal_skin.process(s, motion.motion, reset)
-                mix = dict(settings['mix'])
-                factor = out_w / source_w
-                mix['feather'] *= factor
-                mix['expand'] *= factor
-                result, mask, report = compose(source, rgba_to_tensor(enhanced, keep_alpha=False).numpy(), p, s,
-                                               colour_state=colour_state, reset=reset, **mix)
+                native = rgba_to_tensor(enhanced, keep_alpha=False).numpy()
+                if regional:
+                    source = resize_image(raw, out_w, out_h)
+                    mix = dict(settings['mix'])
+                    factor = out_w / source_w
+                    mix['feather'] *= factor
+                    mix['expand'] *= factor
+                    result, mask, report = compose(source, native, p, s,
+                                                   colour_state=colour_state, reset=reset, **mix)
+                else:
+                    result = native
+                    if channels == 4:
+                        alpha = resize_image(raw, out_w, out_h)[..., 3:4]
+                        result = np.concatenate([native, alpha], axis=-1)
+                    mask = np.zeros((out_h, out_w), np.float32)
+                    report = {'mode': 'native', 'll_postprocessing': False}
                 results[index] = torch.from_numpy(result)
                 masks[index] = torch.from_numpy(mask)
                 report.update(frame=index, reset_history=reset, scene_score=motion.scene_score)
@@ -114,10 +138,11 @@ def enhance(images, settings, batch_mode, preview_mode, preview_long_edge, perso
                 progress.update(1)
         # Never report success merely because the worker returned an upscaled frame.
         proof = session.feature_report()
-        report = {'version': '0.11.0', 'preset': settings['preset'], 'native_passes_per_frame': 1,
+        report = {'version': '0.11.1', 'preset': settings['preset'], 'native_passes_per_frame': 1,
+                  'processing_mode': 'regional' if regional else 'native',
                   'input_size': [source_w, source_h], 'output_size': [out_w, out_h],
                   'preview': bool(preview_mode), 'batch_mode': batch_mode,
-                  'native_settings': options.native(), 'regional_settings': settings['mix'],
+                  'native_settings': options.native(), 'regional_settings': settings['mix'] if regional else None,
                   'warnings': warnings, 'neural_rendering': proof, 'frames': frame_reports}
         return results, masks, json.dumps(report, ensure_ascii=False, indent=2)
     except RuntimeError as exc:

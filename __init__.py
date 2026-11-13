@@ -5,7 +5,7 @@ from .modules.contour.nodes import PersonContourTrim
 from .modules.subject.nodes import PersonSubjectClean
 from .modules.dlss.nodes import DLSS5Settings, DLSS5RegionEnhance, DLSS5Compare
 
-__version__ = "0.11.0"
+__version__ = "0.11.1"
 WEB_DIRECTORY = "./web"
 NODE_CLASS_MAPPINGS = {
     "ResolutionPreset": ResolutionPreset,
@@ -23,7 +23,7 @@ NODE_DISPLAY_NAME_MAPPINGS["LLPortraitColorAlign"] = "LL 人像色彩对齐 · P
 NODE_DISPLAY_NAME_MAPPINGS["AIVisualPhotoFinish"] = "LL 后期修图（兼容版）· Photo Finish"
 NODE_DISPLAY_NAME_MAPPINGS.update({
     'LLDLSS5Settings': 'LL DLSS5 增强设置 · Settings',
-    'LLDLSS5RegionEnhance': 'LL DLSS5 分区光影增强 · Region Enhance',
+    'LLDLSS5RegionEnhance': 'LL DLSS5 图像增强 · Image Enhance',
     'LLDLSS5Compare': 'LL DLSS5 局部对比 · ROI Compare',
 })
 __all__ = ["NODE_CLASS_MAPPINGS", "NODE_DISPLAY_NAME_MAPPINGS", "WEB_DIRECTORY"]

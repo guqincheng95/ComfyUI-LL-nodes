@@ -1,6 +1,8 @@
 # comfyui-LL-nodes · LL 个人节点库
 
-**v0.11.0** · 一个目录安装 · 一次更新全部节点 · 中文分类与搜索
+**v0.11.1** · 一个目录安装 · 一次更新全部节点 · 中文分类与搜索
+
+DLSS5 最短路径：**加载图片 → LL DLSS5 图像增强 → 保存图片**。不接设置、不接遮罩时，使用原作者默认参数并输出原生增强RGB。需要分区时再接设置或遮罩。
 
 新增 [DLSS5 分区光影增强](docs/DLSS5.md)：一次整图神经渲染，人物／环境分区强度、统一光影、边缘与肤色保护、局部对比及视频帧光流稳定。首次使用双击 `setup_dlss5.bat` 自动检查并补齐兼容运行时；ComfyUI-Manager 标准安装可通过 `install.py` 自动调用。需 Windows＋兼容 NVIDIA RTX，驱动／画质仍需本机自检。普通git更新不执行安装脚本。
 
@@ -13,7 +15,7 @@
 | LL 节点库 / 图像后期 / 基础调色 | LL 人像色彩对齐 | 中性色校白平衡、分区肤色匹配、手动调色实时预览 |
 | LL 节点库 / 图像后期 / 兼容与整图仿色 | LL 后期修图（兼容版） | 原图对齐、整图仿色、手动调色实时预览 |
 | LL 节点库 / 图像后期 / DLSS5 神经增强 | LL DLSS5 增强设置 | 人像／均衡／环境预设、原生光影与结构、区域和边缘参数 |
-| LL 节点库 / 图像后期 / DLSS5 神经增强 | LL DLSS5 分区光影增强 | 完整RGB＋人物／皮肤MASK，一次渲染、线性融合、可选整图预览 |
+| LL 节点库 / 图像后期 / DLSS5 神经增强 | LL DLSS5 图像增强 | 只接图像原生直出；可选人物／皮肤MASK与分区增强 |
 | LL 节点库 / 图像后期 / DLSS5 神经增强 | LL DLSS5 局部对比 | 完整增强后裁ROI，左原图右结果；支持检查遮罩 |
 
 换装或换背景时，参见 [人像色彩对齐](docs/PORTRAIT_COLOR_ALIGN.md)。预览开关和重复安装清理见 [实时预览](docs/PHOTO_LIVE_PREVIEW.md)。
@@ -49,11 +51,11 @@ git clone https://github.com/guqincheng95/ComfyUI-LL-nodes.git custom_nodes/comf
 
 ## 从两个独立插件迁移（只需一次）
 
-停止 ComfyUI 后，把 `comfyui-LL-nodes-v0.11.0.zip` 上传至 `custom_nodes`：
+停止 ComfyUI 后，把 `comfyui-LL-nodes-v0.11.1.zip` 上传至 `custom_nodes`：
 
 ```bash
 cd /root/autodl-tmp/AI_Workspace/ComfyUI/custom_nodes
-python -m zipfile -e comfyui-LL-nodes-v0.11.0.zip .
+python -m zipfile -e comfyui-LL-nodes-v0.11.1.zip .
 python comfyui-LL-nodes/scripts/migrate_legacy.py --apply
 ```
 

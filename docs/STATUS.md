@@ -1,7 +1,8 @@
 # 当前状态 · 交接入口
 
-- 日期：2026-11-13；版本 v0.11.0。仓库 guqincheng95/ComfyUI-LL-nodes。
-- 新增 LL DLSS5 增强设置／分区光影增强／局部对比，见 [DLSS5.md](DLSS5.md)。一次整图渲染，外接完整人物和可见皮肤MASK；统一光影近似分离、线性融合、边缘／肤色保护、视频光流与切镜重置。
+- 日期：2026-11-14；版本 v0.11.1。仓库 guqincheng95/ComfyUI-LL-nodes。
+- v0.11.1修正最短路径：只接图像即原版默认参数原生直出，设置／遮罩均可选。处理方式auto/native/regional；已接设置的旧工作流继续原分区流程。
+- 新增 LL DLSS5 增强设置／图像增强／局部对比，见 [DLSS5.md](DLSS5.md)。一次整图渲染，外接完整人物和可见皮肤MASK；统一光影近似分离、线性融合、边缘／肤色保护、视频光流与切镜重置。
 - DLSS5首次环境部署：setup_dlss5.bat自动定位秋叶／便携Python；Manager标准安装有install.py钩子。固定兼容v3.0＋发布包SHA256，支持已有runtime、离线ZIP、Python镜像／下载前缀；检测缺失才补齐，不改Torch/CUDA/驱动。普通git更新后请主动运行一次脚本。
 - DLSS5仅Windows＋兼容NVIDIA RTX；本轮CPU／模拟后端／安装器检查通过，当前环境没有Windows/NVIDIA，真实DLSS效果与本机自检待验证。其余节点不依赖DLSS环境。
 - 两个调色节点支持手动滑块实时预览；旧后期节点归入兼容分类。详见 [PHOTO_LIVE_PREVIEW.md](PHOTO_LIVE_PREVIEW.md)。

@@ -78,24 +78,27 @@ class DLSS5RegionEnhance:
     FUNCTION = 'enhance'
     RETURN_TYPES = ('IMAGE', 'MASK', 'STRING')
     RETURN_NAMES = ('image', 'person_mask', 'report')
-    DESCRIPTION = '全画面单次 DLSS5 渲染，再按外接人物／皮肤 MASK 控制增强。无需新分割模型。预览模式输出低分辨率，正式导出请关闭。'
+    DESCRIPTION = '只接图片即可使用原版默认参数整图增强；接设置／遮罩可启用分区，也可明确选择原生直出。预览模式输出低分辨率，正式导出请关闭。'
 
     @classmethod
     def INPUT_TYPES(cls):
         return {'required': {
-            'image': ('IMAGE',), 'settings': ('LL_DLSS5_SETTINGS',),
+            'image': ('IMAGE',),
             'batch_mode': (['independent_images', 'video_sequence'], {'default': 'independent_images', 'tooltip': '独立图片逐张重置历史；视频必须按帧顺序输入，并建议提供逐帧 MASK。'}),
             'preview_mode': ('BOOLEAN', {'default': False, 'tooltip': '缩小完整画面后增强，保留上下文。输出也是预览尺寸，不能当作原尺寸成片。'}),
             'preview_long_edge': ('INT', {'default': 1024, 'min': 256, 'max': 2048, 'step': 64}),
         }, 'optional': {
+            'settings': ('LL_DLSS5_SETTINGS', {'tooltip': '可不接：自动模式下只接图像使用原版默认参数；接入设置后沿用分区处理。'}),
             'person_mask': ('MASK', {'tooltip': '白色人物、黑色环境。推荐使用分割模型的完整人物 MASK，勿用删除头发／裙摆后的轮廓修剪结果。'}),
             'skin_mask': ('MASK', {'tooltip': '可见皮肤：脸／身体／手，可合并；排除眼唇、衣服和遮挡。缺省不执行外部肤色保护。'}),
+            'processing_mode': (['auto', 'native', 'regional'], {'default': 'auto', 'tooltip': '自动：只接图像为原生直出，接设置／遮罩为分区。原生直出跳过LL分区与色彩保护；设置仅影响原生参数。'}),
         }}
 
-    def enhance(self, image, settings, batch_mode='independent_images', preview_mode=False,
-                preview_long_edge=1024, person_mask=None, skin_mask=None):
+    def enhance(self, image, settings=None, batch_mode='independent_images', preview_mode=False,
+                preview_long_edge=1024, person_mask=None, skin_mask=None, processing_mode='auto'):
         from .runner import enhance
-        return enhance(image, settings, batch_mode, preview_mode, preview_long_edge, person_mask, skin_mask)
+        return enhance(image, settings, batch_mode, preview_mode, preview_long_edge, person_mask, skin_mask,
+                       processing_mode=processing_mode)
 
 
 class DLSS5Compare:

@@ -1,5 +1,11 @@
 # 当前验证记录 · v0.10.0
 
+## v0.11.1 · 2026-11-14
+
+- 175项Python通过；新增7项覆盖单图默认原生RGB逐值直出／Alpha保留、原版参数、显式原生忽略外MASK但保留原生设置、仅MASK自动分区、显式分区、旧设置路径兼容、无效模式与端口／控件顺序。日志见 [dlss-v0111-tests.log](dlss-v0111-tests.log)。
+- 前端逻辑、Python编译与空白检查通过；没有新增DOM控件或依赖。原生输出比对使用模拟worker，Windows/NVIDIA真实DLSS画质仍未在开发环境验证。
+
+
 ## v0.11.0 · 2026-11-13
 
 - 168项Python通过（原127＋DLSS5新增41）；完整输出见 [dlss-v011-tests.log](dlss-v011-tests.log)。两组原生前端逻辑检查通过；Python编译与git diff空白检查通过。

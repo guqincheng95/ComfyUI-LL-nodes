@@ -804,14 +804,15 @@
     }
   },
   "LLDLSS5RegionEnhance": {
-    "display_name": "LL DLSS5 分区光影增强 · Region Enhance",
-    "description": "全画面单次 DLSS5 渲染，再按外接人物／皮肤 MASK 控制增强。无需新分割模型。预览模式输出低分辨率，正式导出请关闭。",
+    "display_name": "LL DLSS5 图像增强 · Image Enhance",
+    "description": "只接图片即可使用原版默认参数整图增强；接设置／遮罩可启用分区，也可明确选择原生直出。预览模式输出低分辨率，正式导出请关闭。",
     "inputs": {
       "image": {
         "name": "输入图像"
       },
       "settings": {
-        "name": "增强设置"
+        "name": "增强设置",
+        "tooltip": "可不接：自动模式下只接图像使用原版默认参数；接入设置后沿用分区处理。"
       },
       "batch_mode": {
         "name": "批次类型",
@@ -835,6 +836,15 @@
       "skin_mask": {
         "name": "可见皮肤遮罩",
         "tooltip": "可见皮肤：脸／身体／手，可合并；排除眼唇、衣服和遮挡。缺省不执行外部肤色保护。"
+      },
+      "processing_mode": {
+        "name": "处理方式",
+        "options": {
+          "auto": "自动・只接图像原生直出",
+          "native": "原生整图直出",
+          "regional": "分区增强"
+        },
+        "tooltip": "自动：只接图像为原生直出，接设置／遮罩为分区。原生直出跳过LL分区与色彩保护；设置仅影响原生参数。"
       }
     },
     "outputs": {
