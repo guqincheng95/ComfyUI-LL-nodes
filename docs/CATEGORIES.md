@@ -8,7 +8,9 @@
 | 图像工具 / 人物轮廓 | LL 人物轮廓修剪 | modules/contour |
 | 图像后期 / 基础调色 | LL 人像色彩对齐 | modules/photo |
 | 图像后期 / 兼容与整图仿色 | LL 后期修图（兼容版） | modules/photo |
-| 图像后期 / DLSS5 神经增强 | LL DLSS5 增强设置、图像增强、局部对比 | modules/dlss |
+| 图像后期 / DLSS5 神经增强 | LL DLSS5 图像增强（参数／分区／对比合一） | modules/dlss |
+
+旧DLSS5设置、对比节点移入“兼容节点/DLSS5旧版”，标记DEPRECATED；不再作为新工作流独立组件。
 
 Z-Image、Krea 2 等适配属于尺寸预设内部选项或兼容说明，不各自创建重复分类。
 后期的曝光、白平衡、色彩平衡是同一节点的参数，不拆成三个重复节点。

@@ -17,6 +17,7 @@ jobs:
       - run: python -m unittest discover -s tests -p test_library.py -v
       - run: node tests/frontend.test.mjs
       - run: node tests/subject_frontend.test.mjs
+      - run: node tests/dlss_frontend.test.mjs
       - run: python -m unittest discover -s tests -p test_dlss_setup.py -v
       - run: python -m compileall -q __init__.py modules scripts tests setup_dlss5.py install.py
   photo-ui-layout:

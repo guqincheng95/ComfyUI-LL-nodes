@@ -1,6 +1,8 @@
 """Stable V1 ComfyUI schemas; heavy/native imports happen only on execution."""
 
 PRESETS = ['人像保真', '均衡增强', '环境增强', '自定义']
+DLSS_CATEGORY = 'LL 节点库/图像后期/DLSS5 神经增强'
+COMPAT_CATEGORY = 'LL 节点库/兼容节点/DLSS5 旧版'
 
 
 def unit(default, tip=''):
@@ -8,11 +10,12 @@ def unit(default, tip=''):
 
 
 class DLSS5Settings:
-    CATEGORY = 'LL 节点库/图像后期/DLSS5 神经增强'
+    DEPRECATED = True
+    CATEGORY = COMPAT_CATEGORY
     FUNCTION = 'build'
     RETURN_TYPES = ('LL_DLSS5_SETTINGS',)
     RETURN_NAMES = ('settings',)
-    DESCRIPTION = '整图仅渲染一次；预设决定原生参数和区域强度。自定义可逐项调整。首次使用先运行 setup_dlss5.bat。'
+    DESCRIPTION = '旧工作流兼容节点，已弃用。新工作流请直接使用LL DLSS5图像增强，参数已合并到主节点。'
 
     @classmethod
     def INPUT_TYPES(cls):
@@ -74,39 +77,73 @@ class DLSS5Settings:
 
 
 class DLSS5RegionEnhance:
-    CATEGORY = DLSS5Settings.CATEGORY
+    CATEGORY = DLSS_CATEGORY
     FUNCTION = 'enhance'
     RETURN_TYPES = ('IMAGE', 'MASK', 'STRING')
     RETURN_NAMES = ('image', 'person_mask', 'report')
-    DESCRIPTION = '只接图片即可使用原版默认参数整图增强；接设置／遮罩可启用分区，也可明确选择原生直出。预览模式输出低分辨率，正式导出请关闭。'
+    DESCRIPTION = '一个节点完成原生整图增强、参数设置、人物分区和内嵌局部对比。只接图片即可运行；展开高级设置可细调。旧settings输入仅用于兼容。'
 
     @classmethod
     def INPUT_TYPES(cls):
+        inline = DLSS5Settings.INPUT_TYPES()
+        controls = {**inline['required'], **inline['optional']}
+        controls.update({
+            'preset': (['原生默认', *PRESETS], {'default': '原生默认', 'tooltip': '原生默认保留原版参数；人像／均衡／环境预设包含LL分区处理；自定义按处理方式生效。'}),
+            'style': (['默认', '自然', '电影'], {'default': '默认'}),
+            'structure': ('FLOAT', {'default': 1.5, 'min': 0., 'max': 2., 'step': .05}),
+            'skin_structure': ('FLOAT', {'default': 2., 'min': -1., 'max': 2., 'step': .05}),
+        })
         return {'required': {
             'image': ('IMAGE',),
             'batch_mode': (['independent_images', 'video_sequence'], {'default': 'independent_images', 'tooltip': '独立图片逐张重置历史；视频必须按帧顺序输入，并建议提供逐帧 MASK。'}),
             'preview_mode': ('BOOLEAN', {'default': False, 'tooltip': '缩小完整画面后增强，保留上下文。输出也是预览尺寸，不能当作原尺寸成片。'}),
             'preview_long_edge': ('INT', {'default': 1024, 'min': 256, 'max': 2048, 'step': 64}),
         }, 'optional': {
-            'settings': ('LL_DLSS5_SETTINGS', {'tooltip': '可不接：自动模式下只接图像使用原版默认参数；接入设置后沿用分区处理。'}),
+            'settings': ('LL_DLSS5_SETTINGS', {'tooltip': '旧工作流兼容输入，可不接。接入后以外部设置为准，忽略主节点内置参数。'}),
             'person_mask': ('MASK', {'tooltip': '白色人物、黑色环境。推荐使用分割模型的完整人物 MASK，勿用删除头发／裙摆后的轮廓修剪结果。'}),
             'skin_mask': ('MASK', {'tooltip': '可见皮肤：脸／身体／手，可合并；排除眼唇、衣服和遮挡。缺省不执行外部肤色保护。'}),
-            'processing_mode': (['auto', 'native', 'regional'], {'default': 'auto', 'tooltip': '自动：只接图像为原生直出，接设置／遮罩为分区。原生直出跳过LL分区与色彩保护；设置仅影响原生参数。'}),
-        }}
+            'processing_mode': (['auto', 'native', 'regional'], {'default': 'auto', 'tooltip': '自动：原生默认且无遮罩时整图直出；接遮罩或选人像／均衡／环境预设时分区。可明确指定原生或分区。'}),
+            **controls,
+            'show_advanced': ('BOOLEAN', {'default': False, 'tooltip': '只控制参数展开显示，不改变已保存的参数值。'}),
+            'compare_preview': ('BOOLEAN', {'default': False, 'tooltip': '在本节点内显示左原图／右结果；正式图像输出不受影响。'}),
+            'roi_mask': ('MASK', {'tooltip': '可选：仅用于对比预览的范围；不参与人物分区或渲染。'}),
+            'roi_x': unit(0.), 'roi_y': unit(0.), 'roi_width': unit(1.), 'roi_height': unit(1.),
+        }, 'hidden': {'prompt': 'PROMPT', 'extra_pnginfo': 'EXTRA_PNGINFO'}}
 
     def enhance(self, image, settings=None, batch_mode='independent_images', preview_mode=False,
-                preview_long_edge=1024, person_mask=None, skin_mask=None, processing_mode='auto'):
+                preview_long_edge=1024, person_mask=None, skin_mask=None, processing_mode='auto',
+                preset='原生默认', compare_preview=False, roi_mask=None, roi_x=0., roi_y=0.,
+                roi_width=1., roi_height=1., show_advanced=False, prompt=None, extra_pnginfo=None, **values):
         from .runner import enhance
-        return enhance(image, settings, batch_mode, preview_mode, preview_long_edge, person_mask, skin_mask,
-                       processing_mode=processing_mode)
+        if settings is None:
+            settings = inline_settings(preset, values)
+            if processing_mode == 'auto':
+                processing_mode = 'regional' if person_mask is not None or skin_mask is not None or preset in PRESETS[:3] else 'native'
+        result = enhance(image, settings, batch_mode, preview_mode, preview_long_edge, person_mask, skin_mask,
+                         processing_mode=processing_mode)
+        if compare_preview:
+            from .preview import comparison_preview
+            return comparison_preview(image, result, roi_mask, roi_x, roi_y, roi_width, roi_height, prompt, extra_pnginfo)
+        return result
+
+
+def inline_settings(preset='原生默认', values=None):
+    """Shared settings implementation; the old node is never required by the graph."""
+    values = dict(values or {})
+    defaults = {'style': '默认', 'structure': 1.5, 'skin_structure': 2.}
+    defaults.update(values)
+    result, = DLSS5Settings().build(preset='自定义' if preset == '原生默认' else preset, **defaults)
+    result['preset'] = preset
+    return result
 
 
 class DLSS5Compare:
-    CATEGORY = DLSS5Settings.CATEGORY
+    DEPRECATED = True
+    CATEGORY = COMPAT_CATEGORY
     FUNCTION = 'compare'
     RETURN_TYPES = ('IMAGE', 'STRING')
     RETURN_NAMES = ('comparison', 'report')
-    DESCRIPTION = '左原图、右增强；先完整渲染再裁出 ROI，不改变光照上下文。仅首帧检查，可接预览图像节点。'
+    DESCRIPTION = '旧工作流兼容节点，已弃用。新工作流直接开启LL DLSS5图像增强节点内的对比预览。'
 
     @classmethod
     def INPUT_TYPES(cls):

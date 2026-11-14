@@ -707,8 +707,8 @@
     }
   },
   "LLDLSS5Settings": {
-    "display_name": "LL DLSS5 增强设置 · Settings",
-    "description": "整图仅渲染一次；预设决定原生参数和区域强度。自定义可逐项调整。首次使用先运行 setup_dlss5.bat。",
+    "display_name": "LL DLSS5 增强设置（旧版兼容）· Settings",
+    "description": "旧工作流兼容节点，已弃用。新工作流请直接使用LL DLSS5图像增强，参数已合并到主节点。",
     "inputs": {
       "preset": {
         "name": "增强预设",
@@ -805,14 +805,14 @@
   },
   "LLDLSS5RegionEnhance": {
     "display_name": "LL DLSS5 图像增强 · Image Enhance",
-    "description": "只接图片即可使用原版默认参数整图增强；接设置／遮罩可启用分区，也可明确选择原生直出。预览模式输出低分辨率，正式导出请关闭。",
+    "description": "一个节点完成原生整图增强、参数设置、人物分区和内嵌局部对比。只接图片即可运行；展开高级设置可细调。旧settings输入仅用于兼容。",
     "inputs": {
       "image": {
         "name": "输入图像"
       },
       "settings": {
-        "name": "增强设置",
-        "tooltip": "可不接：自动模式下只接图像使用原版默认参数；接入设置后沿用分区处理。"
+        "name": "旧版兼容设置（可不接）",
+        "tooltip": "旧工作流兼容输入，可不接。接入后以外部设置为准，忽略主节点内置参数。"
       },
       "batch_mode": {
         "name": "批次类型",
@@ -844,7 +844,117 @@
           "native": "原生整图直出",
           "regional": "分区增强"
         },
-        "tooltip": "自动：只接图像为原生直出，接设置／遮罩为分区。原生直出跳过LL分区与色彩保护；设置仅影响原生参数。"
+        "tooltip": "自动：原生默认且无遮罩时整图直出；接遮罩或选人像／均衡／环境预设时分区。可明确指定原生或分区。"
+      },
+      "preset": {
+        "name": "增强预设",
+        "tooltip": "原生默认保留原版参数；人像／均衡／环境预设包含LL分区处理；自定义按处理方式生效。"
+      },
+      "upscaling": {
+        "name": "输出倍率"
+      },
+      "model": {
+        "name": "原生模型",
+        "options": {
+          "Default": "原生默认"
+        }
+      },
+      "style": {
+        "name": "渲染风格"
+      },
+      "tone": {
+        "name": "原生光影强度",
+        "tooltip": "原生光影／色调参数，不是区域混合强度。"
+      },
+      "structure": {
+        "name": "原生结构强度"
+      },
+      "skin_structure": {
+        "name": "原生皮肤结构"
+      },
+      "automatic_skin_mask": {
+        "name": "原生皮肤识别",
+        "tooltip": "原生皮肤识别，只控制皮肤结构；不替代外接人物 MASK。"
+      },
+      "region_mode": {
+        "name": "区域融合方式",
+        "options": {
+          "unified_lighting": "统一光影・细节分区",
+          "regional_all": "全部变化分区"
+        },
+        "tooltip": "统一光影：低频光影共享，细节分区；全部分区：所有变化都按区域混合。"
+      },
+      "person_strength": {
+        "name": "人物细节强度",
+        "tooltip": "统一光影模式下主要控制人物细节；设为0仍保留统一光影。"
+      },
+      "background_strength": {
+        "name": "环境细节强度"
+      },
+      "lighting_strength": {
+        "name": "统一光影强度",
+        "tooltip": "统一光影模式的全图低频变化强度；全部分区模式忽略。"
+      },
+      "neutral_protection": {
+        "name": "中性色保护",
+        "tooltip": "用原图中性区域限制色偏，保留新的亮度变化；无可靠样本则跳过。"
+      },
+      "skin_protection": {
+        "name": "肤色色度保护",
+        "tooltip": "须接可见皮肤 MASK。限制肤色色度变化，保留增强亮度，不把衣服当皮肤。"
+      },
+      "edge_guard": {
+        "name": "边缘保护",
+        "tooltip": "在人物边界降低细节混合差异；无法保证消除模型引起的位移。"
+      },
+      "feather": {
+        "name": "遮罩羽化像素",
+        "tooltip": "按原图像素设置，放大时同比换算。"
+      },
+      "mask_expand": {
+        "name": "遮罩扩缩像素"
+      },
+      "temporal_mask_strength": {
+        "name": "视频遮罩稳定",
+        "tooltip": "仅视频序列：按光流传播遮罩并与当前遮罩核对，切镜重置。"
+      },
+      "runtime_dir": {
+        "name": "运行时目录",
+        "tooltip": "留空使用安装脚本记录的目录；可复用原作者节点的兼容 v3.0 runtime。"
+      },
+      "release_comfy_models": {
+        "name": "渲染前释放显存",
+        "tooltip": "渲染前卸载 ComfyUI 已加载模型，释放显存；后续节点可能需要重新加载。"
+      },
+      "worker_timeout": {
+        "name": "原生响应超时秒"
+      },
+      "scene_change_threshold": {
+        "name": "切镜检测阈值"
+      },
+      "show_advanced": {
+        "name": "展开高级设置",
+        "tooltip": "只控制参数展开显示，不改变已保存的参数值。"
+      },
+      "compare_preview": {
+        "name": "节点内对比预览",
+        "tooltip": "在本节点内显示左原图／右结果；正式图像输出不受影响。"
+      },
+      "roi_mask": {
+        "name": "对比预览范围遮罩",
+        "tooltip": "可选：仅用于对比预览的范围；不参与人物分区或渲染。"
+      },
+      "roi_x": {
+        "name": "预览起点X"
+      },
+      "roi_y": {
+        "name": "预览起点Y"
+      },
+      "roi_width": {
+        "name": "预览范围宽度"
+      },
+      "roi_height": {
+        "name": "预览范围高度"
       }
     },
     "outputs": {
@@ -860,8 +970,8 @@
     }
   },
   "LLDLSS5Compare": {
-    "display_name": "LL DLSS5 局部对比 · ROI Compare",
-    "description": "左原图、右增强；先完整渲染再裁出 ROI，不改变光照上下文。仅首帧检查，可接预览图像节点。",
+    "display_name": "LL DLSS5 局部对比（旧版兼容）· ROI Compare",
+    "description": "旧工作流兼容节点，已弃用。新工作流直接开启LL DLSS5图像增强节点内的对比预览。",
     "inputs": {
       "original": {
         "name": "原图"

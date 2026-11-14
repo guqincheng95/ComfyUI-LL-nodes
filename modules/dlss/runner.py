@@ -138,7 +138,7 @@ def enhance(images, settings=None, batch_mode='independent_images', preview_mode
                 progress.update(1)
         # Never report success merely because the worker returned an upscaled frame.
         proof = session.feature_report()
-        report = {'version': '0.11.1', 'preset': settings['preset'], 'native_passes_per_frame': 1,
+        report = {'version': '0.12.0', 'preset': settings['preset'], 'native_passes_per_frame': 1,
                   'processing_mode': 'regional' if regional else 'native',
                   'input_size': [source_w, source_h], 'output_size': [out_w, out_h],
                   'preview': bool(preview_mode), 'batch_mode': batch_mode,
