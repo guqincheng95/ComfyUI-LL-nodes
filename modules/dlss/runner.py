@@ -138,7 +138,7 @@ def enhance(images, settings=None, batch_mode='independent_images', preview_mode
                 progress.update(1)
         # Never report success merely because the worker returned an upscaled frame.
         proof = session.feature_report()
-        report = {'version': '0.12.0', 'preset': settings['preset'], 'native_passes_per_frame': 1,
+        report = {'version': '0.12.1', 'preset': settings['preset'], 'native_passes_per_frame': 1,
                   'processing_mode': 'regional' if regional else 'native',
                   'input_size': [source_w, source_h], 'output_size': [out_w, out_h],
                   'preview': bool(preview_mode), 'batch_mode': batch_mode,
@@ -149,7 +149,7 @@ def enhance(images, settings=None, batch_mode='independent_images', preview_mode
         # Preserve ComfyUI's cancellation exception type after killing a blocked worker.
         if 'interrupt' in locals():
             interrupt()
-        raise RuntimeError('LL DLSS5 增强失败。请先运行 setup_dlss5.bat 检查环境；若是 NGX 初始化错误，'
+        raise RuntimeError('LL DLSS5 增强失败。环境缺失时主节点会自动部署，详情请查看控制台；若是 NGX 初始化错误，'
             '请关闭其它 GPU 任务并检查显卡驱动和运行时配套版本。原始错误：\n' + str(exc)) from exc
     finally:
         _RENDER_LOCK.release()

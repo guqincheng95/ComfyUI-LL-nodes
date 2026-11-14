@@ -31,10 +31,10 @@ REQUIRED_RUNTIME_FILES = (
     "nvngx_dlssnr.dll",
 )
 
-SETUP_HINT = """请先在 LL 节点库目录双击 setup_dlss5.bat，或使用 ComfyUI 的 Python 执行：
+SETUP_HINT = """主节点默认在首次运行自动部署环境；也可在 LL 节点库目录双击 setup_dlss5.bat，或使用 ComfyUI 的 Python 执行：
     python setup_dlss5.py
 可传 --archive 离线包.zip 或 --runtime-dir 已有的/bin/runtime。
-也可在设置节点填写运行时目录，或设置 DLSS5_RUNTIME_DIR。"""
+也可在主节点高级设置填写运行时目录，或设置 DLSS5_RUNTIME_DIR。"""
 
 
 class RuntimeMissing(RuntimeError):

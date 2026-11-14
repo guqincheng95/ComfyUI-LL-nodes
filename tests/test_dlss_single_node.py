@@ -14,6 +14,9 @@ from modules.dlss.preview import comparison_preview
 
 class SingleNodeTests(unittest.TestCase):
     def setUp(self):
+        bootstrap = patch('modules.dlss.bootstrap.ensure_environment')
+        self.environment = bootstrap.start()
+        self.addCleanup(bootstrap.stop)
         self.image = torch.full((1, 64, 96, 3), .3)
         self.output = (self.image + .2, torch.zeros((1, 64, 96)), 'report')
 
@@ -96,6 +99,12 @@ class SingleNodeTests(unittest.TestCase):
             DLSS5RegionEnhance().enhance(self.image, show_advanced=True, structure=.8)
             shown = run.call_args.args[1]['options']
         self.assertEqual(hidden, shown)
+
+    def test_setup_controls_are_appended_after_all_existing_widgets(self):
+        optional = list(DLSS5RegionEnhance.INPUT_TYPES()['optional'])
+        self.assertEqual(optional[-7:], ['auto_setup', 'setup_archive', 'setup_index_url',
+            'setup_download_prefix', 'setup_wheel_dir', 'setup_http_proxy', 'setup_official_only'])
+        self.assertLess(optional.index('roi_height'), optional.index('auto_setup'))
 
 
 if __name__ == '__main__':

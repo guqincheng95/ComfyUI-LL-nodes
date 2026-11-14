@@ -10,7 +10,8 @@ const defaults={batch_mode:'independent_images',preview_mode:false,preview_long_
  structure:1.5,skin_structure:2,automatic_skin_mask:true,region_mode:'unified_lighting',person_strength:.35,
  background_strength:1,lighting_strength:.7,neutral_protection:.35,skin_protection:.6,edge_guard:.7,
  feather:6,mask_expand:0,temporal_mask_strength:.4,runtime_dir:'',release_comfy_models:true,
- worker_timeout:120,scene_change_threshold:.24,roi_x:0,roi_y:0,roi_width:1,roi_height:1};
+ worker_timeout:120,scene_change_threshold:.24,roi_x:0,roi_y:0,roi_width:1,roi_height:1,
+ auto_setup:true,setup_archive:'',setup_index_url:'',setup_download_prefix:'',setup_wheel_dir:'',setup_http_proxy:'',setup_official_only:false};
 const node={comfyClass:'LLDLSS5RegionEnhance',size:[360,500],inputs:[{name:'settings',link:null},{name:'person_mask',link:null}],
  widgets:Object.entries(defaults).map(([name,value])=>({name,value,type:typeof value==='boolean'?'toggle':typeof value==='number'?'number':'combo'})),
  computeSize(){return [360,50+this.widgets.reduce((h,w)=>h+(w.computeSize?.()[1]??24)+4,0)];},
@@ -28,6 +29,9 @@ const callback=w('show_advanced').callback;enhanceDlss(node);assert.equal(w('sho
 const closedHeight=node.size[1];
 set('show_advanced',true);
 assert.equal(w('structure').hidden,false);
+assert.equal(w('setup_archive').hidden,false);
+set('auto_setup',false);assert.equal(w('setup_archive').hidden,true);
+set('auto_setup',true);assert.equal(w('setup_archive').hidden,false);
 assert.equal(w('person_strength').hidden,true,'native mode hides unused regional controls');
 assert.ok(node.size[1]>closedHeight);
 set('processing_mode','regional');assert.equal(w('person_strength').hidden,false);

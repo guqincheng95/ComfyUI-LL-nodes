@@ -1,10 +1,11 @@
 # 当前状态 · 交接入口
 
-- 日期：2026-11-14；版本 v0.12.0。仓库 guqincheng95/ComfyUI-LL-nodes。
+- 日期：2026-11-14；版本 v0.12.1。仓库 guqincheng95/ComfyUI-LL-nodes。
+- v0.12.1：首次执行自动检查并部署，完成后继续当前任务；GitHub与公共加速入口小样测速、慢速回退、安全续传、SHA256校验，Python依赖默认清华镜像失败回退PyPI。高级可配置代理／离线包或关闭自动部署。
 - v0.12.0整合为一个主节点：参数直接内置、高级参数按需展开、人物分区和ROI对比都在本节点完成；两个辅助节点DEPRECATED并移入兼容分类。
 - v0.11.1修正最短路径：只接图像即原版默认参数原生直出，设置／遮罩均可选。处理方式auto/native/regional；已接设置的旧工作流继续原分区流程。
 - 使用 LL DLSS5 图像增强，见 [DLSS5.md](DLSS5.md)。一次整图渲染，外接完整人物和可见皮肤MASK；统一光影近似分离、线性融合、边缘／肤色保护、视频光流与切镜重置。
-- DLSS5首次环境部署：setup_dlss5.bat自动定位秋叶／便携Python；Manager标准安装有install.py钩子。固定兼容v3.0＋发布包SHA256，支持已有runtime、离线ZIP、Python镜像／下载前缀；检测缺失才补齐，不改Torch/CUDA/驱动。普通git更新后请主动运行一次脚本。
+- DLSS5首次环境部署：setup_dlss5.bat自动定位秋叶／便携Python；Manager标准安装有install.py钩子。固定兼容v3.0＋发布包SHA256，支持已有runtime、离线ZIP、Python镜像／下载前缀；检测缺失才补齐，不改Torch/CUDA/驱动。git更新后重启，首次执行主节点即可按需准备环境。
 - DLSS5仅Windows＋兼容NVIDIA RTX；本轮CPU／模拟后端／安装器检查通过，当前环境没有Windows/NVIDIA，真实DLSS效果与本机自检待验证。其余节点不依赖DLSS环境。
 - 两个调色节点支持手动滑块实时预览；旧后期节点归入兼容分类。详见 [PHOTO_LIVE_PREVIEW.md](PHOTO_LIVE_PREVIEW.md)。
 - 新增「LL 人像色彩对齐」：中性取样校白平衡，独立匹配脸部与可见身体肤色，再进行手动调整；接线见 [PORTRAIT_COLOR_ALIGN.md](PORTRAIT_COLOR_ALIGN.md)。

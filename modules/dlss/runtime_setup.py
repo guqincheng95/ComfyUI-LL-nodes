@@ -1,6 +1,6 @@
 """Standalone, idempotent Windows setup. Stdlib only until dependency repair.
 
-User-invoked or Manager install hook; normal node import/execution never installs.
+User-invoked, Manager hook, or first-execution bootstrap. Import never installs.
 The release and SHA256 are pinned to upstream's protocol-v4 compatible bundle.
 """
 from __future__ import annotations
@@ -34,10 +34,12 @@ NOTICE = ('LL DLSS5 安装：使用 NVIDIA DLSS 神经渲染，非 LL 自训练�
           '仅修复当前 Python 中缺失的 numpy/OpenCV 和本插件运行时；不安装或升级 Torch/CUDA/显卡驱动。')
 
 
-def sha256(path):
+def sha256(path, cancel_check=None):
     digest = hashlib.sha256()
     with Path(path).open('rb') as stream:
         for chunk in iter(lambda: stream.read(1024 * 1024), b''):
+            if cancel_check:
+                cancel_check()
             digest.update(chunk)
     return digest.hexdigest()
 
@@ -46,7 +48,7 @@ def _import_ok(name):
     try:
         module = importlib.import_module(name)
         return {'ready': True, 'version': getattr(module, '__version__', 'unknown')}
-    except (ImportError, OSError) as exc:
+    except (ImportError, OSError, RuntimeError) as exc:
         return {'ready': False, 'reason': str(exc)}
 
 
@@ -95,10 +97,37 @@ def inspect_environment():
     return report
 
 
-def install_dependencies(index_url=None, wheel_dir=None):
+def run_checked(command, timeout=600, cancel_check=None):
+    if cancel_check is None:
+        return subprocess.run(command, check=True, timeout=timeout)
+    process = subprocess.Popen(command)
+    started = time.monotonic()
+    try:
+        while process.poll() is None:
+            cancel_check()
+            if time.monotonic() - started > timeout:
+                raise subprocess.TimeoutExpired(command, timeout)
+            time.sleep(.15)
+        cancel_check()
+        if process.returncode:
+            raise subprocess.CalledProcessError(process.returncode, command)
+    except BaseException:
+        if process.poll() is None:
+            process.terminate()
+            try:
+                process.wait(timeout=5)
+            except subprocess.TimeoutExpired:
+                process.kill()
+                process.wait(timeout=5)
+        raise
+
+
+def install_dependencies(index_url=None, wheel_dir=None, cancel_check=None, proxy=''):
     if not _import_ok('torch')['ready']:
         raise RuntimeError('当前 Python 无法导入 Torch。请选择运行 ComfyUI 的 Python；本脚本不擅自更换 Torch/CUDA。')
     for module, package in (('numpy', 'numpy>=1.24,<3'), ('cv2', 'opencv-python-headless==4.11.0.86')):
+        if cancel_check:
+            cancel_check()
         if _import_ok(module)['ready']:
             print(f'[已有] {module}，保留当前版本。', flush=True)
             continue
@@ -109,56 +138,45 @@ def install_dependencies(index_url=None, wheel_dir=None):
                         if d.metadata.get('Name', '').lower().replace('_', '-').startswith('opencv-')]
             if existing:
                 raise RuntimeError('已安装 ' + ', '.join(existing) + ' 但 cv2 导入失败，请修复原 OpenCV 环境后重试。')
-        command = [sys.executable, '-m', 'pip', 'install', '--disable-pip-version-check', package]
+        command = [sys.executable, '-m', 'pip', 'install', '--disable-pip-version-check', '--no-input', package]
         # Avoid changing an installed numpy for an OpenCV dependency resolution.
         if module == 'cv2':
             command += ['--no-deps']
-        if wheel_dir:
-            command += ['--no-index', '--find-links', str(wheel_dir)]
-        elif index_url:
-            command += ['--index-url', index_url]
         print('[安装缺失依赖] ' + package, flush=True)
-        subprocess.run(command, check=True, timeout=600)
+        if proxy:
+            command += ['--proxy', proxy]
+        if wheel_dir:
+            choices = [['--no-index', '--find-links', str(wheel_dir)]]
+        else:
+            configured = index_url or os.environ.get('PIP_INDEX_URL')
+            choices = ([['--index-url', configured]] if configured else [
+                ['--index-url', 'https://mirrors.tuna.tsinghua.edu.cn/pypi/web/simple'],
+                ['--index-url', 'https://pypi.org/simple'],
+            ])
+        for number, source in enumerate(choices):
+            try:
+                run_checked(command + source + ['--timeout', '15', '--retries', '1'], timeout=600, cancel_check=cancel_check)
+                break
+            except (subprocess.CalledProcessError, subprocess.TimeoutExpired):
+                if number + 1 == len(choices):
+                    raise
+                print('[依赖源切换] 清华镜像未完成安装，尝试PyPI原始源。', flush=True)
         importlib.invalidate_caches()
         if not _import_ok(module)['ready']:
             raise RuntimeError(f'{module}安装后仍无法导入，请重启安装脚本并检查 Python 环境。')
 
 
-def download_archive(url, target):
-    if not url.lower().startswith('https://'):
-        raise ValueError('下载地址必须使用 HTTPS。')
-    target = Path(target)
-    partial = target.with_suffix('.part')
-    try:
-        request = urllib.request.Request(url, headers={'User-Agent': 'LL-nodes-DLSS5/0.11.0'})
-        with urllib.request.urlopen(request, timeout=30) as response, partial.open('wb') as sink:
-            total = int(response.headers.get('Content-Length') or 0)
-            received, last_percent = 0, -1
-            while True:
-                chunk = response.read(1024 * 1024)
-                if not chunk:
-                    break
-                sink.write(chunk)
-                received += len(chunk)
-                if received > 1024 ** 3:
-                    raise RuntimeError('下载超过1GiB限制，已停止。')
-                percent = int(received * 100 / total) if total else int(received / 10_000_000)
-                if percent != last_percent:
-                    print(f'[下载] {received / 1e6:.1f}MB' + (f' / {total / 1e6:.1f}MB ({percent}%)' if total else ''), flush=True)
-                    last_percent = percent
-            if total and received != total:
-                raise RuntimeError('下载不完整，请重试，或用 --archive 指定离线包。')
-        if sha256(partial) != RELEASE_SHA256:
-            raise RuntimeError('发布包 SHA-256 不匹配，未解压或执行。请使用固定 v3.0 原始 ZIP。')
-        partial.replace(target)
-    finally:
-        partial.unlink(missing_ok=True)
-    return target
+def download_archive(url, target, *, cancel_check=None, progress_callback=None,
+                     prefix='', proxy='', official_only=False):
+    from .download import download
+    return download(url, target, RELEASE_SHA256,
+        466919995 if url == RELEASE_URL else None, prefix=prefix, mirrors=not official_only,
+        proxy=proxy, cancel_check=cancel_check, progress_callback=progress_callback)
 
 
-def extract_verified(archive_path, staging, expected_sha256=RELEASE_SHA256):
+def extract_verified(archive_path, staging, expected_sha256=RELEASE_SHA256, cancel_check=None):
     """Authenticate first, then validate every selected member before any extraction."""
-    if sha256(archive_path) != expected_sha256:
+    if sha256(archive_path, cancel_check) != expected_sha256:
         raise RuntimeError('离线／缓存 ZIP 的 SHA-256 不匹配；要求兼容的原始 v3.0 发布包。')
     staging = Path(staging)
     selected, total, destinations = [], 0, set()
@@ -193,9 +211,14 @@ def extract_verified(archive_path, staging, expected_sha256=RELEASE_SHA256):
             if ('ffmpeg', required) not in destinations:
                 raise RuntimeError('发布包缺少 ffmpeg/' + required)
         for info, path in selected:
+            if cancel_check:
+                cancel_check()
             path.parent.mkdir(parents=True, exist_ok=True)
             with archive.open(info) as source, path.open('wb') as sink:
-                shutil.copyfileobj(source, sink)
+                for block in iter(lambda: source.read(1024 * 1024), b''):
+                    if cancel_check:
+                        cancel_check()
+                    sink.write(block)
     verify_files(staging / 'runtime')
     return staging
 
@@ -246,7 +269,7 @@ def resolve_ffmpeg_directory(runtime):
         return None
 
 
-def smoke_test(runtime, timeout=120):
+def smoke_test(runtime, timeout=120, cancel_check=None):
     """Tiny real worker roundtrip, protocol and signed feature-18 evidence required."""
     import numpy as np
     from .native.paths import RuntimeLayout
@@ -256,7 +279,8 @@ def smoke_test(runtime, timeout=120):
     rgba = np.full((512, 512, 4), 128, np.uint8)
     rgba[..., 3] = 255
     with DlssSession(layout, DlssOptions.create(dlss_model_preset='Default'),
-                     input_width=512, input_height=512, frame_count=1, timeout=timeout) as session:
+                     input_width=512, input_height=512, frame_count=1, timeout=timeout,
+                     cancel_check=cancel_check) as session:
         from .native.imaging import fit_frame
         fitted = fit_frame(rgba, session.render_width, session.render_height)
         result, _ = session.submit(index=0, rgba=fitted,
@@ -283,17 +307,25 @@ def setup_lock(data):
         path.unlink(missing_ok=True)
 
 
-def main(argv=None):
+def main(argv=None, *, cancel_check=None, progress_callback=None):
+    def progress(value, message):
+        if cancel_check:
+            cancel_check()
+        if progress_callback:
+            progress_callback(value, message)
     parser = argparse.ArgumentParser(description=NOTICE)
     parser.add_argument('--check', action='store_true', help='只检测，不写文件、不联网安装。')
     parser.add_argument('--archive', type=Path, help='原始 v3.0 离线 ZIP。')
     parser.add_argument('--runtime-dir', type=Path, help='复用已有兼容 runtime，不复制修改其文件。')
     parser.add_argument('--download-prefix', help='自选 HTTPS 下载代理前缀，拼接原始 GitHub 地址；仍需通过原包 SHA256。')
     parser.add_argument('--index-url', help='Python 包镜像地址。')
+    parser.add_argument('--http-proxy', default='', help='显式HTTP/HTTPS代理地址；不填写使用系统／环境代理。')
+    parser.add_argument('--official-only', action='store_true', help='仅使用GitHub原始下载地址，不测速公共加速入口。')
     parser.add_argument('--wheel-dir', type=Path, help='离线 wheel 文件夹。')
     parser.add_argument('--skip-self-test', action='store_true', help='仅部署，报告明确标记尚未验证原生执行。')
     parser.add_argument('--force', action='store_true', help='重新部署固定版本。')
     args = parser.parse_args(argv)
+    progress(2, '检查运行环境')
     report = inspect_environment()
     if args.check:
         print(json.dumps(report, ensure_ascii=False, indent=2))
@@ -305,7 +337,10 @@ def main(argv=None):
         return 2
     try:
         with setup_lock(DATA):
-            install_dependencies(args.index_url, args.wheel_dir)
+            if args.official_only and args.download_prefix:
+                raise ValueError('仅官方来源与自选下载前缀不能同时使用。')
+            progress(8, '补齐缺失Python依赖')
+            install_dependencies(args.index_url, args.wheel_dir, cancel_check=cancel_check, proxy=args.http_proxy)
             from .native.paths import write_config, find_runtime, RuntimeLayout
             from .native.diagnostics import ensure_supported
             runtime = args.runtime_dir.expanduser().resolve() if args.runtime_dir else None
@@ -329,17 +364,15 @@ def main(argv=None):
                 archive = args.archive
                 if archive is None:
                     archive = cache / 'DLSS.5.Visual.Enhancer.v3.0.zip'
-                    if not archive.is_file() or sha256(archive) != RELEASE_SHA256:
-                        url = RELEASE_URL
-                        if args.download_prefix:
-                            if not args.download_prefix.startswith('https://'):
-                                raise ValueError('镜像前缀必须使用 HTTPS。')
-                            url = args.download_prefix.rstrip('/') + '/' + RELEASE_URL
-                        download_archive(url, archive)
+                    if not archive.is_file() or sha256(archive, cancel_check) != RELEASE_SHA256:
+                        download_archive(RELEASE_URL, archive, cancel_check=cancel_check,
+                            progress_callback=progress_callback, prefix=args.download_prefix or '',
+                            proxy=args.http_proxy, official_only=args.official_only)
                     else:
                         print('[复用] 已校验的本地下载缓存。', flush=True)
                 with tempfile.TemporaryDirectory(prefix='.stage-', dir=DATA) as stage:
-                    extract_verified(archive, Path(stage))
+                    progress(80, '校验并解压兼容运行时')
+                    extract_verified(archive, Path(stage), cancel_check=cancel_check)
                     install_staged(stage, DATA, ('runtime', 'ffmpeg') if runtime is None else ('ffmpeg',))
                 if runtime is None:
                     runtime = DATA / 'runtime'
@@ -350,7 +383,8 @@ def main(argv=None):
             proof = {'verified': False, 'reason': '按参数跳过自检，尚未验证原生渲染。'}
             if not args.skip_self_test:
                 print('[自检] 验证 D3D12、协议v4和真实 DLSS 神经渲染，请等待。', flush=True)
-                proof = smoke_test(runtime)
+                progress(90, '验证真实DLSS神经渲染')
+                proof = smoke_test(runtime, cancel_check=cancel_check)
             write_config(runtime, ffmpeg_dir)
             result = inspect_environment()
             result['native_execution_verified'] = proof.get('verified', False)
@@ -358,7 +392,8 @@ def main(argv=None):
             result['release_archive_sha256'] = RELEASE_SHA256 if runtime == DATA / 'runtime' else None
             (DATA / 'setup-report.json').write_text(json.dumps(result, ensure_ascii=False, indent=2), encoding='utf-8')
             print('[完成] ' + ('原生神经渲染自检通过。' if proof.get('verified') else '依赖和文件就绪，原生渲染尚未验证。'), flush=True)
-            print('重启 ComfyUI，搜索“LL DLSS5”。', flush=True)
+            progress(100, '环境已就绪')
+            print('环境已就绪，继续当前增强任务。' if cancel_check else '重启 ComfyUI，搜索“LL DLSS5”。', flush=True)
         return 0
     except (OSError, RuntimeError, ValueError, zipfile.BadZipFile, subprocess.SubprocessError) as exc:
         print('[安装未完成] ' + str(exc), file=sys.stderr, flush=True)

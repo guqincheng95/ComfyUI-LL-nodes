@@ -1,0 +1,283 @@
+test_batch_broadcast_and_per_frame_reference (test_color_match.ColorMatchTests.test_batch_broadcast_and_per_frame_reference) ... ok
+test_invalid_controls_inputs_and_aspect_ratio (test_color_match.ColorMatchTests.test_invalid_controls_inputs_and_aspect_ratio) ... ok
+test_luminance_only_and_color_only_are_separate (test_color_match.ColorMatchTests.test_luminance_only_and_color_only_are_separate) ... ok
+test_manual_adjustments_follow_matching_and_old_call_works (test_color_match.ColorMatchTests.test_manual_adjustments_follow_matching_and_old_call_works) ... ok
+test_modes_zero_identity_and_same_image (test_color_match.ColorMatchTests.test_modes_zero_identity_and_same_image) ... ok
+test_oklab_roundtrip_and_tile_invariance (test_color_match.ColorMatchTests.test_oklab_roundtrip_and_tile_invariance) ... ok
+test_original_corrects_linear_rgb_cast (test_color_match.ColorMatchTests.test_original_corrects_linear_rgb_cast) ... ok
+test_reference_face_color_is_stable_across_wardrobe_changes (test_color_match.ColorMatchTests.test_reference_face_color_is_stable_across_wardrobe_changes) ... ok
+test_reference_matches_luminance_and_low_chroma_cast (test_color_match.ColorMatchTests.test_reference_matches_luminance_and_low_chroma_cast) ... ok
+test_reference_skips_color_when_neutral_samples_are_missing (test_color_match.ColorMatchTests.test_reference_skips_color_when_neutral_samples_are_missing) ... ok
+test_strength_and_alpha_nonmutation (test_color_match.ColorMatchTests.test_strength_and_alpha_nonmutation) ... ok
+test_transparent_hidden_rgb_does_not_bleed_into_statistics (test_color_match.ColorMatchTests.test_transparent_hidden_rgb_does_not_bleed_into_statistics) ... ok
+test_transparent_pixels_ignored_and_float_precision (test_color_match.ColorMatchTests.test_transparent_pixels_ignored_and_float_precision) ... ok
+test_uniform_grayscale_and_clipped_images_remain_finite (test_color_match.ColorMatchTests.test_uniform_grayscale_and_clipped_images_remain_finite) ... ok
+test_upscaled_input_retains_shape_and_restores_color (test_color_match.ColorMatchTests.test_upscaled_input_retains_shape_and_restores_color) ... ok
+test_batches_broadcast_validation_and_no_input_mutation (test_contour.ContourTests.test_batches_broadcast_validation_and_no_input_mutation) ... ok
+test_foreground_resolution_alignment_and_crop_mismatch (test_contour.ContourTests.test_foreground_resolution_alignment_and_crop_mismatch) ... ok
+test_invalid_input_contracts (test_contour.ContourTests.test_invalid_input_contracts) ... ok
+test_keypoint_canvas_scales_without_changing_layout (test_contour.ContourTests.test_keypoint_canvas_scales_without_changing_layout) ... ok
+test_missing_keypoints_keep_frame_and_error_mode (test_contour.ContourTests.test_missing_keypoints_keep_frame_and_error_mode) ... ok
+test_multiple_people_and_person_index (test_contour.ContourTests.test_multiple_people_and_person_index) ... ok
+test_node_tensor_precision_alpha_and_outputs (test_contour.ContourTests.test_node_tensor_precision_alpha_and_outputs) ... ok
+test_observations_fit_narrow_body_without_accepting_huge_skirt (test_contour.ContourTests.test_observations_fit_narrow_body_without_accepting_huge_skirt) ... ok
+test_protect_exclude_priority_and_foreground_intersection (test_contour.ContourTests.test_protect_exclude_priority_and_foreground_intersection) ... ok
+test_scale_controls_and_feather_preserve_range (test_contour.ContourTests.test_scale_controls_and_feather_preserve_range) ... ok
+test_sdpose_pixel_and_normalized_and_body25 (test_contour.ContourTests.test_sdpose_pixel_and_normalized_and_body25) ... ok
+test_temporal_state_is_local_and_large_jump_resets (test_contour.ContourTests.test_temporal_state_is_local_and_large_jump_resets) ... ok
+test_trims_protrusions_keeps_body_and_canvas (test_contour.ContourTests.test_trims_protrusions_keeps_body_and_canvas) ... ok
+test_edge_guard_limits_transition_enhancement (test_dlss.MixingTests.test_edge_guard_limits_transition_enhancement) ... ok
+test_invalid_numbers_and_wrong_size_fail (test_dlss.MixingTests.test_invalid_numbers_and_wrong_size_fail) ... ok
+test_linear_light_blending_not_gamma_average (test_dlss.MixingTests.test_linear_light_blending_not_gamma_average) ... ok
+test_neutral_colour_gains_are_smoothed_and_reset_on_cut (test_dlss.MixingTests.test_neutral_colour_gains_are_smoothed_and_reset_on_cut) ... ok
+test_no_neutral_samples_skip_instead_of_palette_transfer (test_dlss.MixingTests.test_no_neutral_samples_skip_instead_of_palette_transfer) ... ok
+test_no_skin_mask_does_not_treat_person_as_skin (test_dlss.MixingTests.test_no_skin_mask_does_not_treat_person_as_skin) ... ok
+test_person_and_background_are_separate (test_dlss.MixingTests.test_person_and_background_are_separate) ... ok
+test_roi_is_post_crop_and_uses_mask (test_dlss.MixingTests.test_roi_is_post_crop_and_uses_mask) ... ok
+test_skin_protection_keeps_luminance_and_only_selected_area (test_dlss.MixingTests.test_skin_protection_keeps_luminance_and_only_selected_area) ... ok
+test_soft_mask_and_scale_are_retained (test_dlss.MixingTests.test_soft_mask_and_scale_are_retained) ... ok
+test_temporal_flow_tracks_translation_and_cut_resets (test_dlss.MixingTests.test_temporal_flow_tracks_translation_and_cut_resets) ... ok
+test_transparent_colour_does_not_bleed_on_rescale (test_dlss.MixingTests.test_transparent_colour_does_not_bleed_on_rescale) ... ok
+test_transparent_pixels_are_not_neutral_anchors (test_dlss.MixingTests.test_transparent_pixels_are_not_neutral_anchors) ... ok
+test_unified_lighting_keeps_person_illumination_at_zero_detail (test_dlss.MixingTests.test_unified_lighting_keeps_person_illumination_at_zero_detail) ... ok
+test_zero_strength_preserves_original_and_alpha (test_dlss.MixingTests.test_zero_strength_preserves_original_and_alpha) ... ok
+test_connected_settings_keep_old_automatic_region_behavior (test_dlss.RunnerTests.test_connected_settings_keep_old_automatic_region_behavior) ... ok
+test_custom_settings_and_presets_are_reportable (test_dlss.RunnerTests.test_custom_settings_and_presets_are_reportable) ... ok
+test_explicit_native_keeps_connected_settings_but_skips_masks (test_dlss.RunnerTests.test_explicit_native_keeps_connected_settings_but_skips_masks) ... ok
+test_explicit_region_without_settings_is_supported (test_dlss.RunnerTests.test_explicit_region_without_settings_is_supported) ... ok
+test_image_only_is_exact_native_rgb_without_ll_postprocessing (test_dlss.RunnerTests.test_image_only_is_exact_native_rgb_without_ll_postprocessing) ... ok
+test_independent_images_reset_every_frame_and_alpha_is_exact (test_dlss.RunnerTests.test_independent_images_reset_every_frame_and_alpha_is_exact) ... ok
+test_invalid_processing_mode_fails_before_worker (test_dlss.RunnerTests.test_invalid_processing_mode_fails_before_worker) ... ok
+test_mask_without_settings_automatically_enables_region_defaults (test_dlss.RunnerTests.test_mask_without_settings_automatically_enables_region_defaults) ... ok
+test_missing_signed_proof_is_not_success_and_lock_is_released (test_dlss.RunnerTests.test_missing_signed_proof_is_not_success_and_lock_is_released) ... ok
+test_output_budget_fails_before_allocation (test_dlss.RunnerTests.test_output_budget_fails_before_allocation) ... ok
+test_preview_limits_output_and_marks_it (test_dlss.RunnerTests.test_preview_limits_output_and_marks_it) ... ok
+test_settings_socket_optional_and_existing_widget_order_preserved (test_dlss.RunnerTests.test_settings_socket_optional_and_existing_widget_order_preserved) ... ok
+test_video_uses_temporal_history_and_warns_static_mask (test_dlss.RunnerTests.test_video_uses_temporal_history_and_warns_static_mask) ... ok
+test_wrong_mask_batch_rejected_before_worker_start (test_dlss.RunnerTests.test_wrong_mask_batch_rejected_before_worker_start) ... ok
+test_blocked_handshake_can_be_cancelled (test_dlss.WorkerLifecycleTests.test_blocked_handshake_can_be_cancelled) ... ok
+test_blocked_handshake_is_killed_by_timeout (test_dlss.WorkerLifecycleTests.test_blocked_handshake_is_killed_by_timeout) ... ok
+test_cancelled_install_preserves_exception_and_releases_lock (test_dlss_bootstrap.BootstrapTests.test_cancelled_install_preserves_exception_and_releases_lock) ... [LL DLSS5] 首次运行正在准备环境；完成后继续当前增强任务。
+ok
+test_cancelled_package_install_terminates_child (test_dlss_bootstrap.BootstrapTests.test_cancelled_package_install_terminates_child) ... ok
+test_concurrent_first_use_installs_only_once (test_dlss_bootstrap.BootstrapTests.test_concurrent_first_use_installs_only_once) ... [LL DLSS5] 首次运行正在准备环境；完成后继续当前增强任务。
+ok
+test_existing_install_never_invokes_setup (test_dlss_bootstrap.BootstrapTests.test_existing_install_never_invokes_setup) ... ok
+test_failure_does_not_report_ready_or_keep_lock (test_dlss_bootstrap.BootstrapTests.test_failure_does_not_report_ready_or_keep_lock) ... [LL DLSS5] 首次运行正在准备环境；完成后继续当前增强任务。
+ok
+test_installed_but_unavailable_in_process_requests_restart (test_dlss_bootstrap.BootstrapTests.test_installed_but_unavailable_in_process_requests_restart) ... [LL DLSS5] 首次运行正在准备环境；完成后继续当前增强任务。
+ok
+test_missing_dependency_uses_tuna_then_pypi_without_changing_torch (test_dlss_bootstrap.BootstrapTests.test_missing_dependency_uses_tuna_then_pypi_without_changing_torch) ... [已有] numpy，保留当前版本。
+[安装缺失依赖] opencv-python-headless==4.11.0.86
+[依赖源切换] 清华镜像未完成安装，尝试PyPI原始源。
+ok
+test_missing_environment_installs_then_continues (test_dlss_bootstrap.BootstrapTests.test_missing_environment_installs_then_continues) ... [LL DLSS5] 首次运行正在准备环境；完成后继续当前增强任务。
+ok
+test_offline_mirror_proxy_and_runtime_options_forwarded (test_dlss_bootstrap.BootstrapTests.test_offline_mirror_proxy_and_runtime_options_forwarded) ... [LL DLSS5] 首次运行正在准备环境；完成后继续当前增强任务。
+ok
+test_unsupported_os_never_installs (test_dlss_bootstrap.BootstrapTests.test_unsupported_os_never_installs) ... ok
+test_user_can_disable_automatic_deployment (test_dlss_bootstrap.BootstrapTests.test_user_can_disable_automatic_deployment) ... ok
+test_all_network_failures_keep_data_for_next_run (test_dlss_download.DownloadTests.test_all_network_failures_keep_data_for_next_run) ... [网络] 系统／环境HTTP代理
+[优选] fast
+[切换来源] fast: connection lost
+[网络] 系统／环境HTTP代理
+[优选] fast；续传0.1 MB
+[下载] fast | 0.3/0.3 MB (100.0%) | 196.61 MB/s | 剩余约0秒
+ok
+test_cancellation_preserves_exception_and_partial (test_dlss_download.DownloadTests.test_cancellation_preserves_exception_and_partial) ... [网络] 系统／环境HTTP代理
+[优选] fast
+ok
+test_candidates_include_public_accelerators_and_do_not_leak_private_urls (test_dlss_download.DownloadTests.test_candidates_include_public_accelerators_and_do_not_leak_private_urls) ... ok
+test_complete_partial_is_verified_and_promoted (test_dlss_download.DownloadTests.test_complete_partial_is_verified_and_promoted) ... ok
+test_corrupt_old_prefix_is_replaced_after_full_hash_failure (test_dlss_download.DownloadTests.test_corrupt_old_prefix_is_replaced_after_full_hash_failure) ... [网络] 系统／环境HTTP代理
+[优选] fast；续传0.1 MB
+[下载] fast | 0.3/0.3 MB (100.0%) | 162.15 MB/s | 剩余约0秒
+[校验] 旧分片SHA-256不匹配，重新完整下载。
+[下载] fast | 0.3/0.3 MB (100.0%) | 262.15 MB/s | 剩余约0秒
+ok
+test_existing_verified_archive_skips_all_network (test_dlss_download.DownloadTests.test_existing_verified_archive_skips_all_network) ... ok
+test_failed_probe_does_not_prevent_trying_actual_download (test_dlss_download.DownloadTests.test_failed_probe_does_not_prevent_trying_actual_download) ... [测速不可用] fast: OSError
+[测速不可用] fallback: OSError
+[测速] 未取得有效测速结果，仍将依次尝试候选下载来源。
+ok
+test_fastest_measured_source_wins (test_dlss_download.DownloadTests.test_fastest_measured_source_wins) ... [测速] fast: 0 KB/s
+[测速] fallback: 0 KB/s
+ok
+test_hash_mismatch_never_creates_final_archive (test_dlss_download.DownloadTests.test_hash_mismatch_never_creates_final_archive) ... [网络] 系统／环境HTTP代理
+[优选] fast
+[下载] fast | 0.3/0.3 MB (100.0%) | 262.15 MB/s | 剩余约0秒
+[切换来源] fast: 发布包SHA-256不匹配，拒绝安装。
+[下载] fallback | 0.3/0.3 MB (100.0%) | 262.15 MB/s | 剩余约0秒
+[切换来源] fallback: 发布包SHA-256不匹配，拒绝安装。
+ok
+test_html_response_is_rejected_before_writing (test_dlss_download.DownloadTests.test_html_response_is_rejected_before_writing) ... [网络] 系统／环境HTTP代理
+[优选] fast
+[切换来源] fast: 来源返回HTML页面。
+[切换来源] fallback: 来源返回HTML页面。
+ok
+test_network_failure_keeps_partial_then_next_source_resumes (test_dlss_download.DownloadTests.test_network_failure_keeps_partial_then_next_source_resumes) ... [网络] 系统／环境HTTP代理
+[优选] fast
+[切换来源] fast: connection lost
+[下载] fallback | 0.3/0.3 MB (100.0%) | 196.61 MB/s | 剩余约0秒
+ok
+test_resume_checks_overlap_and_never_duplicates_data (test_dlss_download.DownloadTests.test_resume_checks_overlap_and_never_duplicates_data) ... [网络] 系统／环境HTTP代理
+[优选] fast；续传0.1 MB
+[下载] fast | 0.3/0.3 MB (100.0%) | 162.15 MB/s | 剩余约0秒
+ok
+test_server_ignoring_range_gets_verified_full_fallback (test_dlss_download.DownloadTests.test_server_ignoring_range_gets_verified_full_fallback) ... [网络] 系统／环境HTTP代理
+[优选] fast；续传0.1 MB
+[切换来源] fast: 此来源未正确支持断点范围，保留已有下载并尝试其它来源。
+[完整回退] fast不能安全续传，保留旧分片并尝试完整下载。
+[下载] fast | 0.3/0.3 MB (100.0%) | 262.15 MB/s | 剩余约0秒
+ok
+test_slow_source_switches_with_resume (test_dlss_download.DownloadTests.test_slow_source_switches_with_resume) ... [网络] 系统／环境HTTP代理
+[优选] fast
+[下载] fast | 0.1/0.3 MB (25.0%) | 0.01 MB/s | 剩余约14秒
+[下载] fast | 0.1/0.3 MB (50.0%) | 0.01 MB/s | 剩余约9秒
+[切换来源] fast: 持续低速，保留已下载部分并切换来源。
+[下载] fallback | 0.3/0.3 MB (100.0%) | 131.08 MB/s | 剩余约0秒
+ok
+test_wrong_content_range_does_not_append (test_dlss_download.DownloadTests.test_wrong_content_range_does_not_append) ... [网络] 系统／环境HTTP代理
+[优选] fast；续传0.1 MB
+[切换来源] fast: 此来源未正确支持断点范围，保留已有下载并尝试其它来源。
+[完整回退] fast不能安全续传，保留旧分片并尝试完整下载。
+ok
+test_bad_hash_does_not_extract (test_dlss_setup.SetupTests.test_bad_hash_does_not_extract) ... ok
+test_check_mode_does_not_write_download_or_install (test_dlss_setup.SetupTests.test_check_mode_does_not_write_download_or_install) ... ok
+test_compatible_tag_and_hash_are_pinned (test_dlss_setup.SetupTests.test_compatible_tag_and_hash_are_pinned) ... ok
+test_download_hash_failure_removes_partial_archive (test_dlss_setup.SetupTests.test_download_hash_failure_removes_partial_archive) ... [网络] 系统／环境HTTP代理
+[测速] GitHub原始源（系统路由）: 3 KB/s
+[优选] GitHub原始源（系统路由）
+[下载] GitHub原始源（系统路由） | 0.0/0.0 MB (100.0%) | 0.00 MB/s | 剩余约0秒
+[切换来源] GitHub原始源（系统路由）: 发布包SHA-256不匹配，拒绝安装。
+ok
+test_existing_dependencies_not_reinstalled (test_dlss_setup.SetupTests.test_existing_dependencies_not_reinstalled) ... [已有] numpy，保留当前版本。
+[已有] cv2，保留当前版本。
+ok
+test_failed_directory_swap_restores_old_runtime_and_ffmpeg (test_dlss_setup.SetupTests.test_failed_directory_swap_restores_old_runtime_and_ffmpeg) ... ok
+test_failed_smoke_does_not_replace_saved_selection (test_dlss_setup.SetupTests.test_failed_smoke_does_not_replace_saved_selection) ... ok
+test_ffmpeg_only_repair_preserves_existing_runtime (test_dlss_setup.SetupTests.test_ffmpeg_only_repair_preserves_existing_runtime) ... ok
+test_gpu_detection_skips_unsupported_card_and_accepts_professional_ada (test_dlss_setup.SetupTests.test_gpu_detection_skips_unsupported_card_and_accepts_professional_ada) ... ok
+test_launcher_supports_aki_portable_and_override (test_dlss_setup.SetupTests.test_launcher_supports_aki_portable_and_override) ... ok
+test_missing_required_member_does_not_partly_extract (test_dlss_setup.SetupTests.test_missing_required_member_does_not_partly_extract) ... ok
+test_missing_torch_never_installs_or_changes_cuda (test_dlss_setup.SetupTests.test_missing_torch_never_installs_or_changes_cuda) ... ok
+test_setup_lock_rejects_concurrent_install_and_cleans_up (test_dlss_setup.SetupTests.test_setup_lock_rejects_concurrent_install_and_cleans_up) ... ok
+test_skip_smoke_is_explicitly_recorded_as_unverified (test_dlss_setup.SetupTests.test_skip_smoke_is_explicitly_recorded_as_unverified) ... ok
+test_traversal_and_windows_drive_rejected (test_dlss_setup.SetupTests.test_traversal_and_windows_drive_rejected) ... ok
+test_unsupported_hardware_stops_before_install (test_dlss_setup.SetupTests.test_unsupported_hardware_stops_before_install) ... ok
+test_verified_bundle_installs_both_components (test_dlss_setup.SetupTests.test_verified_bundle_installs_both_components) ... ok
+test_advanced_visibility_does_not_change_processing_parameters (test_dlss_single_node.SingleNodeTests.test_advanced_visibility_does_not_change_processing_parameters) ... ok
+test_compare_preview_does_not_replace_downstream_image (test_dlss_single_node.SingleNodeTests.test_compare_preview_does_not_replace_downstream_image) ... ok
+test_custom_region_parameters_apply_in_same_node (test_dlss_single_node.SingleNodeTests.test_custom_region_parameters_apply_in_same_node) ... ok
+test_default_image_only_uses_upstream_defaults_without_settings_node (test_dlss_single_node.SingleNodeTests.test_default_image_only_uses_upstream_defaults_without_settings_node) ... ok
+test_external_legacy_settings_keep_priority (test_dlss_single_node.SingleNodeTests.test_external_legacy_settings_keep_priority) ... ok
+test_inline_mask_activates_region_even_with_native_preset (test_dlss_single_node.SingleNodeTests.test_inline_mask_activates_region_even_with_native_preset) ... ok
+test_inline_native_controls_do_not_require_separate_settings (test_dlss_single_node.SingleNodeTests.test_inline_native_controls_do_not_require_separate_settings) ... ok
+test_inline_portrait_preset_automatically_enables_region_pipeline (test_dlss_single_node.SingleNodeTests.test_inline_portrait_preset_automatically_enables_region_pipeline) ... ok
+test_node_preview_returns_standard_comfy_ui_payload (test_dlss_single_node.SingleNodeTests.test_node_preview_returns_standard_comfy_ui_payload) ... ok
+test_only_main_dlss_node_is_active_and_legacy_ids_still_registered (test_dlss_single_node.SingleNodeTests.test_only_main_dlss_node_is_active_and_legacy_ids_still_registered) ... ok
+test_setup_controls_are_appended_after_all_existing_widgets (test_dlss_single_node.SingleNodeTests.test_setup_controls_are_appended_after_all_existing_widgets) ... ok
+test_bare_sole_and_shoe_fallback_recover_old_overtrim (test_extremities.ExtremityTests.test_bare_sole_and_shoe_fallback_recover_old_overtrim) ... ok
+test_body25_feet_mapping_null_optional_parts_and_normalized_coordinates (test_extremities.ExtremityTests.test_body25_feet_mapping_null_optional_parts_and_normalized_coordinates) ... ok
+test_broadcast_soft_alpha_and_invalid_controls (test_extremities.ExtremityTests.test_broadcast_soft_alpha_and_invalid_controls) ... ok
+test_detailed_feet_prompt_sam_and_cover_full_sole (test_extremities.ExtremityTests.test_detailed_feet_prompt_sam_and_cover_full_sole) ... ok
+test_exclusion_wins_and_skin_and_feather_cannot_recut_protected_feet (test_extremities.ExtremityTests.test_exclusion_wins_and_skin_and_feather_cannot_recut_protected_feet) ... ok
+test_foot_range_is_independent_of_calf_and_hands (test_extremities.ExtremityTests.test_foot_range_is_independent_of_calf_and_hands) ... ok
+test_initial_missing_foot_cannot_be_painted_back (test_extremities.ExtremityTests.test_initial_missing_foot_cannot_be_painted_back) ... ok
+test_legacy_node_also_has_independent_hand_and_foot_controls (test_extremities.ExtremityTests.test_legacy_node_also_has_independent_hand_and_foot_controls) ... ok
+test_new_options_append_after_old_widgets_and_legacy_calls_remain_valid (test_extremities.ExtremityTests.test_new_options_append_after_old_widgets_and_legacy_calls_remain_valid) ... ok
+test_no_pose_or_missing_endpoints_skips_without_inventing_regions (test_extremities.ExtremityTests.test_no_pose_or_missing_endpoints_skips_without_inventing_regions) ... ok
+test_palm_and_finger_protection_and_independent_range (test_extremities.ExtremityTests.test_palm_and_finger_protection_and_independent_range) ... ok
+test_shoe_color_and_skin_color_do_not_change_whole_foot_protection (test_extremities.ExtremityTests.test_shoe_color_and_skin_color_do_not_change_whole_foot_protection) ... ok
+test_alpha_and_explicit_mask (test_image_aspect_scale.ImageAspectScaleTests.test_alpha_and_explicit_mask) ... ok
+test_crop_uses_identical_geometry_for_image_and_mask (test_image_aspect_scale.ImageAspectScaleTests.test_crop_uses_identical_geometry_for_image_and_mask) ... ok
+test_example_ui_and_api_agree_and_execute (test_image_aspect_scale.ImageAspectScaleTests.test_example_ui_and_api_agree_and_execute) ... ok
+test_letterbox_soft_mask_and_color (test_image_aspect_scale.ImageAspectScaleTests.test_letterbox_soft_mask_and_color) ... ok
+test_mask_only_nearest_and_rgb_only_coverage (test_image_aspect_scale.ImageAspectScaleTests.test_mask_only_nearest_and_rgb_only_coverage) ... ok
+test_mismatched_inputs_fail_with_actionable_error (test_image_aspect_scale.ImageAspectScaleTests.test_mismatched_inputs_fail_with_actionable_error) ... ok
+test_ratio_flip_does_not_rotate_source (test_image_aspect_scale.ImageAspectScaleTests.test_ratio_flip_does_not_rotate_source) ... ok
+test_scale_bases_and_rounding (test_image_aspect_scale.ImageAspectScaleTests.test_scale_bases_and_rounding) ... ok
+test_size_only_matches_connected_custom_ratio_and_rounding (test_image_aspect_scale.ImageAspectScaleTests.test_size_only_matches_connected_custom_ratio_and_rounding) ... ok
+test_size_only_portrait_with_multiple (test_image_aspect_scale.ImageAspectScaleTests.test_size_only_portrait_with_multiple) ... ok
+test_size_only_requires_explicit_ratio_and_length_basis (test_image_aspect_scale.ImageAspectScaleTests.test_size_only_requires_explicit_ratio_and_length_basis) ... ok
+test_source_ratio_and_custom_multiple (test_image_aspect_scale.ImageAspectScaleTests.test_source_ratio_and_custom_multiple) ... ok
+test_existing_api_workflows_resolve (test_library.LibraryTests.test_existing_api_workflows_resolve) ... ok
+test_migration_archives_only_recognized_library_duplicates (test_library.LibraryTests.test_migration_archives_only_recognized_library_duplicates) ... ok
+test_migration_preview_backup_and_repeat (test_library.LibraryTests.test_migration_preview_backup_and_repeat) ... ok
+test_migration_rejects_unrecognized_directory (test_library.LibraryTests.test_migration_rejects_unrecognized_directory) ... ok
+test_unified_registration_and_assets (test_library.LibraryTests.test_unified_registration_and_assets) ... ok
+test_browser_fixture_matches_python_formal_output (test_live_photo_preview.PhotoPreviewTests.test_browser_fixture_matches_python_formal_output) ... ok
+test_legacy_preview_is_auto_base_and_output_is_unchanged (test_live_photo_preview.PhotoPreviewTests.test_legacy_preview_is_auto_base_and_output_is_unchanged) ... ok
+test_portrait_preview_keeps_report_and_bounds_first_frame (test_live_photo_preview.PhotoPreviewTests.test_portrait_preview_keeps_report_and_bounds_first_frame) ... ok
+test_all_controls_effect_and_bounds (test_photo.PhotoTests.test_all_controls_effect_and_bounds) ... ok
+test_batch_tile_alpha_nonmutation (test_photo.PhotoTests.test_batch_tile_alpha_nonmutation) ... ok
+test_black_white_endpoints (test_photo.PhotoTests.test_black_white_endpoints) ... ok
+test_combined_extremes_and_half_input (test_photo.PhotoTests.test_combined_extremes_and_half_input) ... ok
+test_exposure_is_linear_ev (test_photo.PhotoTests.test_exposure_is_linear_ev) ... ok
+test_float_precision_no_uint8_quantization (test_photo.PhotoTests.test_float_precision_no_uint8_quantization) ... ok
+test_invalid_inputs (test_photo.PhotoTests.test_invalid_inputs) ... ok
+test_preserve_luminance_after_gamut_mapping (test_photo.PhotoTests.test_preserve_luminance_after_gamut_mapping) ... ok
+test_region_weights_and_isolation (test_photo.PhotoTests.test_region_weights_and_isolation) ... ok
+test_registration_and_19_defaults (test_photo.PhotoTests.test_registration_and_19_defaults) ... ok
+test_saturation_and_vibrance (test_photo.PhotoTests.test_saturation_and_vibrance) ... ok
+test_tone_monotone_extremes (test_photo.PhotoTests.test_tone_monotone_extremes) ... ok
+test_tone_regions_distinct (test_photo.PhotoTests.test_tone_regions_distinct) ... ok
+test_transfer_roundtrip (test_photo.PhotoTests.test_transfer_roundtrip) ... ok
+test_white_balance_signs (test_photo.PhotoTests.test_white_balance_signs) ... ok
+test_atr_mode_uses_provided_masks_without_loading_model (test_portrait_match.PortraitMatchTests.test_atr_mode_uses_provided_masks_without_loading_model) ... ok
+test_batch_broadcast_alpha_and_wrong_mask_size (test_portrait_match.PortraitMatchTests.test_batch_broadcast_alpha_and_wrong_mask_size) ... ok
+test_covered_body_skips_even_when_reference_body_is_visible (test_portrait_match.PortraitMatchTests.test_covered_body_skips_even_when_reference_body_is_visible) ... ok
+test_face_body_are_independent_and_preserve_skin_shading (test_portrait_match.PortraitMatchTests.test_face_body_are_independent_and_preserve_skin_shading) ... ok
+test_local_exposure_is_optional_and_bounded (test_portrait_match.PortraitMatchTests.test_local_exposure_is_optional_and_bounded) ... ok
+test_manual_values_run_last_and_report_is_unchanged (test_portrait_match.PortraitMatchTests.test_manual_values_run_last_and_report_is_unchanged) ... ok
+test_semantic_candidate_guard_rejects_dark_covered_limbs (test_portrait_match.PortraitMatchTests.test_semantic_candidate_guard_rejects_dark_covered_limbs) ... ok
+test_white_balance_estimates_manual_values (test_portrait_match.PortraitMatchTests.test_white_balance_estimates_manual_values) ... ok
+test_black_and_white_cutouts_do_not_apply_alpha_twice (test_pruning.PruningTests.test_black_and_white_cutouts_do_not_apply_alpha_twice) ... ok
+test_explicit_protect_overrides_semantic_cut_exclude_still_wins (test_pruning.PruningTests.test_explicit_protect_overrides_semantic_cut_exclude_still_wins) ... ok
+test_head_only_samples_do_not_delete_whole_dress (test_pruning.PruningTests.test_head_only_samples_do_not_delete_whole_dress) ... ok
+test_headwear_switch_off_and_person_mode_keep_garments (test_pruning.PruningTests.test_headwear_switch_off_and_person_mode_keep_garments) ... ok
+test_input_validation_and_external_masks_require_real_parts (test_pruning.PruningTests.test_input_validation_and_external_masks_require_real_parts) ... ok
+test_missing_model_never_downloads_and_off_never_loads_parser (test_pruning.PruningTests.test_missing_model_never_downloads_and_off_never_loads_parser) ... ok
+test_native_thin_fingers_survive_analysis_downscale (test_pruning.PruningTests.test_native_thin_fingers_survive_analysis_downscale) ... ok
+test_new_cut_feathers_but_original_soft_boundary_does_not (test_pruning.PruningTests.test_new_cut_feathers_but_original_soft_boundary_does_not) ... ok
+test_no_garment_means_no_spurious_top_left_cut (test_pruning.PruningTests.test_no_garment_means_no_spurious_top_left_cut) ... ok
+test_old_widget_prefix_is_preserved_new_controls_append (test_pruning.PruningTests.test_old_widget_prefix_is_preserved_new_controls_append) ... ok
+test_parser_normalization_contract_and_wrong_class_count (test_pruning.PruningTests.test_parser_normalization_contract_and_wrong_class_count) ... ok
+test_partial_pose_can_run_semantic_pruning_instead_of_global_skip (test_pruning.PruningTests.test_partial_pose_can_run_semantic_pruning_instead_of_global_skip) ... ok
+test_rmbg_soft_hand_matte_and_pixels_are_identity_without_new_cuts (test_pruning.PruningTests.test_rmbg_soft_hand_matte_and_pixels_are_identity_without_new_cuts) ... ok
+test_semantic_garment_and_headwear_removed_body_and_hand_kept (test_pruning.PruningTests.test_semantic_garment_and_headwear_removed_body_and_hand_kept) ... ok
+test_soft_exclusion_applies_opacity_once (test_pruning.PruningTests.test_soft_exclusion_applies_opacity_once) ... ok
+test_whole_person_skin_hint_is_reported_and_ignored (test_pruning.PruningTests.test_whole_person_skin_hint_is_reported_and_ignored) ... ok
+test_all_162_builtin_combinations (test_resolution.ResolutionTests.test_all_162_builtin_combinations) ... ok
+test_custom_unchanged (test_resolution.ResolutionTests.test_custom_unchanged) ... ok
+test_family_tables_independent (test_resolution.ResolutionTests.test_family_tables_independent) ... ok
+test_invalid_inputs (test_resolution.ResolutionTests.test_invalid_inputs) ... ok
+test_preset_validation (test_resolution.ResolutionTests.test_preset_validation) ... ok
+test_registration_and_defaults (test_resolution.ResolutionTests.test_registration_and_defaults) ... ok
+test_required_five_cases (test_resolution.ResolutionTests.test_required_five_cases) ... ok
+test_two_three_and_krea_alignment (test_resolution.ResolutionTests.test_two_three_and_krea_alignment) ... ok
+test_workflow_links (test_resolution.ResolutionTests.test_workflow_links) ... ok
+test_bad_options_masks_and_frame_counts (test_subject.SubjectTests.test_bad_options_masks_and_frame_counts) ... ok
+test_body_trim_removes_obvious_protrusion (test_subject.SubjectTests.test_body_trim_removes_obvious_protrusion) ... ok
+test_candidate_scoring_prefers_valid_positive_and_negative (test_subject.SubjectTests.test_candidate_scoring_prefers_valid_positive_and_negative) ... ok
+test_default_semantic_mode_works_without_pose (test_subject.SubjectTests.test_default_semantic_mode_works_without_pose) ... ok
+test_depth_actually_changes_boundary_without_cutting_limb (test_subject.SubjectTests.test_depth_actually_changes_boundary_without_cutting_limb) ... ok
+test_download_checksum_failure_preserves_existing_file (test_subject.SubjectTests.test_download_checksum_failure_preserves_existing_file) ... ok
+test_external_partial_pose_trim_falls_back_to_subject (test_subject.SubjectTests.test_external_partial_pose_trim_falls_back_to_subject) ... ok
+test_foreground_hint_is_not_a_hard_intersection (test_subject.SubjectTests.test_foreground_hint_is_not_a_hard_intersection) ... ok
+test_missing_model_does_not_download_or_fallback (test_subject.SubjectTests.test_missing_model_does_not_download_or_fallback) ... ok
+test_native_depth_canvas_and_broadcast (test_subject.SubjectTests.test_native_depth_canvas_and_broadcast) ... ok
+test_no_depth_is_explicit_rgb_only (test_subject.SubjectTests.test_no_depth_is_explicit_rgb_only) ... ok
+test_partial_pose_does_not_crop_near_camera_extrema (test_subject.SubjectTests.test_partial_pose_does_not_crop_near_camera_extrema) ... ok
+test_protection_and_exclusion_priority (test_subject.SubjectTests.test_protection_and_exclusion_priority) ... ok
+test_rgb_rgba_depth_share_mask_and_preserve_source (test_subject.SubjectTests.test_rgb_rgba_depth_share_mask_and_preserve_source) ... ok
+test_semantic_prompts_cover_head_and_body_not_just_torso (test_subject.SubjectTests.test_semantic_prompts_cover_head_and_body_not_just_torso) ... ok
+test_skin_dark_samples_shadows_and_garments (test_subject.SubjectTests.test_skin_dark_samples_shadows_and_garments) ... ok
+test_skin_missing_depth_zero_strength_and_empty_hint_skip (test_subject.SubjectTests.test_skin_missing_depth_zero_strength_and_empty_hint_skip) ... ok
+test_skin_requires_color_and_depth_evidence (test_subject.SubjectTests.test_skin_requires_color_and_depth_evidence) ... ok
+test_zero_strength_exact_and_flat_depth_skips (test_subject.SubjectTests.test_zero_strength_exact_and_flat_depth_skips) ... ok
+
+----------------------------------------------------------------------
+Ran 212 tests in 2.324s
+
+OK

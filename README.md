@@ -1,10 +1,10 @@
 # comfyui-LL-nodes · LL 个人节点库
 
-**v0.12.0** · 一个目录安装 · 一次更新全部节点 · 中文分类与搜索
+**v0.12.1** · 一个目录安装 · 一次更新全部节点 · 中文分类与搜索
 
 DLSS5 最短路径：**加载图片 → LL DLSS5 图像增强 → 保存图片**。不接设置、不接遮罩时，使用原作者默认参数并输出原生增强RGB。参数、分区和对比预览均已合并在主节点；需要细调时展开高级设置，不再要求另接设置／对比节点。
 
-新增 [DLSS5 分区光影增强](docs/DLSS5.md)：一次整图神经渲染，人物／环境分区强度、统一光影、边缘与肤色保护、局部对比及视频帧光流稳定。首次使用双击 `setup_dlss5.bat` 自动检查并补齐兼容运行时；ComfyUI-Manager 标准安装可通过 `install.py` 自动调用。需 Windows＋兼容 NVIDIA RTX，驱动／画质仍需本机自检。普通git更新不执行安装脚本。
+新增 [DLSS5 分区光影增强](docs/DLSS5.md)：一次整图神经渲染，人物／环境分区强度、统一光影、边缘与肤色保护、局部对比及视频帧光流稳定。首次运行主节点自动检查，缺失时执行部署并继续增强。运行时从GitHub与公共加速入口测速择优，支持低速换源、断点续传和固定SHA256；已安装环境直接复用。需Windows＋兼容NVIDIA RTX，驱动／画质由本机自检确认。手动脚本与Manager安装钩子仍可使用。
 
 | ComfyUI 分类 | 节点 | 功能 |
 |---|---|---|
@@ -47,15 +47,15 @@ git clone https://github.com/guqincheng95/ComfyUI-LL-nodes.git custom_nodes/comf
 
 也可把交付 ZIP 上传至 `custom_nodes` 后解压，最终入口为 `custom_nodes/comfyui-LL-nodes/__init__.py`。不要把 `modules` 中的文件夹单独安装。
 
-原节点沿用现有依赖。增强人物节点需要额外依赖和本地模型，按 SUBJECT_SETUP.md 配置；代码ZIP不包含模型。DLSS5 依赖使用上方独立脚本自动部署，支持离线 ZIP、已有运行时和自选镜像；安装脚本不更换 Torch/CUDA/驱动。节点导入和执行时不会自动下载或安装。
+原节点沿用现有依赖。增强人物节点需要额外依赖和本地模型，按 SUBJECT_SETUP.md 配置；代码ZIP不包含模型。DLSS5首次执行默认自动部署缺失环境，支持离线ZIP、已有运行时、自选镜像和HTTP代理；不会更换Torch/CUDA/驱动。导入节点不联网，其它节点仍沿用原有依赖安装方式。
 
 ## 从两个独立插件迁移（只需一次）
 
-停止 ComfyUI 后，把 `comfyui-LL-nodes-v0.12.0.zip` 上传至 `custom_nodes`：
+停止 ComfyUI 后，把 `comfyui-LL-nodes-v0.12.1.zip` 上传至 `custom_nodes`：
 
 ```bash
 cd /root/autodl-tmp/AI_Workspace/ComfyUI/custom_nodes
-python -m zipfile -e comfyui-LL-nodes-v0.12.0.zip .
+python -m zipfile -e comfyui-LL-nodes-v0.12.1.zip .
 python comfyui-LL-nodes/scripts/migrate_legacy.py --apply
 ```
 

@@ -1,4 +1,4 @@
-# LL DLSS5 图像增强 · v0.12.0
+# LL DLSS5 图像增强 · v0.12.1
 
 本模块是基于 [Blueforcer/ComfyUI-DLSS5-Enhancer](https://github.com/Blueforcer/ComfyUI-DLSS5-Enhancer) 的适配开发，复用其 MIT 原生客户端；增强能力来自 NVIDIA DLSS5，而非 LL 自训练模型。第三方运行时独立下载，仓库与代码 ZIP 不包含这些二进制。来源和修改见 [DLSS5_UPSTREAM.md](DLSS5_UPSTREAM.md)。
 
@@ -29,7 +29,11 @@
 
 支持 Windows 64位；本适配沿用协议 v4 的 Visual Enhancer v3.0。官方 DLSS5 面向 RTX50；社区运行时的 RTX40、RTX30 路径需要实机验证，RTX30必须匹配指定二进制。RTX20、AMD、Linux 本轮不支持；其它 LL 节点继续正常使用。多卡只能检测兼容候选，底层未提供 GPU 索引选择，不承诺按检测结果选卡。
 
-ComfyUI-Manager 的标准安装流程会执行仓库 `install.py`，自动检测并按需部署；是否调用钩子取决于实际管理器安装流程。**仅 git pull 或 ZIP 覆盖不会自动执行安装脚本**，已有用户更新后首次使用请双击仓库里的 `setup_dlss5.bat`。
+**默认不需要手动运行安装脚本。** 更新并重启ComfyUI后，第一次执行主节点会检查环境；缺少依赖、运行时或FFmpeg时自动调用部署逻辑，完成后继续当前增强任务。已有可用环境直接复用，不重复下载。高级设置中的“首次运行自动部署”默认开启，可关闭后自行准备离线环境。
+
+准备阶段使用当前ComfyUI进程对应的Python，先于增强模块导入修复可选依赖；默认释放已加载模型显存，为原生自检留空间。安装／下载／校验／解压／自检支持取消，同进程同时触发只执行一次部署，文件锁防止跨进程并行覆盖。Comfy进度条显示准备阶段，详细下载速度与来源在控制台。
+
+ComfyUI-Manager的install.py钩子和手动setup_dlss5.bat作为提前部署／排错入口保留。只有直接使用这些手动入口时才需要下面的命令。少数已加载框架无法热启用新二进制依赖时会提示重启，不会无限循环覆盖Torch/CUDA。
 
 批处理自动寻找官方便携版 `python_embeded`、秋叶版 `python`、ComfyUI 的 `.venv/venv`。找不到时设置 `LL_COMFY_PYTHON` 为运行 ComfyUI 的 Python 路径，或直接运行 Python 入口。不会退回不明确的系统 Python。
 
@@ -48,7 +52,7 @@ ComfyUI-Manager 的标准安装流程会执行仓库 `install.py`，自动检测
 5. 校验官方发布资产的 SHA-256，再暂存解压 runtime和FFmpeg，目录替换失败回滚；有安装锁避免同时部署。
 6. 启动512×512真实原生测试，验证协议与签名 DLSSNR feature18 初始化、创建、执行证据。通过后记录路径和 `runtime/dlss5/setup-report.json`。重复运行复用已有文件，不重复下载。
 
-**驱动版本字符串可读取不代表驱动必然兼容，最终由原生自检确认。** 驱动、Windows组件及硬件条件不满足时给出诊断，不擅自升级显卡驱动或改系统安全设置。自检卡住会超时结束。正常导入与节点执行都不自动联网安装。
+**驱动版本字符串可读取不代表驱动必然兼容，最终由原生自检确认。** 驱动、Windows组件及硬件条件不满足时给出诊断，不擅自升级显卡驱动或改系统安全设置。自检卡住会超时结束。导入不联网；主节点执行时在缺失环境且自动部署开启的情况下才联网准备。
 
 以下命令在节点库目录执行，`python`必须是 ComfyUI 当前环境的解释器：
 
@@ -74,7 +78,21 @@ python setup_dlss5.py --download-prefix "https://你的下载代理/"
 
 固定原包：[Visual Enhancer v3.0](https://github.com/Merserk/dlss5-visual-enhancer/releases/tag/v3.0)。不能用“最新版”或另一个 v15/v17 CLI包替换；接口不同。SHA256：`6f0590d81677484f4ecdfaa5c44fc2a0e1a3835d33eefc59d656e6c3bcf35f6a`。
 
-`--skip-self-test`只部署文件和依赖，报告明确标记原生执行未验证；`--force`重新部署固定包。失败时控制台保留原因；正常脚本无须管理员权限。停止 ComfyUI/DLSS任务后再安装，避免 DLL被占用。
+`--skip-self-test`只部署文件和依赖，报告明确标记原生执行未验证；`--force`重新部署固定包。失败时控制台保留原因；正常脚本无须管理员权限。手动强制重装前停止DLSS任务，避免DLL被占用；正常首次执行会自动准备。
+
+## 下载来源与网络适配
+
+运行时原包约467MB，PyPI镜像不能代替这个GitHub Release资产。默认同时测试GitHub原始地址、ghfast.top和GH-Proxy加速入口，读取少量数据测量实际吞吐，再选择更快的来源；测速失败的来源仍可作为后备尝试。它们是公共第三方加速入口，不是NVIDIA官方国内镜像，不承诺固定带宽。参考服务说明：[GH-Proxy](https://gh-proxy.com/docs/github-accelerator)。
+
+- 有HTTP代理时会比较加速入口的系统路由与不经HTTP代理的连接，GitHub仍使用系统路由；不修改全局代理或系统网络配置。TUN仍由操作系统路由，不能把“未检测到HTTP代理”等同于未代理。
+- urllib使用系统／环境HTTP代理；浏览器扩展、PAC或SOCKS端口不保证对Python生效。可在主节点高级设置填写明确的HTTP/HTTPS代理地址，或用 `--http-proxy`，不猜测本机端口。
+- 控制台显示当前来源、MB/s、已下载／总量和预计剩余秒数。持续低速且有其它候选时保留分片换源；网络失败或取消保留 `.part`。
+- 续传严格检查HTTP206、Content-Range、文件总大小和重叠字节，防止重复拼接。不支持续传的来源只能另行完整下载，旧分片保留到完整文件校验成功。
+- 所有入口必须通过同一个原始发布资产SHA256；HTML验证页面、错误大小或错误哈希不得安装。TLS校验保持开启，不下载执行远程安装脚本。
+- 高级“仅GitHub原始来源”／CLI `--official-only` 可关闭公共加速入口。自选 `setup_download_prefix`／`--download-prefix` 会加入测速候选；不能与仅官方来源同时使用。
+- 缺失Python依赖且未指定index／PIP_INDEX_URL时，优先清华PyPI镜像，安装失败尝试PyPI原始源；明确配置或离线wheel优先。已有numpy／OpenCV保持现有版本，不替换opencv-contrib。镜像说明：[清华TUNA](https://mirrors.tuna.tsinghua.edu.cn/help/pypi/)。
+
+已下载完整ZIP、已有运行时和已验证缓存会复用。旧版下载脚本取消时可能自行清理旧分片，旧进程的清理行为不会因更新代码而改变；新版的保留／续传只对新版下载器保证。不要同时启动多个安装进程。
 
 ## 接线
 

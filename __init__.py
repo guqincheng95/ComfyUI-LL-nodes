@@ -5,7 +5,7 @@ from .modules.contour.nodes import PersonContourTrim
 from .modules.subject.nodes import PersonSubjectClean
 from .modules.dlss.nodes import DLSS5Settings, DLSS5RegionEnhance, DLSS5Compare
 
-__version__ = "0.12.0"
+__version__ = "0.12.1"
 WEB_DIRECTORY = "./web"
 NODE_CLASS_MAPPINGS = {
     "ResolutionPreset": ResolutionPreset,

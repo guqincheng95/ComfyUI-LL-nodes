@@ -127,7 +127,7 @@ class SetupTests(unittest.TestCase):
     def test_download_hash_failure_removes_partial_archive(self):
         class Response(io.BytesIO):
             headers = {'Content-Length': '3'}
-        with tempfile.TemporaryDirectory() as tmp, patch.object(setup.urllib.request, 'urlopen', return_value=Response(b'bad')):
+        with tempfile.TemporaryDirectory() as tmp, patch.object(setup.urllib.request, 'urlopen', side_effect=lambda *a, **kw: Response(b'bad')):
             path = Path(tmp) / 'release.zip'
             with self.assertRaisesRegex(RuntimeError, 'SHA-256'):
                 setup.download_archive('https://example.invalid/release.zip', path)

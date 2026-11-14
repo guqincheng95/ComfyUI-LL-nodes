@@ -8,7 +8,8 @@ export function enhanceDlss(node) {
  const advanced=new Set(['model','style','tone','structure','skin_structure','automatic_skin_mask',
   'region_mode','person_strength','background_strength','lighting_strength','neutral_protection',
   'skin_protection','edge_guard','feather','mask_expand','temporal_mask_strength','runtime_dir',
-  'release_comfy_models','worker_timeout','scene_change_threshold']);
+  'release_comfy_models','worker_timeout','scene_change_threshold','auto_setup',
+  'setup_archive','setup_index_url','setup_download_prefix','setup_wheel_dir','setup_http_proxy','setup_official_only']);
  const roi=new Set(['roi_x','roi_y','roi_width','roi_height']);
  const regionalNames=new Set(['region_mode','person_strength','background_strength','lighting_strength',
   'neutral_protection','skin_protection','edge_guard','feather','mask_expand','temporal_mask_strength']);
@@ -27,6 +28,7 @@ export function enhanceDlss(node) {
    else if(['preset','upscaling','show_advanced'].includes(name))visible=!legacy;
    else visible=!legacy&&Boolean(find('show_advanced')?.value)&&(!regionalNames.has(name)||region);
    if(['temporal_mask_strength','scene_change_threshold'].includes(name))visible=visible&&find('batch_mode')?.value==='video_sequence';
+   if(name.startsWith('setup_'))visible=visible&&Boolean(find('auto_setup')?.value);
    record.widget.hidden=!visible;
    record.widget.type=visible?record.type:'converted-widget';
    if(visible){if(record.computeSize)record.widget.computeSize=record.computeSize;else delete record.widget.computeSize;}
@@ -35,7 +37,7 @@ export function enhanceDlss(node) {
   node.setSize?.([node.size?.[0]||380,node.computeSize()[1]]);
   node.setDirtyCanvas?.(true,true);
  };
- for(const name of ['show_advanced','compare_preview','preview_mode','processing_mode','batch_mode']){
+ for(const name of ['show_advanced','compare_preview','preview_mode','processing_mode','batch_mode','auto_setup']){
   const widget=find(name);if(!widget)continue;
   const old=widget.callback;widget.callback=function(...args){const result=old?.apply(this,args);refresh();return result;};
  }

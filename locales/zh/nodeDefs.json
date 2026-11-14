@@ -795,6 +795,34 @@
       },
       "scene_change_threshold": {
         "name": "切镜检测阈值"
+      },
+      "auto_setup": {
+        "name": "首次运行自动部署",
+        "tooltip": "首次运行自动检查，缺失时下载兼容运行时并补齐依赖，完成后继续增强。不会安装驱动或更换Torch/CUDA。"
+      },
+      "setup_archive": {
+        "name": "离线运行时ZIP",
+        "tooltip": "可选：固定v3.0原始离线ZIP完整路径。留空在线下载或复用缓存。"
+      },
+      "setup_index_url": {
+        "name": "Python依赖镜像源",
+        "tooltip": "可选：缺失Python依赖的镜像源simple地址。"
+      },
+      "setup_download_prefix": {
+        "name": "自选下载加速前缀",
+        "tooltip": "可选：HTTPS下载代理前缀；仍校验原始发布包SHA256。"
+      },
+      "setup_wheel_dir": {
+        "name": "离线wheel文件夹",
+        "tooltip": "可选：匹配当前Python和Windows的离线wheel文件夹。"
+      },
+      "setup_http_proxy": {
+        "name": "HTTP/HTTPS代理地址",
+        "tooltip": "可选HTTP/HTTPS代理地址。留空检测系统／环境代理；PAC和浏览器代理不保证被Python使用。"
+      },
+      "setup_official_only": {
+        "name": "仅GitHub原始来源",
+        "tooltip": "关闭时测速GitHub与公共加速入口，择优并回退；开启只使用GitHub原始地址。"
       }
     },
     "outputs": {
@@ -955,6 +983,34 @@
       },
       "roi_height": {
         "name": "预览范围高度"
+      },
+      "auto_setup": {
+        "name": "首次运行自动部署",
+        "tooltip": "首次运行自动检查，缺失时下载兼容运行时并补齐依赖，完成后继续增强。不会安装驱动或更换Torch/CUDA。"
+      },
+      "setup_archive": {
+        "name": "离线运行时ZIP",
+        "tooltip": "可选：固定v3.0原始离线ZIP完整路径。留空在线下载或复用缓存。"
+      },
+      "setup_index_url": {
+        "name": "Python依赖镜像源",
+        "tooltip": "可选：缺失Python依赖的镜像源simple地址。"
+      },
+      "setup_download_prefix": {
+        "name": "自选下载加速前缀",
+        "tooltip": "可选：HTTPS下载代理前缀；仍校验原始发布包SHA256。"
+      },
+      "setup_wheel_dir": {
+        "name": "离线wheel文件夹",
+        "tooltip": "可选：匹配当前Python和Windows的离线wheel文件夹。"
+      },
+      "setup_http_proxy": {
+        "name": "HTTP/HTTPS代理地址",
+        "tooltip": "可选HTTP/HTTPS代理地址。留空检测系统／环境代理；PAC和浏览器代理不保证被Python使用。"
+      },
+      "setup_official_only": {
+        "name": "仅GitHub原始来源",
+        "tooltip": "关闭时测速GitHub与公共加速入口，择优并回退；开启只使用GitHub原始地址。"
       }
     },
     "outputs": {

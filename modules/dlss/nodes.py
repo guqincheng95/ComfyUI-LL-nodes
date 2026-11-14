@@ -43,6 +43,13 @@ class DLSS5Settings:
             'release_comfy_models': ('BOOLEAN', {'default': True, 'tooltip': '渲染前卸载 ComfyUI 已加载模型，释放显存；后续节点可能需要重新加载。'}),
             'worker_timeout': ('INT', {'default': 120, 'min': 30, 'max': 600, 'step': 10}),
             'scene_change_threshold': ('FLOAT', {'default': .24, 'min': .01, 'max': 1., 'step': .01}),
+            'auto_setup': ('BOOLEAN', {'default': True, 'tooltip': '首次运行自动检查，缺失时下载兼容运行时并补齐依赖，完成后继续增强。不会安装驱动或更换Torch/CUDA。'}),
+            'setup_archive': ('STRING', {'default': '', 'tooltip': '可选：固定v3.0原始离线ZIP完整路径。留空在线下载或复用缓存。'}),
+            'setup_index_url': ('STRING', {'default': '', 'tooltip': '可选：缺失Python依赖的镜像源simple地址。'}),
+            'setup_download_prefix': ('STRING', {'default': '', 'tooltip': '可选：HTTPS下载代理前缀；仍校验原始发布包SHA256。'}),
+            'setup_wheel_dir': ('STRING', {'default': '', 'tooltip': '可选：匹配当前Python和Windows的离线wheel文件夹。'}),
+            'setup_http_proxy': ('STRING', {'default': '', 'tooltip': '可选HTTP/HTTPS代理地址。留空检测系统／环境代理；PAC和浏览器代理不保证被Python使用。'}),
+            'setup_official_only': ('BOOLEAN', {'default': False, 'tooltip': '关闭时测速GitHub与公共加速入口，择优并回退；开启只使用GitHub原始地址。'}),
         }}
 
     def build(self, preset='人像保真', upscaling='1x', model='M', style='自然', tone=1., structure=1.2,
@@ -50,7 +57,9 @@ class DLSS5Settings:
               person_strength=.35, background_strength=1., lighting_strength=.7,
               neutral_protection=.35, skin_protection=.6, edge_guard=.7, feather=6., mask_expand=0.,
               temporal_mask_strength=.4, runtime_dir='', release_comfy_models=True,
-              worker_timeout=120, scene_change_threshold=.24):
+              worker_timeout=120, scene_change_threshold=.24, auto_setup=True,
+              setup_archive='', setup_index_url='', setup_download_prefix='', setup_wheel_dir='',
+              setup_http_proxy='', setup_official_only=False):
         from .native.settings import DlssOptions
         if preset not in PRESETS:
             raise ValueError('未知 DLSS5 预设。')
@@ -73,7 +82,10 @@ class DLSS5Settings:
             scene_change_threshold=scene_change_threshold)
         return ({'options': options, 'mix': mix, 'preset': preset, 'runtime_dir': runtime_dir,
                  'release_comfy_models': release_comfy_models, 'worker_timeout': worker_timeout,
-                 'temporal_mask_strength': temporal_mask_strength},)
+                 'temporal_mask_strength': temporal_mask_strength, 'auto_setup': auto_setup,
+                 'setup_archive': setup_archive, 'setup_index_url': setup_index_url,
+                 'setup_download_prefix': setup_download_prefix, 'setup_wheel_dir': setup_wheel_dir,
+                 'setup_http_proxy': setup_http_proxy, 'setup_official_only': setup_official_only},)
 
 
 class DLSS5RegionEnhance:
@@ -93,6 +105,11 @@ class DLSS5RegionEnhance:
             'structure': ('FLOAT', {'default': 1.5, 'min': 0., 'max': 2., 'step': .05}),
             'skin_structure': ('FLOAT', {'default': 2., 'min': -1., 'max': 2., 'step': .05}),
         })
+        # Append setup widgets after every v0.12.0 widget, so old positional
+        # workflow values don't get reinterpreted as proxy/archive settings.
+        setup_names = ('auto_setup', 'setup_archive', 'setup_index_url', 'setup_download_prefix',
+                       'setup_wheel_dir', 'setup_http_proxy', 'setup_official_only')
+        setup_controls = {name: controls.pop(name) for name in setup_names}
         return {'required': {
             'image': ('IMAGE',),
             'batch_mode': (['independent_images', 'video_sequence'], {'default': 'independent_images', 'tooltip': '独立图片逐张重置历史；视频必须按帧顺序输入，并建议提供逐帧 MASK。'}),
@@ -108,17 +125,21 @@ class DLSS5RegionEnhance:
             'compare_preview': ('BOOLEAN', {'default': False, 'tooltip': '在本节点内显示左原图／右结果；正式图像输出不受影响。'}),
             'roi_mask': ('MASK', {'tooltip': '可选：仅用于对比预览的范围；不参与人物分区或渲染。'}),
             'roi_x': unit(0.), 'roi_y': unit(0.), 'roi_width': unit(1.), 'roi_height': unit(1.),
+            **setup_controls,
         }, 'hidden': {'prompt': 'PROMPT', 'extra_pnginfo': 'EXTRA_PNGINFO'}}
 
     def enhance(self, image, settings=None, batch_mode='independent_images', preview_mode=False,
                 preview_long_edge=1024, person_mask=None, skin_mask=None, processing_mode='auto',
                 preset='原生默认', compare_preview=False, roi_mask=None, roi_x=0., roi_y=0.,
                 roi_width=1., roi_height=1., show_advanced=False, prompt=None, extra_pnginfo=None, **values):
-        from .runner import enhance
         if settings is None:
             settings = inline_settings(preset, values)
             if processing_mode == 'auto':
                 processing_mode = 'regional' if person_mask is not None or skin_mask is not None or preset in PRESETS[:3] else 'native'
+        # Bootstrap before importing runner: numpy/cv2 can be missing initially.
+        from .bootstrap import ensure_environment
+        ensure_environment(settings)
+        from .runner import enhance
         result = enhance(image, settings, batch_mode, preview_mode, preview_long_edge, person_mask, skin_mask,
                          processing_mode=processing_mode)
         if compare_preview:
